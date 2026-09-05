@@ -1,4 +1,7 @@
-import type { CheckInput, CoordinateInput, EngineBand, EngineLink } from '../../src/types.js';
+import { festival, FR_BANDS, link as uhf, tntChannel } from './links.js';
+import type { CheckInput, CoordinateInput, EngineLink } from '../../src/types.js';
+
+export { FR_BANDS, tntChannel };
 
 /**
  * Reference cases for the Phase 0 gate (see `docs/VALIDATION.md`).
@@ -30,53 +33,11 @@ export type ValidationCase = {
   | { mode: 'coordinate'; input: CoordinateInput }
 );
 
-export const FR_BANDS: EngineBand[] = [
-  { fromKHz: 174_000, toKHz: 223_000, status: 'free', label: 'VHF 174–223' },
-  { fromKHz: 470_000, toKHz: 694_000, status: 'free', label: 'UHF 470–694' },
-  { fromKHz: 694_000, toKHz: 790_000, status: 'forbidden', label: 'Bande 700 (interdite PMSE)' },
-  { fromKHz: 823_000, toKHz: 832_000, status: 'free', label: '823–832' },
-  { fromKHz: 1_785_000, toKHz: 1_800_000, status: 'free', label: '1785–1800' },
-];
-
-function uhf(id: string, overrides: Partial<EngineLink> = {}): EngineLink {
-  return {
-    id,
-    zoneId: '',
-    tuningRangeKHz: [470_000, 694_000],
-    stepKHz: 25,
-    channelWidthKHz: 200,
-    ...overrides,
-  };
-}
-
 function plan(entries: Record<string, number>) {
   return Object.entries(entries).map(([linkId, freqKHz]) => ({ linkId, freqKHz }));
 }
 
-/** UHF TNT channel N: 8 MHz wide, channel 21 starting at 470 MHz. */
-export function tntChannel(channel: number) {
-  const fromKHz = 470_000 + (channel - 21) * 8_000;
-  return { fromKHz, toKHz: fromKHz + 8_000, source: 'tnt-anfr' as const, label: `Canal TNT ${channel}` };
-}
-
 const comb8 = Array.from({ length: 8 }, (_, i) => uhf(`PEIGNE${i + 1}`));
-
-const festival: EngineLink[] = [
-  ...Array.from({ length: 12 }, (_, i) =>
-    uhf(`SC1-${String(i + 1).padStart(2, '0')}`, { zoneId: 'scene1', tuningRangeKHz: [534_000, 598_000] }),
-  ),
-  ...Array.from({ length: 8 }, (_, i) =>
-    uhf(`SC2-${String(i + 1).padStart(2, '0')}`, { zoneId: 'scene2', tuningRangeKHz: [606_000, 678_000] }),
-  ),
-  ...Array.from({ length: 4 }, (_, i) =>
-    uhf(`IEM-${String(i + 1).padStart(2, '0')}`, {
-      zoneId: 'scene1',
-      tuningRangeKHz: [606_000, 630_000],
-      stepKHz: 125,
-      channelWidthKHz: 300,
-    }),
-  ),
-];
 
 export const VALIDATION_CASES: ValidationCase[] = [
   {
@@ -195,6 +156,6 @@ export const VALIDATION_CASES: ValidationCase[] = [
     rationale:
       "Charge réaliste de bout en bout. Verrouille le plan produit, donc toute régression du moteur.",
     mode: 'coordinate',
-    input: { links: festival, bands: FR_BANDS },
+    input: { links: festival(), bands: FR_BANDS },
   },
 ];

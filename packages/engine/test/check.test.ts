@@ -1,14 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { checkPlan, distanceToInterval, requiredExclusionKHz, requiredSpacingKHz } from '../src/check.js';
 import { ENGINE_VERSION } from '../src/version.js';
-import { link, tntChannel } from './fixtures/links.js';
-import type { EngineBand } from '../src/types.js';
-
-const FR_BANDS: EngineBand[] = [
-  { fromKHz: 470_000, toKHz: 694_000, status: 'free', label: 'UHF 470–694' },
-  { fromKHz: 694_000, toKHz: 790_000, status: 'forbidden', label: 'Bande 700' },
-  { fromKHz: 1_240_000, toKHz: 1_260_000, status: 'temporary', label: '1,2 GHz' },
-];
+import { FR_BANDS, link, tntChannel } from './fixtures/links.js';
+import type { Guards } from '../src/types.js';
 
 describe('helpers', () => {
   it('widens the carrier spacing by the two channel widths', () => {
@@ -122,7 +116,8 @@ describe('checkPlan — regulatory bands', () => {
   });
 
   it('skips the band check entirely when no band plan is supplied', () => {
-    expect(checkPlan({ links: [link('A')], plan: [{ linkId: 'A', freqKHz: 700_000 }] }).ok).toBe(true);
+    const links = [link('A', { tuningRangeKHz: [470_000, 790_000] })];
+    expect(checkPlan({ links, plan: [{ linkId: 'A', freqKHz: 700_000 }] }).ok).toBe(true);
   });
 });
 
@@ -171,6 +166,35 @@ describe('checkPlan — zones', () => {
       zonePolicies: { scene1: 'isolated', scene2: 'full-intermod' },
     });
     expect(result.violations.map((v) => v.kind)).toEqual(['spacing']);
+  });
+});
+
+describe('checkPlan — hardware limits', () => {
+  it('rejects a frequency outside the tuning range of its own hardware', () => {
+    // Reached through manual entry and plan imports: a receiver that cannot be
+    // tuned there makes the rest of the analysis beside the point.
+    const result = checkPlan({
+      links: [link('A', { tuningRangeKHz: [534_000, 598_000] })],
+      plan: [{ linkId: 'A', freqKHz: 650_000 }],
+    });
+    expect(result.violations.map((v) => v.kind)).toEqual(['out-of-tuning-range']);
+    expect(result.violations[0]?.message).toMatch(/hors de la plage/);
+  });
+
+  it('rejects a frequency off the hardware tuning grid', () => {
+    const result = checkPlan({
+      links: [link('A', { tuningRangeKHz: [534_000, 598_000], stepKHz: 25 })],
+      plan: [{ linkId: 'A', freqKHz: 550_013 }],
+    });
+    expect(result.violations.map((v) => v.kind)).toEqual(['out-of-tuning-range']);
+    expect(result.violations[0]?.message).toMatch(/grille d'accord/);
+  });
+
+  it('accepts the exact bounds of the tuning range', () => {
+    const links = [link('A', { tuningRangeKHz: [534_000, 598_000] })];
+    for (const freqKHz of [534_000, 598_000]) {
+      expect(checkPlan({ links, plan: [{ linkId: 'A', freqKHz }] }).ok).toBe(true);
+    }
   });
 });
 
@@ -242,5 +266,30 @@ describe('checkPlan — reporting', () => {
         ],
       }),
     ).toThrow(/deux fois/);
+  });
+});
+
+describe('resolveConfig — cohérence des gardes', () => {
+  const withGuards = (guards: Partial<Guards>) =>
+    checkPlan({ links: [link('A')], plan: [], config: { guards } });
+
+  it('refuse une garde IM3 3 émetteurs plus large que celle à 2 émetteurs', () => {
+    expect(() => withGuards({ im3ThreeTxKHz: 300 })).toThrow(/3 émetteurs/);
+  });
+
+  it('refuse un espacement inférieur à la garde IM3', () => {
+    // Sans cette règle, 2·f1 − f2 à 150 kHz de f1 ne serait signalé nulle part.
+    expect(() => withGuards({ spacingKHz: 100 })).toThrow(/espacement co-canal/i);
+  });
+
+  it('refuse un espacement inférieur à la moitié de la garde IM5', () => {
+    expect(() => withGuards({ im3TwoTxKHz: 40, im3ThreeTxKHz: 40, spacingKHz: 40, im5TwoTxKHz: 90 })).toThrow(
+      /moitié/,
+    );
+  });
+
+  it('refuse une garde négative ou non entière', () => {
+    expect(() => withGuards({ im5TwoTxKHz: -1 })).toThrow(/invalide/);
+    expect(() => withGuards({ im5TwoTxKHz: 12.5 })).toThrow(/invalide/);
   });
 });

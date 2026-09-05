@@ -1,4 +1,4 @@
-import type { EngineConfig, Guards } from './types.js';
+import type { EngineConfig, EngineConfigInput, Guards } from './types.js';
 
 /**
  * Default clearances.
@@ -36,8 +36,47 @@ export const DEFAULT_CONFIG: EngineConfig = {
   placementStrategy: 'compact',
 };
 
-export function resolveConfig(partial?: Partial<EngineConfig>): EngineConfig {
+/**
+ * Checks the guards against each other.
+ *
+ * The engine never checks a product against one of its own generators, on the
+ * grounds that every such case is already covered — and covered harder — by
+ * another rule (see `intermod.ts`). That reasoning holds only while the guards
+ * keep the order below, so it is enforced rather than assumed: a user who
+ * lowers the carrier spacing below the IM3 guard would otherwise silently lose
+ * detections.
+ */
+function validateGuards(guards: Guards): void {
+  for (const [name, value] of Object.entries(guards)) {
+    if (!Number.isInteger(value) || value < 0) {
+      throw new Error(`Garde ${name} invalide : ${value} kHz (entier ≥ 0 attendu)`);
+    }
+  }
+  if (guards.im3ThreeTxKHz > guards.im3TwoTxKHz) {
+    throw new Error(
+      `La garde IM3 à 3 émetteurs (${guards.im3ThreeTxKHz} kHz) ne peut pas dépasser celle à ` +
+        `2 émetteurs (${guards.im3TwoTxKHz} kHz) : un produit à 3 émetteurs qui retombe sur son ` +
+        `propre générateur soustractif est vérifié sous sa forme à 2 émetteurs.`,
+    );
+  }
+  if (guards.spacingKHz < guards.im3TwoTxKHz) {
+    throw new Error(
+      `L'espacement co-canal (${guards.spacingKHz} kHz) ne peut pas être inférieur à la garde IM3 ` +
+        `à 2 émetteurs (${guards.im3TwoTxKHz} kHz) : c'est lui qui couvre les produits retombant ` +
+        `sur leurs propres générateurs.`,
+    );
+  }
+  if (2 * guards.spacingKHz < guards.im5TwoTxKHz) {
+    throw new Error(
+      `L'espacement co-canal (${guards.spacingKHz} kHz) doit valoir au moins la moitié de la garde ` +
+        `IM5 (${guards.im5TwoTxKHz} kHz), pour la même raison.`,
+    );
+  }
+}
+
+export function resolveConfig(partial?: EngineConfigInput): EngineConfig {
   const guards: Guards = { ...DEFAULT_GUARDS, ...partial?.guards };
+  validateGuards(guards);
   const ladder = partial?.robustnessLadder ?? DEFAULT_ROBUSTNESS_LADDER;
   if (ladder.length === 0) throw new Error('robustnessLadder ne peut pas être vide');
   if (ladder[0] !== 1) throw new Error('robustnessLadder[0] doit valoir 1 (gardes nominales)');

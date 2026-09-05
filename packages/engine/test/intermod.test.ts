@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { forEachImHit, isDegenerateResidual, type ImHit, type ImOptions } from '../src/intermod.js';
+import { forEachImHit, type ImHit, type ImOptions } from '../src/intermod.js';
 
 const allVisible: ImOptions['visible'] = () => true;
 
@@ -71,14 +71,6 @@ describe('forEachImHit — 3rd order, 3 transmitters', () => {
     expect(new Set(threeTx.map((h) => h.victimIndex))).toEqual(new Set([0, 1, 2, 3]));
   });
 
-  it('flags the subtractive generator as its own victim (f1 + f2 − 2·f3 case)', () => {
-    // 500 000 + 502 000 − 501 000 = 501 000, which is f3 itself.
-    const hits = collect([500_000, 502_000, 501_000], { enableIm5TwoTx: false });
-    const hit = hits.find((h) => h.kind === 'im3-3tx' && h.victimIndex === 2);
-    expect(hit).toBeDefined();
-    expect(hit?.distanceKHz).toBe(0);
-  });
-
   it('is skipped when disabled', () => {
     expect(collect(quad, { enableIm3ThreeTx: false, enableIm5TwoTx: false })).toHaveLength(0);
   });
@@ -111,20 +103,24 @@ describe('visibility', () => {
   });
 });
 
-describe('isDegenerateResidual', () => {
-  it('matches the specialised rules inlined in the hot loops', () => {
-    // 2-transmitter products: any generator as victim is degenerate.
-    expect(isDegenerateResidual([0, 1], [2, -1], 0)).toBe(true);
-    expect(isDegenerateResidual([0, 1], [2, -1], 1)).toBe(true);
-    expect(isDegenerateResidual([0, 1], [2, -1], 2)).toBe(false);
-    expect(isDegenerateResidual([0, 1], [3, -2], 0)).toBe(true);
-    expect(isDegenerateResidual([0, 1], [3, -2], 1)).toBe(true);
-    expect(isDegenerateResidual([0, 1], [3, -2], 2)).toBe(false);
-    // 3-transmitter products: only the additive generators are degenerate.
-    expect(isDegenerateResidual([0, 1, 2], [1, 1, -1], 0)).toBe(true);
-    expect(isDegenerateResidual([0, 1, 2], [1, 1, -1], 1)).toBe(true);
-    expect(isDegenerateResidual([0, 1, 2], [1, 1, -1], 2)).toBe(false);
-    expect(isDegenerateResidual([0, 1, 2], [1, 1, -1], 3)).toBe(false);
+describe('a product is never checked against its own generators', () => {
+  it('leaves the carrier-spacing cases to the spacing rule', () => {
+    // 2·f1 − f2 against f1 is |f1 − f2|; against f2 it is 2·|f1 − f2|. Same for
+    // the 5th-order forms. None of them is intermodulation.
+    expect(collect([500_000, 500_100])).toHaveLength(0);
+    expect(collect([500_000, 500_030], { im3TwoTxKHz: 1_000, im5TwoTxKHz: 1_000 })).toHaveLength(0);
+  });
+
+  it('reports f1 + f2 − 2·f3 as the 2-transmitter product it actually is', () => {
+    // 500 000 + 502 000 − 2 × 501 000 = 0: the 3-transmitter form would hit f3.
+    // It is the same quantity as 2 × 501 000 − 500 000 = 502 000 landing on f2,
+    // which the 2-transmitter family reports — once, with the wider guard.
+    const hits = collect([500_000, 502_000, 501_000], { enableIm5TwoTx: false });
+    expect(hits.filter((h) => h.kind === 'im3-3tx')).toHaveLength(0);
+    const twoTx = hits.filter((h) => h.kind === 'im3-2tx');
+    expect(twoTx).toHaveLength(2);
+    expect(twoTx.map((h) => h.distanceKHz)).toEqual([0, 0]);
+    expect(new Set(twoTx.map((h) => h.victimIndex))).toEqual(new Set([0, 1]));
   });
 });
 

@@ -28,26 +28,11 @@
       "requiredKHz": 200,
       "actualKHz": 0,
       "message": "IM3 (2 émetteurs) 2×HF01 − HF02 tombe à 494.000 MHz, soit 0 kHz de HF03 (494.000 MHz), minimum requis 200 kHz."
-    },
-    {
-      "kind": "im3-3tx",
-      "severity": "critical",
-      "victimLinkId": "HF01",
-      "victimFreqKHz": 500000,
-      "sourceLinkIds": [
-        "HF03",
-        "HF02",
-        "HF01"
-      ],
-      "offenderFreqKHz": 500000,
-      "requiredKHz": 100,
-      "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) HF03 + HF02 − HF01 tombe à 500.000 MHz, soit 0 kHz de HF01 (500.000 MHz), minimum requis 100 kHz."
     }
   ],
   "margins": {
     "im3TwoTxKHz": 0,
-    "im3ThreeTxKHz": 0,
+    "im3ThreeTxKHz": null,
     "im5TwoTxKHz": null,
     "spacingKHz": null,
     "exclusionKHz": null

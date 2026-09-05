@@ -1,4 +1,5 @@
 import { resolveConfig } from './config.js';
+import { compareIds } from './order.js';
 import { forEachImHit, type ImKind } from './intermod.js';
 import { relationBetween } from './zones.js';
 import { ENGINE_VERSION } from './version.js';
@@ -23,21 +24,29 @@ import type {
 export const MARGIN_WINDOW_FACTOR = 4;
 
 const KIND_RANK: Record<ViolationKind, number> = {
-  'out-of-band': 0,
-  exclusion: 1,
-  spacing: 2,
-  'im3-2tx': 3,
-  'im3-3tx': 4,
-  'im5-2tx': 5,
+  'out-of-tuning-range': 0,
+  'out-of-band': 1,
+  exclusion: 2,
+  spacing: 3,
+  'im3-2tx': 4,
+  'im3-3tx': 5,
+  'im5-2tx': 6,
 };
 
 const SEVERITY_BY_KIND: Record<ViolationKind, Severity> = {
+  'out-of-tuning-range': 'critical',
   'out-of-band': 'critical',
   exclusion: 'critical',
   spacing: 'critical',
   'im3-2tx': 'critical',
   'im3-3tx': 'critical',
   'im5-2tx': 'warning',
+};
+
+const MARGIN_KEY_BY_KIND: Record<ImKind, 'im3TwoTxKHz' | 'im3ThreeTxKHz' | 'im5TwoTxKHz'> = {
+  'im3-2tx': 'im3TwoTxKHz',
+  'im3-3tx': 'im3ThreeTxKHz',
+  'im5-2tx': 'im5TwoTxKHz',
 };
 
 const IM_LABEL: Record<ImKind, string> = {
@@ -106,12 +115,12 @@ function sortViolations(violations: Violation[]): Violation[] {
   return violations.sort(
     (a, b) =>
       KIND_RANK[a.kind] - KIND_RANK[b.kind] ||
-      a.victimLinkId.localeCompare(b.victimLinkId) ||
+      compareIds(a.victimLinkId, b.victimLinkId) ||
       a.offenderFreqKHz - b.offenderFreqKHz ||
-      a.sourceLinkIds.join('|').localeCompare(b.sourceLinkIds.join('|')) ||
+      compareIds(a.sourceLinkIds.join('|'), b.sourceLinkIds.join('|')) ||
       // Two exclusions can overlap the same carrier at the same edge; only the
       // message tells them apart, and something has to.
-      a.message.localeCompare(b.message),
+      compareIds(a.message, b.message),
   );
 }
 
@@ -121,8 +130,10 @@ function tighten(current: number | null, candidate: number): number | null {
 
 /**
  * Checks a complete or partial plan against every constraint family and reports
- * each breach individually. This is the function the product's reputation rests
- * on: it must never stay silent on a violation a manufacturer tool would flag.
+ * each breach individually.
+ *
+ * Over-reporting is a nuisance; under-reporting puts a bad plan on a stage. So
+ * where the two trade off, this function over-reports.
  */
 export function checkPlan(input: CheckInput): CheckResult {
   const config: EngineConfig = resolveConfig(input.config);
@@ -133,8 +144,8 @@ export function checkPlan(input: CheckInput): CheckResult {
     (a, b) =>
       a.fromKHz - b.fromKHz ||
       a.toKHz - b.toKHz ||
-      a.source.localeCompare(b.source) ||
-      a.label.localeCompare(b.label),
+      compareIds(a.source, b.source) ||
+      compareIds(a.label, b.label),
   );
 
   const byId = new Map<string, EngineLink>();
@@ -154,7 +165,7 @@ export function checkPlan(input: CheckInput): CheckResult {
   }
   // Stable, frequency-ordered evaluation so that identical inputs given in a
   // different order produce byte-identical output.
-  assigned.sort((a, b) => a.freqKHz - b.freqKHz || a.link.id.localeCompare(b.link.id));
+  assigned.sort((a, b) => a.freqKHz - b.freqKHz || compareIds(a.link.id, b.link.id));
 
   const violations: Violation[] = [];
   const margins: Margins = {
@@ -164,14 +175,34 @@ export function checkPlan(input: CheckInput): CheckResult {
     spacingKHz: null,
     exclusionKHz: null,
   };
-  const guardFor = (kind: ImKind): number =>
-    kind === 'im3-2tx'
-      ? config.guards.im3TwoTxKHz
-      : kind === 'im3-3tx'
-        ? config.guards.im3ThreeTxKHz
-        : config.guards.im5TwoTxKHz;
-  const marginKeyFor = (kind: ImKind): 'im3TwoTxKHz' | 'im3ThreeTxKHz' | 'im5TwoTxKHz' =>
-    kind === 'im3-2tx' ? 'im3TwoTxKHz' : kind === 'im3-3tx' ? 'im3ThreeTxKHz' : 'im5TwoTxKHz';
+  const guardFor: Record<ImKind, number> = {
+    'im3-2tx': config.guards.im3TwoTxKHz,
+    'im3-3tx': config.guards.im3ThreeTxKHz,
+    'im5-2tx': config.guards.im5TwoTxKHz,
+  };
+
+  // --- Hardware limits. A frequency the receiver cannot be tuned to is not a
+  // plan, whatever the rest of the analysis says about it. Reached through
+  // manual entry and plan imports, so it is checked rather than assumed.
+  for (const { link, freqKHz } of assigned) {
+    const [fromKHz, toKHz] = link.tuningRangeKHz;
+    const outside = freqKHz < fromKHz || freqKHz > toKHz;
+    const offGrid = !outside && (freqKHz - fromKHz) % link.stepKHz !== 0;
+    if (!outside && !offGrid) continue;
+    violations.push({
+      kind: 'out-of-tuning-range',
+      severity: SEVERITY_BY_KIND['out-of-tuning-range'],
+      victimLinkId: link.id,
+      victimFreqKHz: freqKHz,
+      sourceLinkIds: [],
+      offenderFreqKHz: freqKHz,
+      requiredKHz: link.stepKHz,
+      actualKHz: 0,
+      message: outside
+        ? `${mhz(freqKHz)} MHz est hors de la plage d'accord de ${link.id} (${mhz(fromKHz)}–${mhz(toKHz)} MHz).`
+        : `${mhz(freqKHz)} MHz n'est pas sur la grille d'accord de ${link.id} (pas de ${link.stepKHz} kHz depuis ${mhz(fromKHz)} MHz).`,
+    });
+  }
 
   // --- Regulatory bands.
   if (bands.length > 0) {
@@ -265,8 +296,8 @@ export function checkPlan(input: CheckInput): CheckResult {
         ) === 'full',
     },
     (hit) => {
-      const guard = guardFor(hit.kind);
-      const key = marginKeyFor(hit.kind);
+      const guard = guardFor[hit.kind];
+      const key = MARGIN_KEY_BY_KIND[hit.kind];
       margins[key] = tighten(margins[key], hit.distanceKHz);
       if (hit.distanceKHz >= guard) return;
       const victim = assigned[hit.victimIndex] as { link: EngineLink; freqKHz: number };

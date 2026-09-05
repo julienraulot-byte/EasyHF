@@ -36,39 +36,33 @@ export interface ImOptions {
   enableIm3ThreeTx: boolean;
   enableIm5TwoTx: boolean;
   /**
-   * `participates[a][b]` — whether carrier `b` may act on carrier `a` through
-   * intermodulation. Asymmetric by construction (zone policies differ per
-   * zone), so it is read as "b is visible to a".
+   * Whether `source` shares an RF space with `victim`, and can therefore reach
+   * it through intermodulation. A product counts only when every one of its
+   * generators is visible to the victim.
    */
   visible: (victim: number, source: number) => boolean;
 }
 
-/**
- * Reference test for the "already covered by the spacing rule" case.
+/*
+ * A product is never checked against one of its own generators.
  *
- * A product `P = Σ cᵢ·fᵢ` is compared against a victim `f_v`. When the victim
- * is one of the generators, the residual `P − f_v` has coefficients summing to
- * zero. If only two of them are non-zero the residual is `±m·(fᵢ − fⱼ)` — a
- * plain carrier-to-carrier distance, which the spacing rule already enforces
- * and more strictly. Reporting it as intermodulation would double-count.
+ * Substituting a generator for the victim turns `P − f_v` into a combination
+ * whose coefficients sum to zero, and every such residual is a check that has
+ * already been made, more severely, elsewhere:
  *
- * The hot loops below inline the specialised form of this predicate; a unit
- * test pins the two implementations together.
+ *   2·f1 − f2  vs f1  →  |f1 − f2|          carrier spacing
+ *   2·f1 − f2  vs f2  →  2·|f1 − f2|        carrier spacing
+ *   3·f1 − 2f2 vs f1  →  2·|f1 − f2|        carrier spacing
+ *   3·f1 − 2f2 vs f2  →  3·|f1 − f2|        carrier spacing
+ *   f1 + f2 − f3 vs f1 →  |f2 − f3|         carrier spacing
+ *   f1 + f2 − f3 vs f3 →  |f1 + f2 − 2f3|   the 2-transmitter product
+ *                                           `2f3 − f1` measured against `f2`
+ *
+ * The last one is the only non-obvious case: it is a genuine intermodulation,
+ * but it is exactly the 2-transmitter form, which is checked with a guard at
+ * least as wide (`resolveConfig` enforces `im3ThreeTx ≤ im3TwoTx`). Keeping it
+ * here would only report the same anomaly twice under two different names.
  */
-export function isDegenerateResidual(
-  sourceIndices: readonly number[],
-  coefficients: readonly number[],
-  victimIndex: number,
-): boolean {
-  const residual = new Map<number, number>();
-  for (const [k, index] of sourceIndices.entries()) {
-    residual.set(index, (residual.get(index) ?? 0) + (coefficients[k] as number));
-  }
-  residual.set(victimIndex, (residual.get(victimIndex) ?? 0) - 1);
-  let nonZero = 0;
-  for (const c of residual.values()) if (c !== 0) nonZero += 1;
-  return nonZero <= 2;
-}
 
 /** Index of the first element of `sorted` that is >= `value`. */
 function lowerBound(sorted: Float64Array, length: number, value: number): number {
@@ -131,7 +125,6 @@ export function forEachImHit(
       forEachVictim(
         product,
         options.im3TwoTxKHz,
-        // Victim i gives residual (1,−1), victim j gives (2,−2): both degenerate.
         (victim) =>
           victim === i ||
           victim === j ||
@@ -163,11 +156,10 @@ export function forEachImHit(
           forEachVictim(
             product,
             options.im3ThreeTxKHz,
-            // Victim i or j gives residual (0,1,−1): degenerate. Victim k gives
-            // (1,1,−2) — three non-zero terms, a genuine intermodulation case.
             (victim) =>
               victim === i ||
               victim === j ||
+              victim === k ||
               !options.visible(victim, i) ||
               !options.visible(victim, j) ||
               !options.visible(victim, k),
@@ -197,7 +189,6 @@ export function forEachImHit(
         forEachVictim(
           product,
           options.im5TwoTxKHz,
-          // Victim i gives (2,−2), victim j gives (3,−3): both degenerate.
           (victim) =>
             victim === i ||
             victim === j ||

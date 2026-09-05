@@ -3,7 +3,7 @@
   "violations": [],
   "margins": {
     "im3TwoTxKHz": 200,
-    "im3ThreeTxKHz": 200,
+    "im3ThreeTxKHz": null,
     "im5TwoTxKHz": null,
     "spacingKHz": null,
     "exclusionKHz": null

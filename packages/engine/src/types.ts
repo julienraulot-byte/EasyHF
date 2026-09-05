@@ -58,12 +58,12 @@ export interface ZonePolicies {
 /**
  * Minimum clearances, in kHz. All are "strictly less than" thresholds.
  *
- * Third-order products are split by transmitter count on purpose: a 3-transmitter
- * product needs three carriers to coincide in the same non-linearity and lands
- * well below a 2-transmitter one, so the trade the whole profession makes is a
- * tighter guard on it. Coordinating 24 links in a single TV-band window is
- * simply not possible otherwise — the reachable frequency set is a Sidon set,
- * whose size is bounded by the square root of the number of slots.
+ * Third-order products are split by transmitter count: a 3-transmitter product
+ * needs three carriers to coincide in the same non-linearity and lands well
+ * below a 2-transmitter one, so it is given a tighter guard. See `DECISIONS.md`
+ * D-006 for the measured effect on how many links fit in a band.
+ *
+ * `resolveConfig` keeps them ordered: `im3ThreeTx ≤ im3TwoTx ≤ spacing`.
  */
 export interface Guards {
   /** Carrier to 3rd-order, 2-transmitter product (`2f1 − f2`). */
@@ -110,7 +110,16 @@ export interface EngineConfig {
  */
 export type PlacementStrategy = 'compact' | 'spread';
 
+/**
+ * What a caller may override. Guards can be overridden one at a time — the rest
+ * fall back to {@link DEFAULT_GUARDS} — which is how most callers use them.
+ */
+export type EngineConfigInput = Partial<Omit<EngineConfig, 'guards'>> & {
+  guards?: Partial<Guards>;
+};
+
 export type ViolationKind =
+  | 'out-of-tuning-range'
   | 'im3-2tx'
   | 'im3-3tx'
   | 'im5-2tx'
@@ -150,7 +159,7 @@ export interface CheckInput {
   exclusions?: readonly EngineExclusion[];
   bands?: readonly EngineBand[];
   zonePolicies?: ZonePolicies;
-  config?: Partial<EngineConfig>;
+  config?: EngineConfigInput;
 }
 
 /**
@@ -179,7 +188,7 @@ export interface CoordinateInput {
   exclusions?: readonly EngineExclusion[];
   bands?: readonly EngineBand[];
   zonePolicies?: ZonePolicies;
-  config?: Partial<EngineConfig>;
+  config?: EngineConfigInput;
 }
 
 export interface CoordinationResult {

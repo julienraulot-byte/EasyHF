@@ -479,21 +479,6 @@
       "victimFreqKHz": 500400,
       "sourceLinkIds": [
         "PEIGNE1",
-        "PEIGNE3",
-        "PEIGNE2"
-      ],
-      "offenderFreqKHz": 500400,
-      "requiredKHz": 100,
-      "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE3 − PEIGNE2 tombe à 500.400 MHz, soit 0 kHz de PEIGNE2 (500.400 MHz), minimum requis 100 kHz."
-    },
-    {
-      "kind": "im3-3tx",
-      "severity": "critical",
-      "victimLinkId": "PEIGNE2",
-      "victimFreqKHz": 500400,
-      "sourceLinkIds": [
-        "PEIGNE1",
         "PEIGNE4",
         "PEIGNE3"
       ],
@@ -674,21 +659,6 @@
       "victimFreqKHz": 500800,
       "sourceLinkIds": [
         "PEIGNE1",
-        "PEIGNE5",
-        "PEIGNE3"
-      ],
-      "offenderFreqKHz": 500800,
-      "requiredKHz": 100,
-      "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE5 − PEIGNE3 tombe à 500.800 MHz, soit 0 kHz de PEIGNE3 (500.800 MHz), minimum requis 100 kHz."
-    },
-    {
-      "kind": "im3-3tx",
-      "severity": "critical",
-      "victimLinkId": "PEIGNE3",
-      "victimFreqKHz": 500800,
-      "sourceLinkIds": [
-        "PEIGNE1",
         "PEIGNE6",
         "PEIGNE4"
       ],
@@ -726,21 +696,6 @@
       "requiredKHz": 100,
       "actualKHz": 0,
       "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE8 − PEIGNE6 tombe à 500.800 MHz, soit 0 kHz de PEIGNE3 (500.800 MHz), minimum requis 100 kHz."
-    },
-    {
-      "kind": "im3-3tx",
-      "severity": "critical",
-      "victimLinkId": "PEIGNE3",
-      "victimFreqKHz": 500800,
-      "sourceLinkIds": [
-        "PEIGNE2",
-        "PEIGNE4",
-        "PEIGNE3"
-      ],
-      "offenderFreqKHz": 500800,
-      "requiredKHz": 100,
-      "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE4 − PEIGNE3 tombe à 500.800 MHz, soit 0 kHz de PEIGNE3 (500.800 MHz), minimum requis 100 kHz."
     },
     {
       "kind": "im3-3tx",
@@ -899,21 +854,6 @@
       "victimFreqKHz": 501200,
       "sourceLinkIds": [
         "PEIGNE1",
-        "PEIGNE7",
-        "PEIGNE4"
-      ],
-      "offenderFreqKHz": 501200,
-      "requiredKHz": 100,
-      "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE7 − PEIGNE4 tombe à 501.200 MHz, soit 0 kHz de PEIGNE4 (501.200 MHz), minimum requis 100 kHz."
-    },
-    {
-      "kind": "im3-3tx",
-      "severity": "critical",
-      "victimLinkId": "PEIGNE4",
-      "victimFreqKHz": 501200,
-      "sourceLinkIds": [
-        "PEIGNE1",
         "PEIGNE8",
         "PEIGNE5"
       ],
@@ -959,21 +899,6 @@
       "victimFreqKHz": 501200,
       "sourceLinkIds": [
         "PEIGNE2",
-        "PEIGNE6",
-        "PEIGNE4"
-      ],
-      "offenderFreqKHz": 501200,
-      "requiredKHz": 100,
-      "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE6 − PEIGNE4 tombe à 501.200 MHz, soit 0 kHz de PEIGNE4 (501.200 MHz), minimum requis 100 kHz."
-    },
-    {
-      "kind": "im3-3tx",
-      "severity": "critical",
-      "victimLinkId": "PEIGNE4",
-      "victimFreqKHz": 501200,
-      "sourceLinkIds": [
-        "PEIGNE2",
         "PEIGNE7",
         "PEIGNE5"
       ],
@@ -996,21 +921,6 @@
       "requiredKHz": 100,
       "actualKHz": 0,
       "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE8 − PEIGNE6 tombe à 501.200 MHz, soit 0 kHz de PEIGNE4 (501.200 MHz), minimum requis 100 kHz."
-    },
-    {
-      "kind": "im3-3tx",
-      "severity": "critical",
-      "victimLinkId": "PEIGNE4",
-      "victimFreqKHz": 501200,
-      "sourceLinkIds": [
-        "PEIGNE3",
-        "PEIGNE5",
-        "PEIGNE4"
-      ],
-      "offenderFreqKHz": 501200,
-      "requiredKHz": 100,
-      "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE5 − PEIGNE4 tombe à 501.200 MHz, soit 0 kHz de PEIGNE4 (501.200 MHz), minimum requis 100 kHz."
     },
     {
       "kind": "im3-3tx",
@@ -1183,21 +1093,6 @@
       "victimLinkId": "PEIGNE5",
       "victimFreqKHz": 501600,
       "sourceLinkIds": [
-        "PEIGNE2",
-        "PEIGNE8",
-        "PEIGNE5"
-      ],
-      "offenderFreqKHz": 501600,
-      "requiredKHz": 100,
-      "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE8 − PEIGNE5 tombe à 501.600 MHz, soit 0 kHz de PEIGNE5 (501.600 MHz), minimum requis 100 kHz."
-    },
-    {
-      "kind": "im3-3tx",
-      "severity": "critical",
-      "victimLinkId": "PEIGNE5",
-      "victimFreqKHz": 501600,
-      "sourceLinkIds": [
         "PEIGNE3",
         "PEIGNE4",
         "PEIGNE2"
@@ -1229,21 +1124,6 @@
       "victimFreqKHz": 501600,
       "sourceLinkIds": [
         "PEIGNE3",
-        "PEIGNE7",
-        "PEIGNE5"
-      ],
-      "offenderFreqKHz": 501600,
-      "requiredKHz": 100,
-      "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE7 − PEIGNE5 tombe à 501.600 MHz, soit 0 kHz de PEIGNE5 (501.600 MHz), minimum requis 100 kHz."
-    },
-    {
-      "kind": "im3-3tx",
-      "severity": "critical",
-      "victimLinkId": "PEIGNE5",
-      "victimFreqKHz": 501600,
-      "sourceLinkIds": [
-        "PEIGNE3",
         "PEIGNE8",
         "PEIGNE6"
       ],
@@ -1251,21 +1131,6 @@
       "requiredKHz": 100,
       "actualKHz": 0,
       "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE8 − PEIGNE6 tombe à 501.600 MHz, soit 0 kHz de PEIGNE5 (501.600 MHz), minimum requis 100 kHz."
-    },
-    {
-      "kind": "im3-3tx",
-      "severity": "critical",
-      "victimLinkId": "PEIGNE5",
-      "victimFreqKHz": 501600,
-      "sourceLinkIds": [
-        "PEIGNE4",
-        "PEIGNE6",
-        "PEIGNE5"
-      ],
-      "offenderFreqKHz": 501600,
-      "requiredKHz": 100,
-      "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE6 − PEIGNE5 tombe à 501.600 MHz, soit 0 kHz de PEIGNE5 (501.600 MHz), minimum requis 100 kHz."
     },
     {
       "kind": "im3-3tx",
@@ -1483,36 +1348,6 @@
       "victimLinkId": "PEIGNE6",
       "victimFreqKHz": 502000,
       "sourceLinkIds": [
-        "PEIGNE4",
-        "PEIGNE8",
-        "PEIGNE6"
-      ],
-      "offenderFreqKHz": 502000,
-      "requiredKHz": 100,
-      "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE8 − PEIGNE6 tombe à 502.000 MHz, soit 0 kHz de PEIGNE6 (502.000 MHz), minimum requis 100 kHz."
-    },
-    {
-      "kind": "im3-3tx",
-      "severity": "critical",
-      "victimLinkId": "PEIGNE6",
-      "victimFreqKHz": 502000,
-      "sourceLinkIds": [
-        "PEIGNE5",
-        "PEIGNE7",
-        "PEIGNE6"
-      ],
-      "offenderFreqKHz": 502000,
-      "requiredKHz": 100,
-      "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE5 + PEIGNE7 − PEIGNE6 tombe à 502.000 MHz, soit 0 kHz de PEIGNE6 (502.000 MHz), minimum requis 100 kHz."
-    },
-    {
-      "kind": "im3-3tx",
-      "severity": "critical",
-      "victimLinkId": "PEIGNE6",
-      "victimFreqKHz": 502000,
-      "sourceLinkIds": [
         "PEIGNE5",
         "PEIGNE8",
         "PEIGNE7"
@@ -1686,21 +1521,6 @@
       "requiredKHz": 100,
       "actualKHz": 0,
       "message": "IM3 (3 émetteurs) PEIGNE5 + PEIGNE8 − PEIGNE6 tombe à 502.400 MHz, soit 0 kHz de PEIGNE7 (502.400 MHz), minimum requis 100 kHz."
-    },
-    {
-      "kind": "im3-3tx",
-      "severity": "critical",
-      "victimLinkId": "PEIGNE7",
-      "victimFreqKHz": 502400,
-      "sourceLinkIds": [
-        "PEIGNE6",
-        "PEIGNE8",
-        "PEIGNE7"
-      ],
-      "offenderFreqKHz": 502400,
-      "requiredKHz": 100,
-      "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE6 + PEIGNE8 − PEIGNE7 tombe à 502.400 MHz, soit 0 kHz de PEIGNE7 (502.400 MHz), minimum requis 100 kHz."
     },
     {
       "kind": "im3-3tx",

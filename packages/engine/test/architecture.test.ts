@@ -42,10 +42,20 @@ describe('dependency rule', () => {
     }
   });
 
-  it('keeps results reproducible: no clock, no randomness', () => {
+  it('keeps results reproducible: no clock, no randomness, no locale', () => {
     for (const name of files) {
       const source = code(name);
-      for (const forbidden of ['Math.random', 'Date.now', 'new Date', 'performance.now']) {
+      // `localeCompare` and `Intl` order strings by the host locale, which would
+      // make a plan depend on the machine that built it just as surely as a
+      // random number would.
+      for (const forbidden of [
+        'Math.random',
+        'Date.now',
+        'new Date',
+        'performance.now',
+        'localeCompare',
+        'Intl.',
+      ]) {
         expect(source, `${name} référence « ${forbidden} »`).not.toContain(forbidden);
       }
     }

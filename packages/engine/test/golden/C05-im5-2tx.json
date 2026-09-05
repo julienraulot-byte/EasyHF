@@ -18,7 +18,7 @@
   ],
   "margins": {
     "im3TwoTxKHz": 300,
-    "im3ThreeTxKHz": 300,
+    "im3ThreeTxKHz": null,
     "im5TwoTxKHz": 0,
     "spacingKHz": 300,
     "exclusionKHz": null

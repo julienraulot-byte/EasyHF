@@ -25,10 +25,16 @@ describe('reference cases (docs/VALIDATION.md)', () => {
       const actual = run(testCase);
       const goldenPath = join(GOLDEN_DIR, `${testCase.id}.json`);
       const serialised = `${JSON.stringify(actual, null, 2)}\n`;
-      if (UPDATE || !existsSync(goldenPath)) {
+      if (UPDATE) {
         mkdirSync(GOLDEN_DIR, { recursive: true });
         writeFileSync(goldenPath, serialised);
       }
+      // Never write a missing golden on the fly: a witness that regenerates
+      // itself is not a witness. Losing one must fail loudly.
+      expect(
+        existsSync(goldenPath),
+        `Fichier témoin absent : ${testCase.id}.json. Relancer avec UPDATE_GOLDEN=1 pour le créer, puis relire la différence.`,
+      ).toBe(true);
       expect(JSON.parse(serialised)).toEqual(JSON.parse(readFileSync(goldenPath, 'utf8')));
     });
   }
@@ -43,7 +49,7 @@ describe('reference cases (docs/VALIDATION.md)', () => {
 describe('comparison with Wireless Workbench', () => {
   const withReference = VALIDATION_CASES.filter((c) => c.wwbReference);
 
-  it('detects every IM3 violation Wireless Workbench reports', () => {
+  it.skipIf(withReference.length === 0)('detects every IM3 violation Wireless Workbench reports', () => {
     for (const testCase of withReference) {
       const result = run(testCase);
       const found = new Set(

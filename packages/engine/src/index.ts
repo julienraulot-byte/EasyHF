@@ -15,7 +15,7 @@ export {
   resolveConfig,
   scaleGuards,
 } from './config.js';
-export { forEachImHit, isDegenerateResidual, type ImHit, type ImKind, type ImOptions } from './intermod.js';
+export { forEachImHit, type ImHit, type ImKind, type ImOptions } from './intermod.js';
 export { buildGrid, clearanceProfile, freqAt, markBlocked, orderCandidates, type CandidateGrid } from './candidates.js';
 export { relationBetween, type Relation } from './zones.js';
 export { ENGINE_VERSION } from './version.js';

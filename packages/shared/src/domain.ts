@@ -1,4 +1,4 @@
-import type { EngineConfig, InterZonePolicy } from '@easyhf/engine';
+import type { EngineConfigInput, InterZonePolicy } from '@easyhf/engine';
 
 /** Frequencies are always whole kHz. Never a float in MHz. */
 export type FreqKHz = number;
@@ -59,7 +59,7 @@ export interface Project {
   zones: Zone[];
   scans: ScanRef[];
   exclusions: Exclusion[];
-  engineConfig: Partial<EngineConfig>;
+  engineConfig: EngineConfigInput;
   /** Version of the engine that produced the current plan. */
   engineVersion?: string;
   createdAt: string;

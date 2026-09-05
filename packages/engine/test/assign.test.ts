@@ -1,47 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { coordinate } from '../src/assign.js';
 import { checkPlan } from '../src/check.js';
-import { link, tntChannel } from './fixtures/links.js';
-import type { EngineBand, EngineLink } from '../src/types.js';
-
-const FR_BANDS: EngineBand[] = [
-  { fromKHz: 470_000, toKHz: 694_000, status: 'free', label: 'UHF 470–694' },
-  { fromKHz: 694_000, toKHz: 790_000, status: 'forbidden', label: 'Bande 700' },
-];
-
-/** A realistic 24-link, 2-zone festival load spread over three hardware families. */
-function festival(): EngineLink[] {
-  const links: EngineLink[] = [];
-  for (let i = 0; i < 12; i += 1) {
-    links.push(
-      link(`SC1-${String(i + 1).padStart(2, '0')}`, {
-        zoneId: 'scene1',
-        tuningRangeKHz: [534_000, 598_000],
-        stepKHz: 25,
-      }),
-    );
-  }
-  for (let i = 0; i < 8; i += 1) {
-    links.push(
-      link(`SC2-${String(i + 1).padStart(2, '0')}`, {
-        zoneId: 'scene2',
-        tuningRangeKHz: [606_000, 678_000],
-        stepKHz: 25,
-      }),
-    );
-  }
-  for (let i = 0; i < 4; i += 1) {
-    links.push(
-      link(`IEM-${String(i + 1).padStart(2, '0')}`, {
-        zoneId: 'scene1',
-        tuningRangeKHz: [606_000, 630_000],
-        stepKHz: 125,
-        channelWidthKHz: 300,
-      }),
-    );
-  }
-  return links;
-}
+import { festival, FR_BANDS, link, tntChannel } from './fixtures/links.js';
+import type { EngineLink } from '../src/types.js';
 
 describe('coordinate — basic guarantees', () => {
   it('produces a plan free of critical violations', () => {
@@ -148,6 +109,39 @@ describe('coordinate — zone policies', () => {
     ];
     const coupled = coordinate({ links, zonePolicies: { a: 'full-intermod', b: 'full-intermod' } });
     expect(new Set(coupled.assignments.map((a) => a.freqKHz)).size).toBe(12);
+  });
+});
+
+describe('coordinate — fifth order stays a warning', () => {
+  it('accepts a 5th-order hit rather than spending a rung of the ladder on it', () => {
+    // 3 × 500 000 − 2 × 500 300 = 499 400. C can only sit 75 kHz away from it,
+    // inside the 90 kHz IM5 guard but clear of every critical constraint.
+    const result = coordinate({
+      links: [
+        link('A', { lockedFreqKHz: 500_000 }),
+        link('B', { lockedFreqKHz: 500_300 }),
+        link('C', { tuningRangeKHz: [499_475, 499_475] }),
+      ],
+      bands: FR_BANDS,
+    });
+    expect(result.assignments).toHaveLength(3);
+    expect(result.robustness.level).toBe(0);
+    expect(result.robustness.guards.spacingKHz).toBe(300);
+    expect(result.violations.map((v) => [v.kind, v.severity])).toEqual([['im5-2tx', 'warning']]);
+    expect(result.ok).toBe(true);
+  });
+
+  it('prefers a 5th-order-clean frequency when one exists', () => {
+    const clean = coordinate({
+      links: [
+        link('A', { lockedFreqKHz: 500_000 }),
+        link('B', { lockedFreqKHz: 500_300 }),
+        link('C', { tuningRangeKHz: [499_400, 499_600] }),
+      ],
+      bands: FR_BANDS,
+    });
+    expect(clean.violations).toEqual([]);
+    expect(clean.assignments.find((a) => a.linkId === 'C')?.freqKHz).not.toBe(499_400);
   });
 });
 
