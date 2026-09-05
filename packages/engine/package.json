@@ -1,0 +1,17 @@
+{
+  "name": "@easyhf/engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "EasyHF intermodulation & frequency-assignment engine. Pure TypeScript, zero runtime dependencies.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
+    "bench": "tsx bench/capacity.ts"
+  }
+}
