@@ -103,7 +103,7 @@ describe('visibility', () => {
   });
 });
 
-describe('a product is never checked against its own generators', () => {
+describe('a product hitting its own generator, within one zone', () => {
   it('leaves the carrier-spacing cases to the spacing rule', () => {
     // 2·f1 − f2 against f1 is |f1 − f2|; against f2 it is 2·|f1 − f2|. Same for
     // the 5th-order forms. None of them is intermodulation.

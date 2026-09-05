@@ -132,11 +132,12 @@ describe('coordinate — fifth order stays a warning', () => {
     expect(result.ok).toBe(true);
   });
 
-  it('never reaches a worse rung than the same search with 5th order off', () => {
+  it('does not reach a worse rung than the same search with 5th order off, at equal placements', () => {
     // The second pass at each rung is, by construction, the search one gets
     // with IM5 disabled: same masks, same order. So enabling IM5 can add
-    // warnings but never cost a rung — here on a load tight enough to need
-    // the ladder.
+    // warnings but cannot cost a rung — unless the first pass placed *more*
+    // links, which the engine prefers over a lower rung (see D-016). This
+    // load is tight enough to need the ladder and lands on equal placements.
     const links = Array.from({ length: 14 }, (_, i) =>
       link(`HF${String(i + 1).padStart(2, '0')}`, {
         zoneId: ['a', 'b', 'c'][i % 3] as string,

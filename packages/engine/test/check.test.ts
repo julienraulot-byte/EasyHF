@@ -105,6 +105,23 @@ describe('checkPlan — regulatory bands', () => {
     expect(result.violations.map((v) => v.kind)).toEqual(['out-of-band']);
   });
 
+  it('treats two contiguous allowed bands as one', () => {
+    // A plan may split a physical band into two entries carrying different
+    // notes; a carrier on the seam is not out of band.
+    const split = [
+      { fromKHz: 470_000, toKHz: 600_000, status: 'free' as const },
+      { fromKHz: 600_000, toKHz: 694_000, status: 'free' as const },
+    ];
+    const result = checkPlan({ links: [link('A')], plan: [{ linkId: 'A', freqKHz: 599_950 }], bands: split });
+    expect(result.ok).toBe(true);
+    // But a forbidden neighbour still bites.
+    const bounded = [
+      { fromKHz: 470_000, toKHz: 600_000, status: 'free' as const },
+      { fromKHz: 600_000, toKHz: 694_000, status: 'forbidden' as const },
+    ];
+    expect(checkPlan({ links: [link('A')], plan: [{ linkId: 'A', freqKHz: 599_950 }], bands: bounded }).ok).toBe(false);
+  });
+
   it('honours allowTemporaryBands', () => {
     const input = {
       links: [link('A', { tuningRangeKHz: [1_240_000, 1_260_000] })],

@@ -39,12 +39,11 @@ export const DEFAULT_CONFIG: EngineConfig = {
 /**
  * Checks the guards against each other.
  *
- * The engine never checks a product against one of its own generators, on the
- * grounds that every such case is already covered — and covered harder — by
- * another rule (see `intermod.ts`). That reasoning holds only while the guards
- * keep the order below, so it is enforced rather than assumed: a user who
- * lowers the carrier spacing below the IM3 guard would otherwise silently lose
- * detections.
+ * A product hitting one of its own generators is skipped whenever another rule
+ * covers that case — and "covers" must mean "at least as strictly", which only
+ * holds while the guards keep the order below (see `intermod.ts`). So the order
+ * is enforced rather than assumed: a user who lowers the carrier spacing below
+ * the IM3 guard would otherwise silently lose detections.
  */
 function validateGuards(guards: Guards): void {
   for (const [name, value] of Object.entries(guards)) {

@@ -144,7 +144,7 @@ de Wireless Workbench et d'IAS lors de la campagne de validation (phase 0, §4.4
   porteuse, au prix de l'encombrement.
 
 Sur 12 liaisons dans 534–598 MHz : `compact` occupe 15,7 MHz, `spread` 62,0 MHz.
-`compact` place aussi 15 à 25 % de liaisons de plus (tableau D-006). Le défaut
+`compact` place aussi 10 à 23 % de liaisons de plus (tableau D-006). Le défaut
 est donc `compact`, `spread` reste offert.
 
 **Ce qui est attendu de Julien :** confirmer que la pratique de terrain va bien
@@ -197,7 +197,14 @@ demande davantage :
 
 - espacement d'une paire = `max(garde, (largeur₁ + largeur₂) / 2)` ;
 - garde vis-à-vis d'une exclusion = `max(garde, largeur / 2)` ;
-- une porteuse doit tenir dans sa bande **demi-largeur comprise**.
+- une porteuse doit tenir dans le spectre autorisé **demi-largeur comprise**
+  (deux bandes autorisées contiguës comptent pour une).
+
+Les gardes d'intermodulation, elles, **ne sont pas élargies** : ce sont des
+distances porteuse → produit, fixes, comme dans les outils du métier. Un produit
+à 150 kHz d'une porteuse dont le canal fait 800 kHz passe avec la garde 3
+émetteurs à 100 kHz. C'est voulu, et c'est le même choix des deux côtés du
+moteur.
 
 ## D-012 — Marges plafonnées à 4 fois la garde
 
@@ -261,8 +268,12 @@ trajectoire peut échouer là où la trajectoire simple réussit : sur une scèn
 palier fait donc deux passes : avec la préférence, puis — seulement si la
 première échoue — sans elle. La seconde passe est, par construction, exactement
 la recherche que l'on obtient IM5 désactivé : mêmes masques, même ordre.
-Activer IM5 peut ajouter des avertissements ; il ne peut plus coûter un palier.
-Un test l'affirme sur une charge assez serrée pour atteindre l'échelle.
+Activer IM5 peut ajouter des avertissements ; **à liaisons placées égales**, il
+ne coûte plus un palier. La réserve compte : quand la première passe place
+*plus* de liaisons à un palier plus bas, le moteur garde ce plan-là — « plus de
+liaisons d'abord » — et le palier final peut être plus élevé qu'IM5 désactivé
+(6 scènes sur 300 dans le fuzz de la troisième revue). Un test l'affirme sur une
+charge assez serrée pour atteindre l'échelle, à placements égaux.
 
 ## D-017 — La plage et la grille d'accord font partie des règles
 
@@ -382,3 +393,19 @@ signifient sur le terrain.
 **Ce qui est attendu de Julien :** confirmer que « visible de la victime » est
 la bonne sémantique pour les politiques inter-zones, ou décrire le cas de
 terrain qui la met en défaut.
+
+**Le cas concret à trancher, trouvé par la troisième revue.** Deux zones
+`isolated` (deux salles qui réutilisent le spectre — c'est leur raison d'être)
+et une zone `full-intermod` entre elles. Par D-010, la zone du milieu voit les
+deux autres. Alors `A + B − C` retombe sur B à `|A − C|` **quelle que soit B** :
+si A et C sont à 50 kHz l'une de l'autre, aucune liaison de la zone du milieu
+n'est plaçable, et si A = C, elles restent non assignées à tous les paliers
+avec `violations: []`. Le moteur est cohérent avec son modèle — les deux
+porteuses arrivent bien dans les récepteurs du milieu — mais l'opérateur reçoit
+trois liaisons non placées sans une ligne d'explication.
+
+Deux questions en une : (1) `isolated` doit-il vraiment être annulé par un
+voisin `full-intermod` (D-010), et (2) quoi qu'il en soit, le résultat doit
+dire **pourquoi** une liaison n'est pas placée. Le second point est un
+livrable de la phase 4 (écran « Coordonner »), et demandera au moteur un
+diagnostic par liaison non assignée — à concevoir après la réponse au premier.

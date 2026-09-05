@@ -110,19 +110,36 @@ export function distanceToInterval(freq: number, from: number, to: number): numb
   return 0;
 }
 
-/** Whether a carrier fits, channel width included, in an allowed band. */
-export function findHostBand(
-  freq: number,
-  half: number,
+/**
+ * The spectrum a carrier may occupy: allowed bands, with contiguous or
+ * overlapping ones merged. A band plan may split one physical band into two
+ * entries (different notes, different power limits) and a carrier sitting on
+ * that seam is not out of band.
+ */
+export function allowedSpans(
   bands: readonly EngineBand[],
   allowTemporary: boolean,
-): EngineBand | undefined {
-  return bands.find(
-    (band) =>
-      (band.status === 'free' || (band.status === 'temporary' && allowTemporary)) &&
-      freq - half >= band.fromKHz &&
-      freq + half <= band.toKHz,
-  );
+): readonly (readonly [number, number])[] {
+  const allowed = bands
+    .filter((band) => band.status === 'free' || (band.status === 'temporary' && allowTemporary))
+    .map((band) => [band.fromKHz, band.toKHz] as [number, number])
+    .sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const merged: [number, number][] = [];
+  for (const [from, to] of allowed) {
+    const last = merged[merged.length - 1];
+    if (last && from <= last[1]) last[1] = Math.max(last[1], to);
+    else merged.push([from, to]);
+  }
+  return merged;
+}
+
+/** Whether a carrier fits, channel width included, in the allowed spectrum. */
+export function fitsAllowedSpan(
+  freq: number,
+  half: number,
+  spans: readonly (readonly [number, number])[],
+): boolean {
+  return spans.some(([from, to]) => freq - half >= from && freq + half <= to);
 }
 
 function sortViolations(violations: Violation[]): Violation[] {
@@ -220,9 +237,10 @@ export function checkPlan(input: CheckInput): CheckResult {
 
   // --- Regulatory bands.
   if (bands.length > 0) {
+    const spans = allowedSpans(bands, config.allowTemporaryBands);
     for (const { link, freqKHz } of assigned) {
       const half = halfWidthKHz(link);
-      if (findHostBand(freqKHz, half, bands, config.allowTemporaryBands)) continue;
+      if (fitsAllowedSpan(freqKHz, half, spans)) continue;
       violations.push({
         kind: 'out-of-band',
         severity: SEVERITY_BY_KIND['out-of-band'],

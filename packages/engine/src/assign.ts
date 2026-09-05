@@ -1,7 +1,8 @@
 import { blockerFor, buildGrid, freqAt, markBlocked, orderCandidates, SCALE, type CandidateGrid } from './candidates.js';
 import {
+  allowedSpans,
   checkPlan,
-  findHostBand,
+  fitsAllowedSpan,
   halfWidthKHz,
   requiredExclusionKHz,
   requiredSpacingKHz,
@@ -53,6 +54,7 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
   const links = input.links;
   const n = links.length;
   const bands = input.bands ?? [];
+  const spans = allowedSpans(bands, config.allowTemporaryBands);
   const exclusions = validExclusions(input.exclusions);
 
   const seenIds = new Set<string>();
@@ -90,7 +92,7 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
     const half = halfWidthKHz(link);
     if (bands.length > 0) {
       for (let k = 0; k < grid.count; k += 1) {
-        if (!findHostBand(freqAt(grid, k), half, bands, config.allowTemporaryBands)) mask[k] = 1;
+        if (!fitsAllowedSpan(freqAt(grid, k), half, spans)) mask[k] = 1;
       }
     }
     const exclusionGuard = requiredExclusionKHz(link, guards.exclusionKHz);
