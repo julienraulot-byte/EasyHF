@@ -51,22 +51,34 @@ bornes sont donc portées en **unités de 1/6 kHz**, où elles restent des entie
 exacts. Aucun flottant ne décide jamais si un candidat est bloqué. C'est ce qui
 rend un plan reproductible au kHz près, y compris sur une autre machine.
 
-## D-005 — Un produit qui retombe sur l'un de ses propres générateurs
+## D-005 — Un produit n'est jamais confronté à ses propres générateurs
 
 *Phase 0.* Un produit `P = Σ cᵢ·fᵢ` (avec `Σ cᵢ = 1`) est comparé à une porteuse
 victime `f_v`. Si la victime est elle-même un générateur, le résidu `P − f_v` a
-des coefficients de somme nulle ; quand seuls deux d'entre eux sont non nuls, le
-résidu vaut `±m·(fᵢ − fⱼ)`, c'est-à-dire un simple écart entre porteuses — déjà
-couvert, et plus sévèrement, par la règle d'espacement.
+des coefficients de somme nulle, et **chacun de ces cas est déjà vérifié
+ailleurs, plus sévèrement** :
 
-Ces cas sont donc écartés du comptage d'intermodulation, sans quoi la même
-anomalie serait signalée deux fois sous deux noms. Le cas `f1 + f2 − 2·f3`
-(victime = générateur soustractif) donne trois coefficients non nuls : c'est une
-vraie intermodulation, il est conservé.
+| Produit | Victime | Ce que la distance vaut réellement | Déjà couvert par |
+|---|---|---|---|
+| `2f1 − f2` | `f1` | `\|f1 − f2\|` | espacement co-canal |
+| `2f1 − f2` | `f2` | `2·\|f1 − f2\|` | espacement co-canal |
+| `3f1 − 2f2` | `f1` | `2·\|f1 − f2\|` | espacement co-canal |
+| `3f1 − 2f2` | `f2` | `3·\|f1 − f2\|` | espacement co-canal |
+| `f1 + f2 − f3` | `f1` ou `f2` | `\|f2 − f3\|` / `\|f1 − f3\|` | espacement co-canal |
+| `f1 + f2 − f3` | `f3` | `\|f1 + f2 − 2f3\|` | le produit `2f3 − f1` mesuré contre `f2` |
 
-La règle générale est implémentée en clair dans `isDegenerateResidual`, la forme
-spécialisée est inlinée dans les boucles chaudes, et un test épingle les deux
-l'une à l'autre.
+La dernière ligne est la seule non évidente. C'est une vraie intermodulation,
+mais c'est **exactement la forme à 2 émetteurs**, vérifiée avec une garde au
+moins aussi large. La signaler aussi comme produit à 3 émetteurs ne détectait
+rien de plus : elle remplissait les rapports de doublons — 12 des 100 violations
+du cas `C06-peigne-8` étaient de cette nature.
+
+Ce raisonnement n'est valable que si les gardes gardent leur ordre. Il n'est
+donc pas supposé, il est **imposé** par `resolveConfig` :
+`im3ThreeTx ≤ im3TwoTx ≤ espacement`, et `2 × espacement ≥ im5`. Sans cette
+règle, un utilisateur abaissant l'espacement sous la garde IM3 perdrait
+silencieusement des détections — c'est-à-dire exactement le défaut le plus grave
+que ce moteur puisse avoir.
 
 ## D-006 — Garde IM3 séparée entre 2 et 3 émetteurs **[À VALIDER JULIEN]**
 
@@ -83,6 +95,9 @@ Les gardes sont donc séparées :
 | IM5 2 émetteurs (`3f1 − 2f2`) | 90 kHz | brief §4 |
 | Espacement co-canal | 300 kHz | brief §4 |
 | Garde vs exclusion | 250 kHz | brief §4 |
+
+`resolveConfig` refuse toute configuration qui casserait l'ordre
+`im3ThreeTx ≤ im3TwoTx ≤ espacement` — voir D-005.
 
 Justification physique : un produit à 3 émetteurs demande la coïncidence de
 trois porteuses dans la même non-linéarité et sort nettement plus bas qu'un
@@ -195,12 +210,91 @@ source dans le commit.
 ## D-015 — Limite connue : le glouton plafonne, et on l'assume en v1
 
 *Phase 0.* À gardes nominales, avec l'IM3 3 émetteurs active, le moteur place
-environ 36 liaisons sur 224 MHz. Un ensemble valide de 40 existe pourtant : la
-contrainte réelle porte sur les sommes deux à deux, qui tiennent largement dans
-la plage disponible. C'est le glouton qui ne le trouve pas — l'atteindre
-demanderait une recherche locale (recuit, redémarrages), donc de l'aléa, donc
-une graine, donc D-003 à réviser.
+environ 36 liaisons sur 224 MHz. Le comptage suggère que 40 n'est pas hors
+d'atteinte — la contrainte dominante porte sur les sommes deux à deux, dont il y
+en a 780 pour 40 porteuses, à répartir sur 448 MHz — mais **je n'ai pas construit
+un tel ensemble**, et tant qu'il ne l'est pas, cette borne reste une intuition et
+non un résultat. L'atteindre demanderait de toute façon une recherche locale
+(recuit, redémarrages), donc de l'aléa, donc une graine, donc D-003 à réviser.
 
 Au-delà de ce plafond, le moteur ne ment pas : il dégrade les gardes par paliers
 et l'annonce (D-009). Une recherche locale n'est pas dans le périmètre v1 ; elle
 sera proposée à Julien, pas implémentée d'office.
+
+## D-016 — Le 5ᵉ ordre ne coûte jamais un palier de robustesse
+
+*Phase 0, issue de la revue.* `checkPlan` classe l'IM5 en avertissement, mais
+l'assignateur le traitait comme un blocage dur. Conséquence : plutôt que
+d'accepter un avertissement, le moteur descendait d'un palier et **dégradait
+l'espacement de 300 à 240 kHz et la garde IM3 de 200 à 160 kHz pour tout le
+plan** — il affaiblissait des gardes critiques pour éviter un avertissement, et
+celui-ci disparaissait du rapport. Le contraire exact de la franchise
+revendiquée en D-009.
+
+`buildMask` produit désormais deux masques. Le masque `hard` porte ce qui rend un
+plan invalide ; `soft` y ajoute les produits du 5ᵉ ordre. La recherche essaie
+d'abord les fréquences propres au sens de `soft`, puis se rabat sur celles qui ne
+sont libres qu'au sens de `hard`. Un avertissement reste un avertissement, et
+apparaît dans le rapport.
+
+## D-017 — La plage et la grille d'accord font partie des règles
+
+*Phase 0, issue de la revue.* `checkPlan` ignorait `tuningRangeKHz` et
+`stepKHz` : un plan saisi à la main ou importé pouvait placer une liaison à une
+fréquence que le récepteur ne peut tout simplement pas afficher, et être déclaré
+valide. Nouvelle violation `out-of-tuning-range`, critique, couvrant le
+hors-plage et le hors-grille. Elle vaut aussi pour les fréquences verrouillées.
+
+## D-018 — Ordre des chaînes par unités de code, jamais `localeCompare`
+
+*Phase 0, issue de la revue.* Six comparaisons d'identifiants utilisaient
+`localeCompare`, dont une décidant l'ordre de traitement des liaisons. Or
+`localeCompare` dépend de la locale de la machine : sous `tr_TR`, `i` et `I` ne
+s'ordonnent pas comme sous `en_US`. Deux machines produisaient donc deux plans
+différents pour les mêmes entrées — ce qui contredisait directement la promesse
+« octet pour octet, y compris sur une autre machine ».
+
+Tout passe par `compareIds` (`order.ts`), qui compare par unités de code. Le test
+d'architecture interdit désormais `localeCompare` et `Intl.` au même titre que
+`Math.random`.
+
+## D-019 — Bande 863–865 MHz : question ouverte **[À VALIDER JULIEN]**
+
+*Phase 0.* `data/bands/fr.json` ne contient pas la bande 863–865 MHz, utilisée
+par des micros sans fil d'entrée de gamme au titre des dispositifs à faible
+portée (recommandation ERC 70-03). Pour un outil qui se veut multi-marques,
+c'est probablement une omission — mais je ne l'ajoute pas : le §7 du brief
+interdit de trancher seul sur du réglementaire, et la règle « pas de
+modification sans source » vaut aussi pour les ajouts.
+
+**Ce qui est attendu de Julien :** confirmer le statut et la puissance admise en
+France, et fournir la source à citer dans le commit.
+
+## D-020 — Le modèle de visibilité est écrit, parce qu'il s'est déjà trompé
+
+*Phase 0, issue de la revue.* Une revue adverse a trouvé un bug que la suite de
+tests ne pouvait pas voir : en construisant le masque, l'assignateur ne retenait
+comme générateurs que les porteuses **qu'il voyait lui-même**, alors que la règle
+est que chaque générateur doit être visible **de la victime**. Avec trois zones
+de politiques différentes — B en `full-intermod`, A et C non — un produit
+`2f − p` pouvait retomber exactement sur une victime de B sans être bloqué. Le
+moteur rendait alors un plan complet, palier 0, puis le déclarait `ok: false` par
+sa propre re-vérification finale : il ne mentait pas, mais il ne savait pas non
+plus produire un plan valide.
+
+Deux choses en découlent, et les deux sont dans le dépôt :
+
+1. Un tableau de visibilité en tête de `buildMask` : quel rôle joue la liaison
+   placée, qui est la victime, et de qui les générateurs doivent être visibles.
+   La règle était jusque-là diffuse entre quatre fichiers, ce qui est
+   précisément comment elle s'est perdue.
+2. `cross-validation.test.ts`, qui offre à la recherche **chaque fréquence
+   possible**, une par une, et exige que son verdict coïncide avec celui du
+   vérificateur — en une zone, en trois zones sous les 27 combinaisons de
+   politiques, en grilles et largeurs mélangées, et sur des scènes tirées au
+   sort. Réintroduire le bug fait échouer ce test en une seconde.
+
+À retenir pour la suite : `assign.ts` et `check.ts` encodent les mêmes règles
+deux fois, sous deux formes. Rien ne les force à rester d'accord, sauf ce test.
+Toute règle ajoutée à l'un doit l'être à l'autre, et la comparaison exhaustive
+est le seul moyen de le savoir.

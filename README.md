@@ -46,13 +46,18 @@ UPDATE_GOLDEN=1 pnpm test              # régénère les fichiers témoins de va
 ## Ce que le moteur garantit
 
 - **Déterminisme.** Mêmes entrées, même plan, octet pour octet — quel que soit
-  l'ordre dans lequel les liaisons, les exclusions ou les bandes sont fournies.
-  Aucun aléa, aucune horloge.
+  l'ordre dans lequel les liaisons, les exclusions ou les bandes sont fournies,
+  et quelle que soit la machine. Aucun aléa, aucune horloge, aucun tri dépendant
+  de la locale.
 - **Arithmétique exacte.** Fréquences en kHz entiers, bornes d'intervalles en
   sixièmes de kHz. Aucun flottant ne décide si une fréquence est utilisable.
 - **Franchise.** Quand aucun plan complet n'existe aux gardes nominales, le
   moteur dégrade par paliers documentés et rend l'indice atteint, les gardes
-  réellement appliquées et les marges obtenues.
+  réellement appliquées et les marges obtenues. Un avertissement de 5ᵉ ordre ne
+  coûte jamais un palier.
+- **Accord entre l'assignateur et le vérificateur.** Les deux encodent les mêmes
+  règles sous deux formes ; un test les compare fréquence par fréquence, sur les
+  27 combinaisons de politiques de zones.
 
 ## Données
 

@@ -18,9 +18,10 @@ lieu, **la phase 0 n'est pas franchie**, quel que soit l'état des tests.
 | Vérification d'un plan, violations et marges | fait, testée |
 | Assignation automatique déterministe | fait, testée |
 | 10 cas de référence figés en fichiers témoins | fait |
-| Reproductibilité octet pour octet | testée, y compris par propriétés |
+| Accord exhaustif entre l'assignateur et le vérificateur | testé candidat par candidat, 27 combinaisons de politiques de zones |
+| Reproductibilité octet pour octet | testée par propriétés ; vraie par construction entre machines (D-018) |
 | Budget de performance (40 liaisons < 3 s) | tenu, ~1,6 s |
-| Couverture `engine` | 99,9 % lignes, 98,8 % branches (seuil : 90 %) |
+| Couverture `engine` | 99,9 % lignes, 99,1 % branches (seuil : 90 %) |
 | **Comparaison avec Wireless Workbench** | **à faire — voir plus bas** |
 
 ## Les dix cas
@@ -90,6 +91,20 @@ règles d'espacement et de bande — le sous-signalement ne l'est pas.
 
 Tant qu'aucun cas ne porte de `wwbReference`, la suite affiche le test
 « en attente des relevés Wireless Workbench — la phase 0 reste ouverte ».
+
+## Le test qui compte le plus, et pourquoi
+
+`packages/engine/test/cross-validation.test.ts` n'est pas un test de plus : c'est
+celui qui tient l'ensemble. `assign.ts` et `check.ts` encodent les mêmes règles
+deux fois — l'un résout chaque produit pour la porteuse inconnue et bloque des
+intervalles, l'autre énumère les produits et mesure des distances. Rien
+n'oblige les deux à rester d'accord.
+
+Le test offre donc à la recherche **chaque fréquence que la liaison pourrait
+prendre**, une par une, et exige que son verdict coïncide exactement avec celui
+du vérificateur. C'est ainsi qu'a été rattrapé le bug de visibilité inter-zones
+décrit en D-020, qu'aucun test unitaire ne voyait. Toute règle ajoutée à l'un des
+deux fichiers doit l'être à l'autre : ce test est le seul moyen de le savoir.
 
 ## Ce que cette validation ne couvre pas
 
