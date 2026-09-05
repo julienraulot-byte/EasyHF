@@ -1,0 +1,62 @@
+{
+  "country": "FR",
+  "updated": "2026-09",
+  "sources": [
+    "ARCEP — Décision n° 2015-0830 du 2 juillet 2015 (conditions techniques PMSE audio)",
+    "ARCEP — Décision n° 2016-0272 du 18 février 2016 (fin de l'accès PMSE à la bande 700 MHz au 1er juillet 2019)",
+    "ANFR — ouverture temporaire des bandes 1,2 et 1,4 GHz pour les Jeux de Paris 2024"
+  ],
+  "bands": [
+    {
+      "fromKHz": 174000,
+      "toKHz": 223000,
+      "status": "free",
+      "maxERPmW": 50,
+      "label": "VHF 174–223 MHz",
+      "note": "Sans autorisation individuelle, usage professionnel, conditions techniques ARCEP 2015-0830."
+    },
+    {
+      "fromKHz": 470000,
+      "toKHz": 694000,
+      "status": "free",
+      "maxERPmW": 50,
+      "label": "UHF 470–694 MHz",
+      "note": "Bande principale. Protégée pour l'audiovisuel jusqu'en 2030. Exclusions TNT locales à appliquer systématiquement."
+    },
+    {
+      "fromKHz": 694000,
+      "toKHz": 790000,
+      "status": "forbidden",
+      "label": "Bande 700 MHz",
+      "note": "Interdite aux PMSE depuis le 1er juillet 2019 (décision ARCEP 2016-0272)."
+    },
+    {
+      "fromKHz": 823000,
+      "toKHz": 832000,
+      "status": "free",
+      "label": "823–832 MHz",
+      "note": "Duplex gap. Bande étroite : peu de liaisons, à réserver aux compléments."
+    },
+    {
+      "fromKHz": 1240000,
+      "toKHz": 1260000,
+      "status": "temporary",
+      "label": "1,2 GHz",
+      "note": "Ouverture temporaire ANFR (Paris 2024). Pérennisation en discussion CEPT — statut à revérifier avant chaque usage."
+    },
+    {
+      "fromKHz": 1350000,
+      "toKHz": 1400000,
+      "status": "temporary",
+      "label": "1,4 GHz",
+      "note": "Ouverture temporaire ANFR (Paris 2024). Pérennisation en discussion CEPT — statut à revérifier avant chaque usage."
+    },
+    {
+      "fromKHz": 1785000,
+      "toKHz": 1800000,
+      "status": "free",
+      "label": "1785–1800 MHz",
+      "note": "Portée réduite, sensible aux masquages corps. Usage plutôt intérieur."
+    }
+  ]
+}
