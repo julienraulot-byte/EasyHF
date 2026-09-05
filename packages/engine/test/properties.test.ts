@@ -4,7 +4,7 @@ import { coordinate } from '../src/assign.js';
 import { buildGrid, freqAt, markBlocked, SCALE } from '../src/candidates.js';
 import { checkPlan, distanceToInterval, requiredExclusionKHz } from '../src/check.js';
 import { DEFAULT_GUARDS } from '../src/config.js';
-import type { EngineExclusion, EngineLink } from '../src/types.js';
+import type { EngineExclusion, EngineLink, InterZonePolicy } from '../src/types.js';
 
 const RUNS = { numRuns: 150 };
 
@@ -15,7 +15,7 @@ const linkArb = (index: number): fc.Arbitrary<EngineLink> =>
       span: fc.integer({ min: 4_000, max: 40_000 }),
       stepKHz: fc.constantFrom(5, 25, 125),
       channelWidthKHz: fc.constantFrom(25, 200, 300),
-      zoneId: fc.constantFrom('', 'a', 'b'),
+      zoneId: fc.constantFrom('a', 'b', 'c'),
     })
     .map(({ start, span, stepKHz, channelWidthKHz, zoneId }) => ({
       id: `HF${String(index).padStart(2, '0')}`,
@@ -28,6 +28,16 @@ const linkArb = (index: number): fc.Arbitrary<EngineLink> =>
 const linksArb = fc
   .integer({ min: 2, max: 8 })
   .chain((n) => fc.tuple(...Array.from({ length: n }, (_, i) => linkArb(i))));
+
+/**
+ * Three zones rather than two: with only two, every pair of carriers shares the
+ * same relation, and the whole question of who is visible to whom disappears.
+ */
+const zonePoliciesArb = fc.record({
+  a: fc.constantFrom<InterZonePolicy>('full-intermod', 'spacing-only', 'isolated'),
+  b: fc.constantFrom<InterZonePolicy>('full-intermod', 'spacing-only', 'isolated'),
+  c: fc.constantFrom<InterZonePolicy>('full-intermod', 'spacing-only', 'isolated'),
+});
 
 const exclusionsArb = fc.array(
   fc
@@ -72,9 +82,9 @@ describe('markBlocked (property)', () => {
 describe('coordinate (property)', () => {
   it('is invariant under the order the links are given in', () => {
     fc.assert(
-      fc.property(linksArb, exclusionsArb, (links, exclusions) => {
-        const forward = coordinate({ links, exclusions });
-        const reversed = coordinate({ links: [...links].reverse(), exclusions });
+      fc.property(linksArb, exclusionsArb, zonePoliciesArb, (links, exclusions, zonePolicies) => {
+        const forward = coordinate({ links, exclusions, zonePolicies });
+        const reversed = coordinate({ links: [...links].reverse(), exclusions, zonePolicies });
         expect(reversed).toEqual(forward);
       }),
       RUNS,
@@ -83,9 +93,9 @@ describe('coordinate (property)', () => {
 
   it('only ever assigns frequencies on the hardware grid, inside the tuning range', () => {
     fc.assert(
-      fc.property(linksArb, exclusionsArb, (links, exclusions) => {
+      fc.property(linksArb, exclusionsArb, zonePoliciesArb, (links, exclusions, zonePolicies) => {
         const byId = new Map(links.map((l) => [l.id, l]));
-        for (const { linkId, freqKHz } of coordinate({ links, exclusions }).assignments) {
+        for (const { linkId, freqKHz } of coordinate({ links, exclusions, zonePolicies }).assignments) {
           const l = byId.get(linkId) as EngineLink;
           expect(freqKHz).toBeGreaterThanOrEqual(l.tuningRangeKHz[0]);
           expect(freqKHz).toBeLessThanOrEqual(l.tuningRangeKHz[1]);
@@ -98,9 +108,9 @@ describe('coordinate (property)', () => {
 
   it('keeps every assigned frequency clear of every exclusion', () => {
     fc.assert(
-      fc.property(linksArb, exclusionsArb, (links, exclusions) => {
+      fc.property(linksArb, exclusionsArb, zonePoliciesArb, (links, exclusions, zonePolicies) => {
         const byId = new Map(links.map((l) => [l.id, l]));
-        const result = coordinate({ links, exclusions });
+        const result = coordinate({ links, exclusions, zonePolicies });
         for (const { linkId, freqKHz } of result.assignments) {
           const required = requiredExclusionKHz(
             byId.get(linkId) as EngineLink,
@@ -118,14 +128,17 @@ describe('coordinate (property)', () => {
   });
 
   it('produces a plan that an independent check finds free of critical violations', () => {
+    // Partial plans are held to the same standard: every link the search did
+    // place was validated against the mask when it was placed, so a partial
+    // plan that conflicts means the mask and the checker disagree.
     fc.assert(
-      fc.property(linksArb, exclusionsArb, (links, exclusions) => {
-        const result = coordinate({ links, exclusions });
-        if (result.unassignedLinkIds.length > 0) return; // partial plans may conflict
+      fc.property(linksArb, exclusionsArb, zonePoliciesArb, (links, exclusions, zonePolicies) => {
+        const result = coordinate({ links, exclusions, zonePolicies });
         const verified = checkPlan({
           links,
           plan: result.assignments,
           exclusions,
+          zonePolicies,
           config: { guards: result.robustness.guards },
         });
         expect(verified.violations.filter((v) => v.severity === 'critical')).toEqual([]);

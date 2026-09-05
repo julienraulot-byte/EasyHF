@@ -7,7 +7,7 @@ export default defineConfig({
       provider: 'v8',
       include: ['packages/engine/src/**/*.ts'],
       exclude: ['packages/engine/src/index.ts', 'packages/engine/src/types.ts'],
-      thresholds: { lines: 90, functions: 90, branches: 85, statements: 90 },
+      thresholds: { lines: 90, functions: 90, branches: 90, statements: 90 },
     },
   },
 });
