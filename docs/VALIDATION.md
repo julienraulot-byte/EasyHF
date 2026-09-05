@@ -18,10 +18,11 @@ lieu, **la phase 0 n'est pas franchie**, quel que soit l'état des tests.
 | Vérification d'un plan, violations et marges | fait, testée |
 | Assignation automatique déterministe | fait, testée |
 | 10 cas de référence figés en fichiers témoins | fait |
-| Accord exhaustif entre l'assignateur et le vérificateur | testé candidat par candidat, 27 combinaisons de politiques de zones |
+| Accord exhaustif entre l'assignateur et le vérificateur | testé candidat par candidat : 27 combinaisons de politiques × 3 zones de départ, exclusions et bandes, grilles mélangées, scènes aléatoires |
+| Détection inter-zones sur le vérificateur seul | deux cas construits à la main (D-021) |
 | Reproductibilité octet pour octet | testée par propriétés ; vraie par construction entre machines (D-018) |
-| Budget de performance (40 liaisons < 3 s) | tenu, ~1,6 s |
-| Couverture `engine` | 99,9 % lignes, 99,1 % branches (seuil : 90 %) |
+| Budget de performance (40 liaisons < 3 s) | tenu, ~1,7 s sur la machine de build |
+| Couverture `engine` | 99,9 % lignes, 99,2 % branches (seuil : 90 %) |
 | **Comparaison avec Wireless Workbench** | **à faire — voir plus bas** |
 
 ## Les dix cas
@@ -92,19 +93,22 @@ règles d'espacement et de bande — le sous-signalement ne l'est pas.
 Tant qu'aucun cas ne porte de `wwbReference`, la suite affiche le test
 « en attente des relevés Wireless Workbench — la phase 0 reste ouverte ».
 
-## Le test qui compte le plus, et pourquoi
+## Deux familles de tests, qui ne se remplacent pas
 
-`packages/engine/test/cross-validation.test.ts` n'est pas un test de plus : c'est
-celui qui tient l'ensemble. `assign.ts` et `check.ts` encodent les mêmes règles
-deux fois — l'un résout chaque produit pour la porteuse inconnue et bloque des
-intervalles, l'autre énumère les produits et mesure des distances. Rien
-n'oblige les deux à rester d'accord.
+`assign.ts` et `check.ts` encodent les mêmes règles deux fois — l'un résout
+chaque produit pour la porteuse inconnue et bloque des intervalles, l'autre
+énumère les produits et mesure des distances.
 
-Le test offre donc à la recherche **chaque fréquence que la liaison pourrait
-prendre**, une par une, et exige que son verdict coïncide exactement avec celui
-du vérificateur. C'est ainsi qu'a été rattrapé le bug de visibilité inter-zones
-décrit en D-020, qu'aucun test unitaire ne voyait. Toute règle ajoutée à l'un des
-deux fichiers doit l'être à l'autre : ce test est le seul moyen de le savoir.
+**Cohérence.** `cross-validation.test.ts` offre à la recherche chaque fréquence
+que la liaison pourrait prendre, une par une, et exige que son verdict coïncide
+avec celui du vérificateur. C'est ainsi qu'a été rattrapé le bug de visibilité
+de D-020. Mais il est aveugle à une erreur que les deux côtés partagent — et
+c'est ce qui est arrivé en D-021.
+
+**Détection.** Les cas de `check.test.ts` intitulés « a product hitting its own
+generator across zones » pinnent ce que le vérificateur doit trouver **seul**,
+sans référence à la recherche. C'est là que doit aller tout nouveau cas de
+sous-détection découvert, avant même sa correction.
 
 ## Ce que cette validation ne couvre pas
 
