@@ -198,6 +198,72 @@ describe('checkPlan — hardware limits', () => {
   });
 });
 
+describe('checkPlan — a product hitting its own generator across zones', () => {
+  // These are detection tests, not consistency tests: they pin what the checker
+  // must find on its own, regardless of what the assignment search believes.
+  it('reports the equidistant triplet when the middle carrier alone sees both others', () => {
+    // A, B, C at 400 kHz steps: A + C − B lands exactly on B. Within one zone
+    // the 2-transmitter forms 2B − A and 2B − C report it. Here A and C never
+    // see each other, so those forms are silent — and the 3-transmitter one
+    // must speak.
+    const links = [link('A', { zoneId: 'a' }), link('B', { zoneId: 'b' }), link('C', { zoneId: 'c' })];
+    const plan = [
+      { linkId: 'A', freqKHz: 500_000 },
+      { linkId: 'B', freqKHz: 500_400 },
+      { linkId: 'C', freqKHz: 500_800 },
+    ];
+    for (const outer of ['spacing-only', 'isolated'] as const) {
+      const result = checkPlan({ links, plan, zonePolicies: { a: outer, b: 'full-intermod', c: outer } });
+      expect(result.ok, outer).toBe(false);
+      expect(result.violations.map((v) => v.kind)).toEqual(['im3-3tx']);
+      expect(result.violations[0]?.victimLinkId).toBe('B');
+      expect(result.violations[0]?.actualKHz).toBe(0);
+    }
+  });
+
+  it('reports two near-co-channel carriers beating in a receiver that sees both', () => {
+    // B and C are 50 kHz apart in zones isolated from each other, so no spacing
+    // rule runs between them. A sees both: A + B − C lands 50 kHz from A.
+    const result = checkPlan({
+      links: [link('A', { zoneId: 'a' }), link('B', { zoneId: 'b' }), link('C', { zoneId: 'c' })],
+      plan: [
+        { linkId: 'A', freqKHz: 500_000 },
+        { linkId: 'B', freqKHz: 510_000 },
+        { linkId: 'C', freqKHz: 510_050 },
+      ],
+      zonePolicies: { a: 'full-intermod', b: 'isolated', c: 'isolated' },
+    });
+    expect(result.ok).toBe(false);
+    expect(result.violations.every((v) => v.kind === 'im3-3tx' && v.victimLinkId === 'A')).toBe(true);
+    expect(result.violations.length).toBeGreaterThan(0);
+  });
+
+  it('stays quiet within one zone, where the covering rules run', () => {
+    const links = [link('A'), link('B'), link('C')];
+    const triplet = checkPlan({
+      links,
+      plan: [
+        { linkId: 'A', freqKHz: 500_000 },
+        { linkId: 'B', freqKHz: 500_400 },
+        { linkId: 'C', freqKHz: 500_800 },
+      ],
+    });
+    expect(triplet.violations.map((v) => v.kind)).toEqual(['im3-2tx', 'im3-2tx']);
+  });
+});
+
+describe('checkPlan — malformed input', () => {
+  it('rejects an inverted exclusion rather than reading it two ways', () => {
+    expect(() =>
+      checkPlan({
+        links: [link('A')],
+        plan: [],
+        exclusions: [{ fromKHz: 550_000, toKHz: 540_000, source: 'manual', label: 'inversée' }],
+      }),
+    ).toThrow(/inversée/);
+  });
+});
+
 describe('checkPlan — reporting', () => {
   it('marks IM3 critical and IM5 a warning', () => {
     const result = checkPlan({

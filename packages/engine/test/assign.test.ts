@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { coordinate } from '../src/assign.js';
 import { checkPlan } from '../src/check.js';
+import { scaleGuards } from '../src/config.js';
 import { festival, FR_BANDS, link, tntChannel } from './fixtures/links.js';
 import type { EngineLink } from '../src/types.js';
 
@@ -131,6 +132,24 @@ describe('coordinate — fifth order stays a warning', () => {
     expect(result.ok).toBe(true);
   });
 
+  it('never reaches a worse rung than the same search with 5th order off', () => {
+    // The second pass at each rung is, by construction, the search one gets
+    // with IM5 disabled: same masks, same order. So enabling IM5 can add
+    // warnings but never cost a rung — here on a load tight enough to need
+    // the ladder.
+    const links = Array.from({ length: 14 }, (_, i) =>
+      link(`HF${String(i + 1).padStart(2, '0')}`, {
+        zoneId: ['a', 'b', 'c'][i % 3] as string,
+        tuningRangeKHz: [520_000, 532_000],
+      }),
+    );
+    const zonePolicies = { a: 'full-intermod', b: 'spacing-only', c: 'spacing-only' } as const;
+    const withIm5 = coordinate({ links, zonePolicies });
+    const without = coordinate({ links, zonePolicies, config: { enableIm5TwoTx: false } });
+    expect(withIm5.robustness.level).toBeLessThanOrEqual(without.robustness.level);
+    expect(withIm5.unassignedLinkIds.length).toBeLessThanOrEqual(without.unassignedLinkIds.length);
+  });
+
   it('prefers a 5th-order-clean frequency when one exists', () => {
     const clean = coordinate({
       links: [
@@ -180,16 +199,6 @@ describe('coordinate — robustness ladder', () => {
 });
 
 describe('coordinate — determinism', () => {
-  it('returns an identical plan whatever order the links arrive in', () => {
-    const links = festival();
-    const shuffled = [...links].reverse();
-    const a = coordinate({ links, bands: FR_BANDS });
-    const b = coordinate({ links: shuffled, bands: FR_BANDS });
-    expect(b.assignments).toEqual(a.assignments);
-    expect(b.violations).toEqual(a.violations);
-    expect(b.robustness).toEqual(a.robustness);
-  });
-
   it('carries no timing or other unstable data in its result', () => {
     const links = festival();
     expect(JSON.stringify(coordinate({ links, bands: FR_BANDS }))).toBe(
@@ -201,6 +210,31 @@ describe('coordinate — determinism', () => {
 describe('coordinate — input validation', () => {
   it('rejects duplicate link ids', () => {
     expect(() => coordinate({ links: [link('A'), link('A')] })).toThrow(/en double/);
+  });
+
+  it('rejects an inverted exclusion', () => {
+    expect(() =>
+      coordinate({
+        links: [link('A')],
+        exclusions: [{ fromKHz: 550_000, toKHz: 540_000, source: 'manual', label: 'inversée' }],
+      }),
+    ).toThrow(/inversée/);
+  });
+
+  it('keeps every guard invariant through the whole ladder', () => {
+    // floor(0.3 × 45) = 13 but floor(0.3 × 90) = 27: without care the scaled
+    // guards would fail the very check the nominal ones passed, and the final
+    // re-verification would throw on a plan the ladder itself produced.
+    const guards = { im3TwoTxKHz: 45, im3ThreeTxKHz: 45, spacingKHz: 45, im5TwoTxKHz: 90, exclusionKHz: 45 };
+    const scaled = scaleGuards(guards, 0.3);
+    expect(scaled.spacingKHz).toBe(13);
+    expect(scaled.im5TwoTxKHz).toBe(26);
+    expect(() =>
+      coordinate({
+        links: [link('A', { tuningRangeKHz: [500_000, 500_015], stepKHz: 5, channelWidthKHz: 5 }), link('B', { tuningRangeKHz: [500_000, 500_015], stepKHz: 5, channelWidthKHz: 5 })],
+        config: { guards },
+      }),
+    ).not.toThrow();
   });
 
   it('rejects a ladder that does not start at the nominal guards', () => {

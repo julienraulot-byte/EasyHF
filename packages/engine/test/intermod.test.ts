@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { forEachImHit, type ImHit, type ImOptions } from '../src/intermod.js';
 
-const allVisible: ImOptions['visible'] = () => true;
+const oneZone: ImOptions['relation'] = () => 'full';
 
 function collect(freqs: number[], options: Partial<ImOptions> = {}): ImHit[] {
   const hits: ImHit[] = [];
@@ -13,7 +13,7 @@ function collect(freqs: number[], options: Partial<ImOptions> = {}): ImHit[] {
       im5TwoTxKHz: 90,
       enableIm3ThreeTx: true,
       enableIm5TwoTx: true,
-      visible: allVisible,
+      relation: oneZone,
       ...options,
     },
     (hit) => hits.push(hit),
@@ -97,7 +97,7 @@ describe('visibility', () => {
     const hits = collect([500_000, 500_400, 499_600], {
       enableIm3ThreeTx: false,
       enableIm5TwoTx: false,
-      visible: (victim, source) => victim !== 1 && source !== 1,
+      relation: (a, b) => (a === 1 || b === 1 ? 'none' : 'full'),
     });
     expect(hits).toHaveLength(0);
   });

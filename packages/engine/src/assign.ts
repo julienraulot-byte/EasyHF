@@ -1,14 +1,19 @@
 import { blockerFor, buildGrid, freqAt, markBlocked, orderCandidates, SCALE, type CandidateGrid } from './candidates.js';
-import { checkPlan, findHostBand, halfWidthKHz, requiredExclusionKHz, requiredSpacingKHz } from './check.js';
+import {
+  checkPlan,
+  findHostBand,
+  halfWidthKHz,
+  requiredExclusionKHz,
+  requiredSpacingKHz,
+  validExclusions,
+} from './check.js';
 import { resolveConfig, scaleGuards } from './config.js';
 import { compareIds } from './order.js';
-import { relationBetween } from './zones.js';
+import { RELATION_RANK, relationBetween } from './zones.js';
 import { ENGINE_VERSION } from './version.js';
 import type { CoordinateInput, CoordinationResult, EngineConfig, EngineLink, Guards, PlanEntry } from './types.js';
 
-const REL_NONE = 0;
-const REL_SPACING = 1;
-const REL_FULL = 2;
+const REL = RELATION_RANK;
 
 interface Placed {
   linkIndex: number;
@@ -48,7 +53,7 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
   const links = input.links;
   const n = links.length;
   const bands = input.bands ?? [];
-  const exclusions = input.exclusions ?? [];
+  const exclusions = validExclusions(input.exclusions);
 
   const seenIds = new Set<string>();
   for (const link of links) {
@@ -64,14 +69,11 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
   const relation = new Uint8Array(n * n);
   for (let i = 0; i < n; i += 1) {
     for (let j = 0; j < n; j += 1) {
-      const r = relationBetween(
-        (links[i] as EngineLink).zoneId,
-        (links[j] as EngineLink).zoneId,
-        input.zonePolicies,
-      );
-      relation[i * n + j] = r === 'full' ? REL_FULL : r === 'spacing' ? REL_SPACING : REL_NONE;
+      relation[i * n + j] =
+        REL[relationBetween((links[i] as EngineLink).zoneId, (links[j] as EngineLink).zoneId, input.zonePolicies)];
     }
   }
+  const rel = (a: number, b: number): number => relation[a * n + b] as number;
 
   const lockedIndices: number[] = [];
   const freeIndices: number[] = [];
@@ -108,22 +110,25 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
    *
    * Two masks come back. `hard` carries what makes a plan invalid: carrier
    * spacing, exclusions, bands and third-order intermodulation. `soft` adds the
-   * fifth-order products, which `checkPlan` only reports as warnings. The
-   * search prefers a `soft`-free frequency but will take a merely `hard`-free
-   * one, rather than weaken a guard that actually matters to avoid a warning.
+   * fifth-order products, which `checkPlan` only reports as warnings.
    *
-   * Visibility is the subtle part. A product counts against a victim only when
-   * every generator is visible to **the victim** — never to the link being
-   * placed. Under three zones with differing policies those are not the same
-   * set:
+   * This function is the mirror image of `forEachImHit`: where the checker
+   * enumerates products and measures distances, this solves each product for
+   * the unknown carrier and blocks the interval it may not fall in. Every rule
+   * there has its counterpart here, under the same visibility condition — a
+   * product counts against a victim only when every generator is `full` with
+   * **the victim**. Which victim, and who must see whom, depends on the role
+   * the new carrier `f` plays in the product:
    *
-   * | role of this link | victim  | generators must be visible to |
-   * |-------------------|---------|-------------------------------|
-   * | victim            | itself  | this link                     |
-   * | generator         | a placed carrier | that carrier         |
+   *   f as …        victim         generators must be full with
+   *   ─────────────────────────────────────────────────────────────
+   *   victim        f              f            (`visible` below)
+   *   generator     a placed p     p            (`sourcesFor[p]` below)
    *
-   * Filtering generators by what *this* link can see silently drops products
-   * that reach the victim through a zone this link happens to be isolated from.
+   * `sourcesFor` is read from `placed`, not from `visible`: a generator the
+   * victim can see need not be one this link can see. And, as in the checker,
+   * a product hitting one of its own generators is blocked only when the rule
+   * that normally covers it does not run across the zones involved.
    */
   const buildMask = (
     linkIndex: number,
@@ -137,30 +142,25 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
     const block = blockerFor(hard, grid);
     const g3a = guards.im3TwoTxKHz;
     const g3b = guards.im3ThreeTxKHz;
+    const threeTx = config.enableIm3ThreeTx;
 
     for (const p of placed) {
-      if (relation[linkIndex * n + p.linkIndex] === REL_NONE) continue;
-      const required = requiredSpacingKHz(link, links[p.linkIndex] as EngineLink, guards.spacingKHz);
-      block.around(p.freqKHz, required);
+      if (rel(linkIndex, p.linkIndex) === REL.none) continue;
+      block.around(p.freqKHz, requiredSpacingKHz(link, links[p.linkIndex] as EngineLink, guards.spacingKHz));
     }
 
-    // Carriers that can reach this link: the generators of any product it can
-    // fall victim to.
-    const visible = placed.filter((p) => relation[linkIndex * n + p.linkIndex] === REL_FULL);
+    // Carriers full with this link: the generators of any product it can fall
+    // victim to.
+    const visible = placed.filter((p) => rel(linkIndex, p.linkIndex) === REL.full);
     const m = visible.length;
     if (m === 0) return { hard, soft: hard };
 
-    // Generators visible to each placed victim. Read from `placed`, not from
-    // `visible` — see the visibility table above.
+    // Generators full with each placed victim.
     const sourcesFor = visible.map((victim) =>
-      placed.filter(
-        (p) =>
-          p.linkIndex !== victim.linkIndex &&
-          relation[victim.linkIndex * n + p.linkIndex] === REL_FULL,
-      ),
+      placed.filter((p) => p.linkIndex !== victim.linkIndex && rel(victim.linkIndex, p.linkIndex) === REL.full),
     );
 
-    // --- This link as victim: products of the carriers already placed.
+    // --- f as victim of products of the placed carriers.
     for (let a = 0; a < m; a += 1) {
       const fa = (visible[a] as Placed).freqKHz;
       for (let b = 0; b < m; b += 1) {
@@ -168,44 +168,66 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
         block.around(2 * fa - (visible[b] as Placed).freqKHz, g3a);
       }
     }
-    if (config.enableIm3ThreeTx && m >= 3) {
+    if (threeTx) {
       for (let a = 0; a < m; a += 1) {
-        const fa = (visible[a] as Placed).freqKHz;
+        const pa = visible[a] as Placed;
         for (let b = a + 1; b < m; b += 1) {
-          const sum = fa + (visible[b] as Placed).freqKHz;
+          const pb = visible[b] as Placed;
+          const sum = pa.freqKHz + pb.freqKHz;
           for (let c = 0; c < m; c += 1) {
             if (c === a || c === b) continue;
             block.around(sum - (visible[c] as Placed).freqKHz, g3b);
           }
+          // f as its own generator, with pa and pb the other two:
+          const relAB = rel(pa.linkIndex, pb.linkIndex);
+          // f + pa − pb hits f  ⇒  |pa − pb| < g3b, for every f. Covered by
+          // spacing(pa, pb) unless the two never constrain each other.
+          if (relAB === REL.none && Math.abs(pa.freqKHz - pb.freqKHz) < g3b) hard.fill(1);
+          // pa + pb − f hits f  ⇒  |pa + pb − 2f| < g3b. Covered by the
+          // 2-transmitter form only when pa and pb see each other.
+          if (relAB !== REL.full) block.range(3 * (sum - g3b) + 1, 3 * (sum + g3b) - 1);
         }
       }
     }
 
-    // --- This link as a generator: each product solved for the unknown carrier.
+    // --- f as a generator: each product solved for f, per placed victim.
     // Bounds are exact integers in units of 1/6 kHz (see candidates.ts).
     for (let vi = 0; vi < m; vi += 1) {
-      const fv = (visible[vi] as Placed).freqKHz;
+      const victim = visible[vi] as Placed;
+      const fv = victim.freqKHz;
       const sources = sourcesFor[vi] as Placed[];
       const s = sources.length;
 
       for (let pi = 0; pi < s; pi += 1) {
-        const fp = (sources[pi] as Placed).freqKHz;
-        // 2f − p  ⇒  6f ∈ (3(fp + fv − g3a), 3(fp + fv + g3a))
+        const p = sources[pi] as Placed;
+        const fp = p.freqKHz;
+        // 2f − p hits v  ⇒  6f ∈ (3(fp + fv − g3a), 3(fp + fv + g3a))
         block.range(3 * (fp + fv - g3a) + 1, 3 * (fp + fv + g3a) - 1);
-        // 2p − f  ⇒  |2fp − fv − f| < g3a
+        // 2p − f hits v  ⇒  |2fp − fv − f| < g3a
         block.around(2 * fp - fv, g3a);
+
+        if (!threeTx) continue;
+        const relFP = rel(linkIndex, p.linkIndex);
+        // v as additive generator alongside f (f + v − p) or alongside p
+        // (p + v − f): residual |f − p|, covered by spacing(f, p) unless f and
+        // p never constrain each other.
+        if (relFP === REL.none) block.around(fp, g3b);
+        // v as subtractive generator (f + p − v hits v): residual |f + p − 2v|,
+        // the 2-transmitter form 2v − p against f, which only runs when f
+        // sees p.
+        if (relFP !== REL.full) block.around(2 * fv - fp, g3b);
       }
 
-      if (!config.enableIm3ThreeTx || s < 2) continue;
+      if (!threeTx || s < 2) continue;
       for (let i1 = 0; i1 < s; i1 += 1) {
         const fp1 = (sources[i1] as Placed).freqKHz;
         for (let i2 = 0; i2 < s; i2 += 1) {
           if (i2 === i1) continue;
-          // f + p1 − p2 hitting v ⇒ f ∈ (fv + fp2 − fp1 ± g3b)
+          // f + p1 − p2 hits v  ⇒  f ∈ (fv + fp2 − fp1 ± g3b)
           block.around(fv + (sources[i2] as Placed).freqKHz - fp1, g3b);
         }
         for (let i2 = i1 + 1; i2 < s; i2 += 1) {
-          // p1 + p2 − f hitting v ⇒ f ∈ (fp1 + fp2 − fv ± g3b)
+          // p1 + p2 − f hits v  ⇒  f ∈ (fp1 + fp2 − fv ± g3b)
           block.around(fp1 + (sources[i2] as Placed).freqKHz - fv, g3b);
         }
       }
@@ -237,7 +259,15 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
     return { hard, soft };
   };
 
-  const runLevel = (guards: Guards): Attempt => {
+  /**
+   * One greedy search at a fixed set of guards.
+   *
+   * `preferIm5Clean` puts the fifth-order-clean frequencies first in each
+   * link's candidate list. That preference changes the path the greedy takes,
+   * and with a bounded backtracking budget a different path can fail where the
+   * plain one succeeds — so a level is only given up after both have been tried.
+   */
+  const runLevel = (guards: Guards, preferIm5Clean: boolean): Attempt => {
     const statics = new Map<number, Uint8Array>();
     const staticFor = (i: number): Uint8Array => {
       let cached = statics.get(i);
@@ -284,14 +314,15 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
       let frame = frames[depth];
       if (!frame) {
         const { hard, soft } = buildMask(linkIndex, placed, guards, staticFor(linkIndex));
-        // Fifth-order-clean frequencies first, then the rest. A warning never
-        // costs a rung on the robustness ladder.
-        const preferred = orderCandidates(soft, grid, config.placementStrategy);
-        const fallback =
-          soft === hard
-            ? []
-            : orderCandidates(hard, grid, config.placementStrategy).filter((k) => soft[k] === 1);
-        frame = { candidates: [...preferred, ...fallback], next: 0 };
+        let candidates: number[];
+        if (preferIm5Clean && soft !== hard) {
+          const preferred = orderCandidates(soft, grid, config.placementStrategy);
+          const fallback = orderCandidates(hard, grid, config.placementStrategy).filter((k) => soft[k] === 1);
+          candidates = [...preferred, ...fallback];
+        } else {
+          candidates = orderCandidates(hard, grid, config.placementStrategy);
+        }
+        frame = { candidates, next: 0 };
         frames[depth] = frame;
       }
 
@@ -338,22 +369,26 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
   let totalBacktracks = 0;
   let totalCandidates = 0;
 
-  for (const [index, factor] of config.robustnessLadder.entries()) {
+  ladder: for (const [index, factor] of config.robustnessLadder.entries()) {
     const levelGuards = scaleGuards(config.guards, factor);
-    const result = runLevel(levelGuards);
     levelsTried += 1;
-    totalBacktracks += result.backtrackSteps;
-    totalCandidates += result.candidatesEvaluated;
-    if (!attempt || result.assignments.size > attempt.assignments.size) {
-      attempt = result;
-      level = index;
-      guards = levelGuards;
-    }
-    if (result.complete) {
-      attempt = result;
-      level = index;
-      guards = levelGuards;
-      break;
+    // Fifth-order-clean first; then, before giving up a rung of real guards
+    // over what is only a warning, the same rung without the preference.
+    for (const preferIm5Clean of config.enableIm5TwoTx ? [true, false] : [false]) {
+      const result = runLevel(levelGuards, preferIm5Clean);
+      totalBacktracks += result.backtrackSteps;
+      totalCandidates += result.candidatesEvaluated;
+      if (!attempt || result.assignments.size > attempt.assignments.size) {
+        attempt = result;
+        level = index;
+        guards = levelGuards;
+      }
+      if (result.complete) {
+        attempt = result;
+        level = index;
+        guards = levelGuards;
+        break ladder;
+      }
     }
   }
 

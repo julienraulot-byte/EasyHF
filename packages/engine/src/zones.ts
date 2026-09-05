@@ -16,6 +16,9 @@ const CONSTRAINT_RANK: Record<InterZonePolicy, number> = {
 
 const RELATION_BY_RANK: readonly Relation[] = ['none', 'spacing', 'full'];
 
+/** Numeric form of a relation, for the matrices the assignment search keeps. */
+export const RELATION_RANK: Record<Relation, 0 | 1 | 2> = { none: 0, spacing: 1, full: 2 };
+
 /**
  * Two carriers in the same zone always constrain each other fully.
  *

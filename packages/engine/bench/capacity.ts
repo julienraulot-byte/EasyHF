@@ -32,17 +32,17 @@ function placed(im3ThreeTxKHz: number, placementStrategy: PlacementStrategy, max
 }
 
 console.log('Liaisons placées à gardes nominales — 470–694 MHz, pas 25 kHz, canal 200 kHz');
-console.log('IM3 2tx 200 kHz · IM5 90 kHz · espacement 300 kHz · 200 retours arrière\n');
+console.log('IM3 2tx 200 kHz · IM5 90 kHz · espacement 300 kHz · 100 retours arrière par passe\n');
 console.log('garde IM3 3tx | compact | spread');
 for (const guard of [200, 150, 100, 75, 50, 25]) {
   console.log(
-    `${String(guard).padStart(9)} kHz | ${String(placed(guard, 'compact', 200)).padStart(7)} | ${String(placed(guard, 'spread', 200)).padStart(6)}`,
+    `${String(guard).padStart(9)} kHz | ${String(placed(guard, 'compact', 100)).padStart(7)} | ${String(placed(guard, 'spread', 100)).padStart(6)}`,
   );
 }
 
 console.log('\nRendement des retours arrière — 40 liaisons, gardes nominales, placement compact');
 console.log('budget | liaisons placées | durée');
-for (const budget of [0, 200, 2_000, 20_000]) {
+for (const budget of [0, 50, 100, 200, 2_000]) {
   const started = Date.now();
   const result = coordinate({
     links: links(40),

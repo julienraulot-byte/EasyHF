@@ -91,7 +91,10 @@ export interface EngineConfig {
    * cannot be found at the previous level. Index 0 must be 1 (nominal guards).
    */
   robustnessLadder: readonly number[];
-  /** Upper bound on backtracking steps per ladder level. */
+  /**
+   * Upper bound on backtracking steps per search pass. A ladder level runs two
+   * passes when 5th-order products are enabled (see `coordinate`).
+   */
   maxBacktrackSteps: number;
   /** Which free candidate to take for a link. */
   placementStrategy: PlacementStrategy;

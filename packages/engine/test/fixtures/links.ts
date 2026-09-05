@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import type { EngineBand, EngineLink } from '../../src/types.js';
 
 /** A generic UHF handheld: 470–694 MHz tunable, 25 kHz grid, 200 kHz channel. */
@@ -12,15 +14,12 @@ export function link(id: string, overrides: Partial<EngineLink> = {}): EngineLin
   };
 }
 
-/** The French PMSE bands, trimmed to what the engine reads. */
-export const FR_BANDS: EngineBand[] = [
-  { fromKHz: 174_000, toKHz: 223_000, status: 'free', label: 'VHF 174–223' },
-  { fromKHz: 470_000, toKHz: 694_000, status: 'free', label: 'UHF 470–694' },
-  { fromKHz: 694_000, toKHz: 790_000, status: 'forbidden', label: 'Bande 700 (interdite PMSE)' },
-  { fromKHz: 823_000, toKHz: 832_000, status: 'free', label: '823–832' },
-  { fromKHz: 1_240_000, toKHz: 1_260_000, status: 'temporary', label: '1,2 GHz' },
-  { fromKHz: 1_785_000, toKHz: 1_800_000, status: 'free', label: '1785–1800' },
-];
+/** The French band plan, read from the one file the product ships. */
+export const FR_BANDS: EngineBand[] = (
+  JSON.parse(
+    readFileSync(fileURLToPath(new URL('../../../../data/bands/fr.json', import.meta.url)), 'utf8'),
+  ) as { bands: EngineBand[] }
+).bands;
 
 /** UHF TNT channel N: 8 MHz wide, channel 21 starting at 470 MHz. */
 export function tntChannel(channel: number) {

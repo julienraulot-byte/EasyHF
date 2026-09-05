@@ -1,14 +1,11 @@
-import type { EngineConfigInput, InterZonePolicy } from '@easyhf/engine';
+import type { EngineConfigInput, FreqKHz, InterZonePolicy } from '@easyhf/engine';
 
-/** Frequencies are always whole kHz. Never a float in MHz. */
-export type FreqKHz = number;
+export type { FreqKHz };
 
 export interface Venue {
   label: string;
   lat?: number;
   lon?: number;
-  /** INSEE code when the venue was resolved through the Base Adresse Nationale. */
-  inseeCode?: string;
 }
 
 /** A span of spectrum the plan must stay clear of. */

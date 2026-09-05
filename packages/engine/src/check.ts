@@ -89,6 +89,20 @@ export function requiredExclusionKHz(link: EngineLink, exclusionKHz: number): nu
   return Math.max(exclusionKHz, halfWidthKHz(link));
 }
 
+/** Rejects an exclusion the two halves of the engine would read differently. */
+export function validExclusions(
+  exclusions: readonly EngineExclusion[] | undefined,
+): readonly EngineExclusion[] {
+  for (const exclusion of exclusions ?? []) {
+    if (exclusion.toKHz < exclusion.fromKHz) {
+      throw new Error(
+        `Exclusion « ${exclusion.label} » inversée : ${exclusion.fromKHz}–${exclusion.toKHz} kHz`,
+      );
+    }
+  }
+  return exclusions ?? [];
+}
+
 /** Distance from a point to a closed interval; 0 when inside. */
 export function distanceToInterval(freq: number, from: number, to: number): number {
   if (freq < from) return from - freq;
@@ -140,7 +154,7 @@ export function checkPlan(input: CheckInput): CheckResult {
   const bands = input.bands ?? [];
   // Normalised so that the same set of exclusions, however it was ordered by
   // the caller, yields the same report.
-  const exclusions = [...(input.exclusions ?? [])].sort(
+  const exclusions = [...validExclusions(input.exclusions)].sort(
     (a, b) =>
       a.fromKHz - b.fromKHz ||
       a.toKHz - b.toKHz ||
@@ -288,12 +302,12 @@ export function checkPlan(input: CheckInput): CheckResult {
       im5TwoTxKHz: config.guards.im5TwoTxKHz * MARGIN_WINDOW_FACTOR,
       enableIm3ThreeTx: config.enableIm3ThreeTx,
       enableIm5TwoTx: config.enableIm5TwoTx,
-      visible: (victim, source) =>
+      relation: (a, b) =>
         relationBetween(
-          (assigned[victim] as { link: EngineLink }).link.zoneId,
-          (assigned[source] as { link: EngineLink }).link.zoneId,
+          (assigned[a] as { link: EngineLink }).link.zoneId,
+          (assigned[b] as { link: EngineLink }).link.zoneId,
           input.zonePolicies,
-        ) === 'full',
+        ),
     },
     (hit) => {
       const guard = guardFor[hit.kind];

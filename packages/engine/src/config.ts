@@ -32,7 +32,7 @@ export const DEFAULT_CONFIG: EngineConfig = {
   enableIm5TwoTx: true,
   allowTemporaryBands: true,
   robustnessLadder: DEFAULT_ROBUSTNESS_LADDER,
-  maxBacktrackSteps: 200,
+  maxBacktrackSteps: 100,
   placementStrategy: 'compact',
 };
 
@@ -91,13 +91,21 @@ export function resolveConfig(partial?: EngineConfigInput): EngineConfig {
   return { ...DEFAULT_CONFIG, ...partial, guards, robustnessLadder: ladder };
 }
 
-/** Nominal guards scaled by a ladder factor, rounded down to whole kHz. */
+/**
+ * Nominal guards scaled by a ladder factor, rounded down to whole kHz.
+ *
+ * `floor` is monotone, so the `im3ThreeTx ≤ im3TwoTx ≤ spacing` order survives
+ * scaling on its own. `2·spacing ≥ im5` does not — `floor(0.3 × 45) = 13` but
+ * `floor(0.3 × 90) = 27` — so it is restored explicitly, or the re-check at the
+ * end of `coordinate` would reject guards the ladder itself produced.
+ */
 export function scaleGuards(guards: Guards, factor: number): Guards {
+  const spacingKHz = Math.floor(guards.spacingKHz * factor);
   return {
     im3TwoTxKHz: Math.floor(guards.im3TwoTxKHz * factor),
     im3ThreeTxKHz: Math.floor(guards.im3ThreeTxKHz * factor),
-    im5TwoTxKHz: Math.floor(guards.im5TwoTxKHz * factor),
-    spacingKHz: Math.floor(guards.spacingKHz * factor),
+    im5TwoTxKHz: Math.min(Math.floor(guards.im5TwoTxKHz * factor), 2 * spacingKHz),
+    spacingKHz,
     exclusionKHz: Math.floor(guards.exclusionKHz * factor),
   };
 }

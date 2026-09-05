@@ -12,6 +12,8 @@
  * filtered by the receiver front-end; they are deliberately not modelled.
  */
 
+import type { Relation } from './zones.js';
+
 export type ImKind = 'im3-2tx' | 'im3-3tx' | 'im5-2tx';
 
 export interface ImHit {
@@ -36,32 +38,40 @@ export interface ImOptions {
   enableIm3ThreeTx: boolean;
   enableIm5TwoTx: boolean;
   /**
-   * Whether `source` shares an RF space with `victim`, and can therefore reach
-   * it through intermodulation. A product counts only when every one of its
-   * generators is visible to the victim.
+   * How two carriers constrain each other (see `zones.ts`). A product counts
+   * against a victim only when every generator is `full` with it. Symmetric,
+   * and `full` for a carrier with itself.
    */
-  visible: (victim: number, source: number) => boolean;
+  relation: (a: number, b: number) => Relation;
 }
 
 /*
- * A product is never checked against one of its own generators.
- *
+ * When the victim is one of the generators
+ * ----------------------------------------
  * Substituting a generator for the victim turns `P − f_v` into a combination
- * whose coefficients sum to zero, and every such residual is a check that has
- * already been made, more severely, elsewhere:
+ * whose coefficients sum to zero, and each such residual is a quantity some
+ * other rule already measures — usually harder:
  *
- *   2·f1 − f2  vs f1  →  |f1 − f2|          carrier spacing
- *   2·f1 − f2  vs f2  →  2·|f1 − f2|        carrier spacing
- *   3·f1 − 2f2 vs f1  →  2·|f1 − f2|        carrier spacing
- *   3·f1 − 2f2 vs f2  →  3·|f1 − f2|        carrier spacing
- *   f1 + f2 − f3 vs f1 →  |f2 − f3|         carrier spacing
- *   f1 + f2 − f3 vs f3 →  |f1 + f2 − 2f3|   the 2-transmitter product
- *                                           `2f3 − f1` measured against `f2`
+ *   2·f1 − f2    vs f1  →  |f1 − f2|         carrier spacing (f1, f2)
+ *   2·f1 − f2    vs f2  →  2·|f1 − f2|       carrier spacing (f1, f2)
+ *   3·f1 − 2·f2  vs f1  →  2·|f1 − f2|       carrier spacing (f1, f2)
+ *   3·f1 − 2·f2  vs f2  →  3·|f1 − f2|       carrier spacing (f1, f2)
+ *   f1 + f2 − f3 vs f1  →  |f2 − f3|         carrier spacing (f2, f3)
+ *   f1 + f2 − f3 vs f3  →  |f1 + f2 − 2·f3|  the 2-transmitter product 2·f3 − f1
+ *                                            measured against f2
  *
- * The last one is the only non-obvious case: it is a genuine intermodulation,
- * but it is exactly the 2-transmitter form, which is checked with a guard at
- * least as wide (`resolveConfig` enforces `im3ThreeTx ≤ im3TwoTx`). Keeping it
- * here would only report the same anomaly twice under two different names.
+ * Reporting the case here as well would name the same anomaly twice. So it is
+ * skipped — **but only when the covering rule actually runs**. Within one zone
+ * it always does. Across zones it may not: spacing is skipped between
+ * `isolated` zones, and the 2-transmitter form needs f2 to see f1, which the
+ * 3-transmitter form never asked for. In those cases nothing else will report
+ * the product, so it is reported here, under its own name.
+ *
+ * For the 2-transmitter families the covering rule is spacing between the two
+ * generators, which always runs when they can see each other at all — and a
+ * product only counts when they can. So those are skipped unconditionally.
+ * `resolveConfig` keeps the guards ordered so that "covered" also means
+ * "covered at least as strictly".
  */
 
 /** Index of the first element of `sorted` that is >= `value`. */
@@ -90,6 +100,8 @@ export function forEachImHit(
 ): void {
   const n = freqs.length;
   if (n < 2) return;
+  const { relation } = options;
+  const sees = (victim: number, source: number): boolean => relation(victim, source) === 'full';
 
   // Victims indexed by ascending frequency, so each product only has to look at
   // the handful of carriers inside its guard window.
@@ -125,11 +137,7 @@ export function forEachImHit(
       forEachVictim(
         product,
         options.im3TwoTxKHz,
-        (victim) =>
-          victim === i ||
-          victim === j ||
-          !options.visible(victim, i) ||
-          !options.visible(victim, j),
+        (victim) => victim === i || victim === j || !sees(victim, i) || !sees(victim, j),
         (victim, distance) =>
           emit({
             kind: 'im3-2tx',
@@ -156,13 +164,17 @@ export function forEachImHit(
           forEachVictim(
             product,
             options.im3ThreeTxKHz,
-            (victim) =>
-              victim === i ||
-              victim === j ||
-              victim === k ||
-              !options.visible(victim, i) ||
-              !options.visible(victim, j) ||
-              !options.visible(victim, k),
+            (victim) => {
+              if (!sees(victim, i) || !sees(victim, j) || !sees(victim, k)) return true;
+              // Additive generator as victim: residual |other additive − k|,
+              // covered by spacing unless those two never constrain each other.
+              if (victim === i) return relation(j, k) !== 'none';
+              if (victim === j) return relation(i, k) !== 'none';
+              // Subtractive generator as victim: the 2-transmitter form, which
+              // only runs when the two additive generators see each other.
+              if (victim === k) return relation(i, j) === 'full';
+              return false;
+            },
             (victim, distance) =>
               emit({
                 kind: 'im3-3tx',
@@ -189,11 +201,7 @@ export function forEachImHit(
         forEachVictim(
           product,
           options.im5TwoTxKHz,
-          (victim) =>
-            victim === i ||
-            victim === j ||
-            !options.visible(victim, i) ||
-            !options.visible(victim, j),
+          (victim) => victim === i || victim === j || !sees(victim, i) || !sees(victim, j),
           (victim, distance) =>
             emit({
               kind: 'im5-2tx',

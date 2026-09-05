@@ -48,36 +48,21 @@ export function freqAt(grid: CandidateGrid, index: number): number {
  * Callers model *open* constraints (`|f − x| < guard`) by passing
  * `lo6 = 6·(x − guard) + 1` and `hi6 = 6·(x + guard) − 1`, which excludes the
  * exactly-at-the-guard frequency without any rounding.
+ *
+ * One-off form of {@link blockerFor}; the assignment search uses the latter,
+ * which hoists the grid constants out of its million-call loops.
  */
-export function markBlocked(
-  mask: Uint8Array,
-  grid: CandidateGrid,
-  lo6: number,
-  hi6: number,
-): void {
-  if (hi6 < lo6) return;
-  const base6 = SCALE * grid.baseKHz;
-  const step6 = SCALE * grid.stepKHz;
-  let start = Math.ceil((lo6 - base6) / step6);
-  let end = Math.floor((hi6 - base6) / step6);
-  if (start < 0) start = 0;
-  if (end > grid.count - 1) end = grid.count - 1;
-  if (start <= end) mask.fill(1, start, end + 1);
+export function markBlocked(mask: Uint8Array, grid: CandidateGrid, lo6: number, hi6: number): void {
+  blockerFor(mask, grid).range(lo6, hi6);
 }
 
-/**
- * `markBlocked` with the grid's scaled constants hoisted out of the loop.
- *
- * The assignment search calls this on the order of a million times per plan —
- * once per (victim, source, source) triple — so the per-call property lookups
- * and multiplications are worth removing.
- */
 export function blockerFor(mask: Uint8Array, grid: CandidateGrid) {
   const base6 = SCALE * grid.baseKHz;
   const step6 = SCALE * grid.stepKHz;
   const last = grid.count - 1;
   /** Blocks the closed scaled range `[lo6, hi6]`, in units of 1/6 kHz. */
   const range = (lo6: number, hi6: number): void => {
+    if (hi6 < lo6) return;
     let start = Math.ceil((lo6 - base6) / step6);
     if (start < 0) start = 0;
     let end = Math.floor((hi6 - base6) / step6);
