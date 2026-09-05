@@ -1,0 +1,128 @@
+{
+  "ok": true,
+  "assignments": [
+    {
+      "linkId": "SC1-01",
+      "freqKHz": 534000
+    },
+    {
+      "linkId": "SC1-02",
+      "freqKHz": 534475
+    },
+    {
+      "linkId": "SC1-03",
+      "freqKHz": 535200
+    },
+    {
+      "linkId": "SC1-04",
+      "freqKHz": 536750
+    },
+    {
+      "linkId": "SC1-05",
+      "freqKHz": 538500
+    },
+    {
+      "linkId": "SC1-06",
+      "freqKHz": 540600
+    },
+    {
+      "linkId": "SC1-07",
+      "freqKHz": 541425
+    },
+    {
+      "linkId": "SC1-08",
+      "freqKHz": 544000
+    },
+    {
+      "linkId": "SC1-09",
+      "freqKHz": 545650
+    },
+    {
+      "linkId": "SC1-10",
+      "freqKHz": 548125
+    },
+    {
+      "linkId": "SC1-11",
+      "freqKHz": 551625
+    },
+    {
+      "linkId": "SC1-12",
+      "freqKHz": 556475
+    },
+    {
+      "linkId": "IEM-01",
+      "freqKHz": 606000
+    },
+    {
+      "linkId": "IEM-02",
+      "freqKHz": 606375
+    },
+    {
+      "linkId": "IEM-03",
+      "freqKHz": 607000
+    },
+    {
+      "linkId": "IEM-04",
+      "freqKHz": 608375
+    },
+    {
+      "linkId": "SC2-01",
+      "freqKHz": 616100
+    },
+    {
+      "linkId": "SC2-02",
+      "freqKHz": 621700
+    },
+    {
+      "linkId": "SC2-03",
+      "freqKHz": 625400
+    },
+    {
+      "linkId": "SC2-04",
+      "freqKHz": 630700
+    },
+    {
+      "linkId": "SC2-05",
+      "freqKHz": 633850
+    },
+    {
+      "linkId": "SC2-06",
+      "freqKHz": 646200
+    },
+    {
+      "linkId": "SC2-07",
+      "freqKHz": 648075
+    },
+    {
+      "linkId": "SC2-08",
+      "freqKHz": 656025
+    }
+  ],
+  "unassignedLinkIds": [],
+  "violations": [],
+  "margins": {
+    "im3TwoTxKHz": 200,
+    "im3ThreeTxKHz": 100,
+    "im5TwoTxKHz": 100,
+    "spacingKHz": 375,
+    "exclusionKHz": null
+  },
+  "robustness": {
+    "level": 0,
+    "factor": 1,
+    "guards": {
+      "im3TwoTxKHz": 200,
+      "im3ThreeTxKHz": 100,
+      "im5TwoTxKHz": 90,
+      "spacingKHz": 300,
+      "exclusionKHz": 250
+    },
+    "ladderLength": 5
+  },
+  "stats": {
+    "backtrackSteps": 0,
+    "candidatesEvaluated": 24,
+    "ladderLevelsTried": 1
+  },
+  "engineVersion": "0.1.0"
+}

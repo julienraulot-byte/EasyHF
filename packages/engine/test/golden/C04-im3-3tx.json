@@ -1,0 +1,73 @@
+{
+  "ok": false,
+  "violations": [
+    {
+      "kind": "im3-3tx",
+      "severity": "critical",
+      "victimLinkId": "HF01",
+      "victimFreqKHz": 500000,
+      "sourceLinkIds": [
+        "HF02",
+        "HF03",
+        "HF04"
+      ],
+      "offenderFreqKHz": 500000,
+      "requiredKHz": 100,
+      "actualKHz": 0,
+      "message": "IM3 (3 émetteurs) HF02 + HF03 − HF04 tombe à 500.000 MHz, soit 0 kHz de HF01 (500.000 MHz), minimum requis 100 kHz."
+    },
+    {
+      "kind": "im3-3tx",
+      "severity": "critical",
+      "victimLinkId": "HF02",
+      "victimFreqKHz": 505300,
+      "sourceLinkIds": [
+        "HF01",
+        "HF04",
+        "HF03"
+      ],
+      "offenderFreqKHz": 505300,
+      "requiredKHz": 100,
+      "actualKHz": 0,
+      "message": "IM3 (3 émetteurs) HF01 + HF04 − HF03 tombe à 505.300 MHz, soit 0 kHz de HF02 (505.300 MHz), minimum requis 100 kHz."
+    },
+    {
+      "kind": "im3-3tx",
+      "severity": "critical",
+      "victimLinkId": "HF03",
+      "victimFreqKHz": 508400,
+      "sourceLinkIds": [
+        "HF01",
+        "HF04",
+        "HF02"
+      ],
+      "offenderFreqKHz": 508400,
+      "requiredKHz": 100,
+      "actualKHz": 0,
+      "message": "IM3 (3 émetteurs) HF01 + HF04 − HF02 tombe à 508.400 MHz, soit 0 kHz de HF03 (508.400 MHz), minimum requis 100 kHz."
+    },
+    {
+      "kind": "im3-3tx",
+      "severity": "critical",
+      "victimLinkId": "HF04",
+      "victimFreqKHz": 513700,
+      "sourceLinkIds": [
+        "HF02",
+        "HF03",
+        "HF01"
+      ],
+      "offenderFreqKHz": 513700,
+      "requiredKHz": 100,
+      "actualKHz": 0,
+      "message": "IM3 (3 émetteurs) HF02 + HF03 − HF01 tombe à 513.700 MHz, soit 0 kHz de HF04 (513.700 MHz), minimum requis 100 kHz."
+    }
+  ],
+  "margins": {
+    "im3TwoTxKHz": null,
+    "im3ThreeTxKHz": 0,
+    "im5TwoTxKHz": null,
+    "spacingKHz": null,
+    "exclusionKHz": null
+  },
+  "engineVersion": "0.1.0"
+}

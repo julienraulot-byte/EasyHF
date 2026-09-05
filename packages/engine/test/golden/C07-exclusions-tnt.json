@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "assignments": [
+    {
+      "linkId": "HF01",
+      "freqKHz": 510000
+    },
+    {
+      "linkId": "HF02",
+      "freqKHz": 510300
+    },
+    {
+      "linkId": "HF03",
+      "freqKHz": 510800
+    },
+    {
+      "linkId": "HF04",
+      "freqKHz": 511900
+    },
+    {
+      "linkId": "HF05",
+      "freqKHz": 512300
+    },
+    {
+      "linkId": "HF06",
+      "freqKHz": 513200
+    }
+  ],
+  "unassignedLinkIds": [],
+  "violations": [],
+  "margins": {
+    "im3TwoTxKHz": 200,
+    "im3ThreeTxKHz": 100,
+    "im5TwoTxKHz": 100,
+    "spacingKHz": 300,
+    "exclusionKHz": null
+  },
+  "robustness": {
+    "level": 0,
+    "factor": 1,
+    "guards": {
+      "im3TwoTxKHz": 200,
+      "im3ThreeTxKHz": 100,
+      "im5TwoTxKHz": 90,
+      "spacingKHz": 300,
+      "exclusionKHz": 250
+    },
+    "ladderLength": 5
+  },
+  "stats": {
+    "backtrackSteps": 0,
+    "candidatesEvaluated": 6,
+    "ladderLevelsTried": 1
+  },
+  "engineVersion": "0.1.0"
+}

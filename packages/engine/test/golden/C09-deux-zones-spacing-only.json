@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "violations": [],
+  "margins": {
+    "im3TwoTxKHz": null,
+    "im3ThreeTxKHz": null,
+    "im5TwoTxKHz": null,
+    "spacingKHz": null,
+    "exclusionKHz": null
+  },
+  "engineVersion": "0.1.0"
+}
