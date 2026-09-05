@@ -57,7 +57,8 @@ contre une régression silencieuse du plan produit.
 
 ## Protocole de comparaison avec Wireless Workbench
 
-À exécuter par Julien, une fois par cas.
+Le mode opératoire détaillé, avec les fréquences prêtes à saisir pour chaque
+cas, est dans `docs/WWB-RELEVES.md`. Résumé :
 
 1. Dans WWB, créer une **inclusion group** avec autant d'émetteurs que le cas en
    compte, en saisissant les fréquences exactes listées dans le fichier témoin
