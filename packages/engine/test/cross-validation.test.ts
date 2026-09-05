@@ -2,7 +2,15 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { coordinate } from '../src/assign.js';
 import { checkPlan } from '../src/check.js';
-import type { EngineConfigInput, EngineLink, InterZonePolicy, ZonePolicies } from '../src/types.js';
+import { FR_BANDS, tntChannel } from './fixtures/links.js';
+import type {
+  EngineBand,
+  EngineConfigInput,
+  EngineExclusion,
+  EngineLink,
+  InterZonePolicy,
+  ZonePolicies,
+} from '../src/types.js';
 
 /**
  * The assignment search and the plan checker encode the same rules twice:
@@ -41,6 +49,7 @@ function crossValidate(
   zonePolicies: ZonePolicies,
   zoneOfFreeLink: string,
   config: EngineConfigInput,
+  statics: { exclusions?: EngineExclusion[]; bands?: EngineBand[] } = {},
 ): { accepted: number; rejected: number } {
   let accepted = 0;
   let rejected = 0;
@@ -55,7 +64,7 @@ function crossValidate(
       channelWidthKHz: 200,
     };
     const links = [...locked, free];
-    const search = coordinate({ links, zonePolicies, config: merged });
+    const search = coordinate({ links, zonePolicies, config: merged, ...statics });
     const searchAccepted = search.unassignedLinkIds.length === 0;
 
     const verdict = checkPlan({
@@ -66,6 +75,7 @@ function crossValidate(
       ],
       zonePolicies,
       config: merged,
+      ...statics,
     });
     // Only violations the free link takes part in: a conflict between two
     // locked carriers is not something the search can act on, and the mask
@@ -94,30 +104,54 @@ function crossValidate(
 const grid = (from: number, count: number, step = 25) =>
   Array.from({ length: count }, (_, i) => from + i * step);
 
+/** A scenario that only ever accepts, or only ever rejects, has tested nothing. */
+function bothOutcomes(counts: { accepted: number; rejected: number }, label: string): void {
+  expect(counts.accepted, `${label} : aucune fréquence acceptée`).toBeGreaterThan(0);
+  expect(counts.rejected, `${label} : aucune fréquence refusée`).toBeGreaterThan(0);
+}
+
 describe('assignment and checking agree, candidate by candidate', () => {
   it('in a single zone', () => {
     const locked = [pinned('L1', 'a', 500_000), pinned('L2', 'a', 506_000), pinned('L3', 'a', 511_300)];
-    const { accepted, rejected } = crossValidate(locked, grid(494_000, 800), {}, 'a', {});
-    expect(accepted).toBeGreaterThan(0);
-    expect(rejected).toBeGreaterThan(0);
+    bothOutcomes(crossValidate(locked, grid(494_000, 800), {}, 'a', {}), 'une zone');
   });
 
-  it('across three zones under every combination of policies', () => {
-    // The case that matters: with B fully coupled and A, C not, a product can
-    // reach a victim in B through carriers the link being placed cannot see.
+  it('across three zones under every combination of policies, from every zone', () => {
+    // The cases that matter: with one zone fully coupled and the others not, a
+    // product can reach a victim through carriers the link being placed cannot
+    // see, and a product can hit one of its own generators with no other rule
+    // left to cover it.
     const policies: InterZonePolicy[] = ['full-intermod', 'spacing-only', 'isolated'];
     for (const a of policies) {
       for (const b of policies) {
         for (const c of policies) {
-          const locked = [
-            pinned('LA', 'a', 500_000),
-            pinned('LB', 'b', 520_000),
-            pinned('LC', 'c', 507_400),
-          ];
-          crossValidate(locked, grid(505_000, 400), { a, b, c }, 'a', {});
+          for (const freeZone of ['a', 'b', 'c']) {
+            const locked = [pinned('LA', 'a', 500_000), pinned('LB', 'b', 520_000), pinned('LC', 'c', 507_400)];
+            bothOutcomes(
+              crossValidate(locked, grid(499_000, 900), { a, b, c }, freeZone, {}),
+              `${a}/${b}/${c}, libre en ${freeZone}`,
+            );
+          }
         }
       }
     }
+  });
+
+  it('with exclusions and a band plan in force', () => {
+    const locked = [pinned('L1', 'a', 530_000), pinned('L2', 'b', 553_000), pinned('L3', 'a', 561_100)];
+    bothOutcomes(
+      crossValidate(locked, grid(524_000, 1_600), { a: 'full-intermod', b: 'spacing-only' }, 'a', {}, {
+        exclusions: [tntChannel(29), tntChannel(31)],
+        bands: FR_BANDS,
+      }),
+      'exclusions et bandes',
+    );
+    // Straddling the 694 MHz band edge and the forbidden 700 MHz band.
+    const high = [pinned('H1', 'a', 690_000), pinned('H2', 'a', 692_000)];
+    bothOutcomes(
+      crossValidate(high, grid(688_000, 400), {}, 'a', {}, { bands: FR_BANDS }),
+      'bord de bande',
+    );
   });
 
   it('with mixed tuning grids and channel widths', () => {
@@ -126,7 +160,10 @@ describe('assignment and checking agree, candidate by candidate', () => {
       { ...pinned('L2', 'a', 503_125, 125), channelWidthKHz: 300 },
       { ...pinned('L3', 'b', 508_000), channelWidthKHz: 800 },
     ];
-    crossValidate(locked, grid(496_000, 600), { a: 'full-intermod', b: 'spacing-only' }, 'a', {});
+    bothOutcomes(
+      crossValidate(locked, grid(496_000, 600), { a: 'full-intermod', b: 'spacing-only' }, 'a', {}),
+      'grilles mélangées',
+    );
   });
 
   it('with the higher-order products switched off', () => {
@@ -136,7 +173,7 @@ describe('assignment and checking agree, candidate by candidate', () => {
       { enableIm5TwoTx: false },
       { enableIm3ThreeTx: false, enableIm5TwoTx: false },
     ]) {
-      crossValidate(locked, grid(495_000, 400), {}, 'a', config);
+      bothOutcomes(crossValidate(locked, grid(495_000, 400), {}, 'a', config), JSON.stringify(config));
     }
   });
 
