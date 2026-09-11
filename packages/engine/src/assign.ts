@@ -21,6 +21,8 @@ const REL = RELATION_RANK;
 interface Placed {
   linkIndex: number;
   freqKHz: number;
+  /** Half-width for intermodulation (D-026): 0 for a narrowband carrier. */
+  halfKHz: number;
 }
 
 interface Masks {
@@ -71,6 +73,8 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
   );
   const imHalf: number[] = links.map(imHalfWidthKHz);
   const generates: boolean[] = links.map((link) => generatesIm(link, config));
+  /** No block anywhere: every carrier generates and no filtering is needed. */
+  const allGenerate = generates.every(Boolean);
 
   // Pairwise zone relation, resolved once. Symmetric by construction.
   const relation = new Uint8Array(n * n);
@@ -152,10 +156,11 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
     const threeTx = config.enableIm3ThreeTx;
     // Wideband blocks (D-026): `hf` widens every product the new carrier takes
     // part in, `gf` says whether it generates any. A guard of 0 switches the
-    // rule off, widening or not — as `distance < 0` never holds in the checker.
+    // rule off, widening or not — as `distance < 0` never holds in the checker
+    // — so each rule's loop is skipped outright when its guard is 0.
     const hf = imHalf[linkIndex] as number;
     const gf = generates[linkIndex] as boolean;
-    const h = (p: Placed): number => imHalf[p.linkIndex] as number;
+    const h = (p: Placed): number => p.halfKHz;
     const spacingWith = (a: number, b: number): number =>
       requiredSpacingKHz(
         links[a] as EngineLink,
@@ -163,17 +168,6 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
         (guards[a] as Guards).spacingKHz,
         (guards[b] as Guards).spacingKHz,
       );
-    /** Blocks `|f − centre| < guard + widening`, unless the rule is off. */
-    const around = (blocker: ReturnType<typeof blockerFor>, centreKHz: number, guard: number, widening: number): void => {
-      if (guard > 0) blocker.around(centreKHz, guard + widening);
-    };
-    /** Blocks `|k·f − centre| < guard + widening`, in exact sixths. */
-    const scaled = (blocker: ReturnType<typeof blockerFor>, k: 2 | 3, centreKHz: number, guard: number, widening: number): void => {
-      if (guard <= 0) return;
-      const G = guard + widening;
-      const unit = SCALE / k;
-      blocker.range(unit * (centreKHz - G) + 1, unit * (centreKHz + G) - 1);
-    };
 
     for (const p of placed) {
       if (rel(linkIndex, p.linkIndex) === REL.none) continue;
@@ -184,26 +178,31 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
     // victim to, and the victims of any product it generates.
     const visible = placed.filter((p) => rel(linkIndex, p.linkIndex) === REL.full);
     if (visible.length === 0) return { hard, soft: hard };
-    const gens = visible.filter((p) => generates[p.linkIndex]);
+    const gens = allGenerate ? visible : visible.filter((p) => generates[p.linkIndex]);
     const m = gens.length;
 
     // Generators full with each placed victim.
     const sourcesFor = visible.map((victim) =>
       placed.filter(
-        (p) => p.linkIndex !== victim.linkIndex && generates[p.linkIndex] && rel(victim.linkIndex, p.linkIndex) === REL.full,
+        (p) =>
+          p.linkIndex !== victim.linkIndex &&
+          (allGenerate || generates[p.linkIndex]) &&
+          rel(victim.linkIndex, p.linkIndex) === REL.full,
       ),
     );
 
     // --- f as victim of products of the placed generators.
-    for (let a = 0; a < m; a += 1) {
-      const pa = gens[a] as Placed;
-      for (let b = 0; b < m; b += 1) {
-        if (b === a) continue;
-        const pb = gens[b] as Placed;
-        around(block, 2 * pa.freqKHz - pb.freqKHz, g3a, hf + 2 * h(pa) + h(pb));
+    if (g3a > 0) {
+      for (let a = 0; a < m; a += 1) {
+        const pa = gens[a] as Placed;
+        for (let b = 0; b < m; b += 1) {
+          if (b === a) continue;
+          const pb = gens[b] as Placed;
+          block.around(2 * pa.freqKHz - pb.freqKHz, g3a + hf + 2 * h(pa) + h(pb));
+        }
       }
     }
-    if (threeTx) {
+    if (threeTx && g3b > 0) {
       for (let a = 0; a < m; a += 1) {
         const pa = gens[a] as Placed;
         for (let b = a + 1; b < m; b += 1) {
@@ -212,19 +211,19 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
           for (let c = 0; c < m; c += 1) {
             if (c === a || c === b) continue;
             const pc = gens[c] as Placed;
-            around(block, sum - pc.freqKHz, g3b, hf + h(pa) + h(pb) + h(pc));
+            block.around(sum - pc.freqKHz, g3b + hf + h(pa) + h(pb) + h(pc));
           }
           if (!gf) continue;
           // f as its own generator, with pa and pb the other two (D-005: the
           // rule that measures the residual decides, whatever its guard):
           const relAB = rel(pa.linkIndex, pb.linkIndex);
-          const widening = 2 * hf + h(pa) + h(pb);
+          const G = g3b + 2 * hf + h(pa) + h(pb);
           // f + pa − pb hits f  ⇒  |pa − pb| < g3b, for every f. Spacing
           // (pa, pb) decides unless it is skipped between isolated zones.
-          if (relAB === REL.none && g3b > 0 && Math.abs(pa.freqKHz - pb.freqKHz) < g3b + widening) hard.fill(1);
+          if (relAB === REL.none && Math.abs(pa.freqKHz - pb.freqKHz) < G) hard.fill(1);
           // pa + pb − f hits f  ⇒  |pa + pb − 2f| < g3b. The 2-transmitter
           // forms decide, and they run only when pa and pb see each other.
-          if (relAB !== REL.full) scaled(block, 2, sum, g3b, widening);
+          if (relAB !== REL.full) block.range(3 * (sum - G) + 1, 3 * (sum + G) - 1);
         }
       }
     }
@@ -247,36 +246,39 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
           const p = sources[pi] as Placed;
           const fp = p.freqKHz;
           const hp = h(p);
-          // 2f − p hits v  ⇒  |2f − (fp + fv)| < v3a
-          scaled(block, 2, fp + fv, v3a, 2 * hf + hp + hv);
-          // 2p − f hits v  ⇒  |f − (2fp − fv)| < v3a
-          around(block, 2 * fp - fv, v3a, hf + 2 * hp + hv);
+          if (v3a > 0) {
+            // 2f − p hits v  ⇒  |2f − (fp + fv)| < v3a
+            const G = v3a + 2 * hf + hp + hv;
+            block.range(3 * (fp + fv - G) + 1, 3 * (fp + fv + G) - 1);
+            // 2p − f hits v  ⇒  |f − (2fp − fv)| < v3a
+            block.around(2 * fp - fv, v3a + hf + 2 * hp + hv);
+          }
 
-          if (!threeTx || !gv) continue;
+          if (!threeTx || !gv || v3b <= 0) continue;
           const relFP = rel(linkIndex, p.linkIndex);
           // v as additive generator alongside f (f + v − p) or alongside p
           // (p + v − f): residual |f − p|, which spacing(f, p) decides unless
           // it is skipped between isolated zones.
-          if (relFP === REL.none) around(block, fp, v3b, hf + 2 * hv + hp);
+          if (relFP === REL.none) block.around(fp, v3b + hf + 2 * hv + hp);
           // v as subtractive generator (f + p − v hits v): residual |f + p − 2v|,
           // which the 2-transmitter forms against f and against p decide; they
           // run only when f and p see each other.
-          if (relFP !== REL.full) around(block, 2 * fv - fp, v3b, hf + hp + 2 * hv);
+          if (relFP !== REL.full) block.around(2 * fv - fp, v3b + hf + hp + 2 * hv);
         }
 
-        if (!threeTx || s < 2) continue;
+        if (!threeTx || s < 2 || v3b <= 0) continue;
         for (let i1 = 0; i1 < s; i1 += 1) {
           const p1 = sources[i1] as Placed;
           for (let i2 = 0; i2 < s; i2 += 1) {
             if (i2 === i1) continue;
             const p2 = sources[i2] as Placed;
             // f + p1 − p2 hits v  ⇒  f ∈ (fv + fp2 − fp1 ± v3b)
-            around(block, fv + p2.freqKHz - p1.freqKHz, v3b, hf + h(p1) + h(p2) + hv);
+            block.around(fv + p2.freqKHz - p1.freqKHz, v3b + hf + h(p1) + h(p2) + hv);
           }
           for (let i2 = i1 + 1; i2 < s; i2 += 1) {
             const p2 = sources[i2] as Placed;
             // p1 + p2 − f hits v  ⇒  f ∈ (fp1 + fp2 − fv ± v3b)
-            around(block, p1.freqKHz + p2.freqKHz - fv, v3b, hf + h(p1) + h(p2) + hv);
+            block.around(p1.freqKHz + p2.freqKHz - fv, v3b + hf + h(p1) + h(p2) + hv);
           }
         }
       }
@@ -288,12 +290,14 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
     const soft = hard.slice();
     const blockSoft = blockerFor(soft, grid);
     const g5 = own.im5TwoTxKHz;
-    for (let a = 0; a < m; a += 1) {
-      const pa = gens[a] as Placed;
-      for (let b = 0; b < m; b += 1) {
-        if (b === a) continue;
-        const pb = gens[b] as Placed;
-        around(blockSoft, 3 * pa.freqKHz - 2 * pb.freqKHz, g5, hf + 3 * h(pa) + 2 * h(pb));
+    if (g5 > 0) {
+      for (let a = 0; a < m; a += 1) {
+        const pa = gens[a] as Placed;
+        for (let b = 0; b < m; b += 1) {
+          if (b === a) continue;
+          const pb = gens[b] as Placed;
+          blockSoft.around(3 * pa.freqKHz - 2 * pb.freqKHz, g5 + hf + 3 * h(pa) + 2 * h(pb));
+        }
       }
     }
     if (gf) {
@@ -302,13 +306,16 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
         const fv = victim.freqKHz;
         const hv = h(victim);
         const v5 = (guards[victim.linkIndex] as Guards).im5TwoTxKHz;
+        if (v5 <= 0) continue;
         for (const p of sourcesFor[vi] as Placed[]) {
           const fp = p.freqKHz;
           const hp = h(p);
           // 3f − 2p hits v  ⇒  |3f − (2fp + fv)| < v5
-          scaled(blockSoft, 3, 2 * fp + fv, v5, 3 * hf + 2 * hp + hv);
+          const G1 = v5 + 3 * hf + 2 * hp + hv;
+          blockSoft.range(2 * (2 * fp + fv - G1) + 1, 2 * (2 * fp + fv + G1) - 1);
           // 3p − 2f hits v  ⇒  |2f − (3fp − fv)| < v5
-          scaled(blockSoft, 2, 3 * fp - fv, v5, 2 * hf + 3 * hp + hv);
+          const G2 = v5 + 2 * hf + 3 * hp + hv;
+          blockSoft.range(3 * (3 * fp - fv - G2) + 1, 3 * (3 * fp - fv + G2) - 1);
         }
       }
     }
@@ -339,7 +346,7 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
     for (const i of lockedIndices) {
       const freq = (links[i] as EngineLink).lockedFreqKHz as number;
       assignments.set(i, freq);
-      placed.push({ linkIndex: i, freqKHz: freq });
+      placed.push({ linkIndex: i, freqKHz: freq, halfKHz: imHalf[i] as number });
     }
     placed.sort((a, b) => a.freqKHz - b.freqKHz || a.linkIndex - b.linkIndex);
 
@@ -400,7 +407,7 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
 
       const freq = freqAt(grid, frame.candidates[frame.next] as number);
       assignments.set(linkIndex, freq);
-      placed.push({ linkIndex, freqKHz: freq });
+      placed.push({ linkIndex, freqKHz: freq, halfKHz: imHalf[linkIndex] as number });
       candidatesEvaluated += 1;
       depth += 1;
       if (depth > bestDepth) {
