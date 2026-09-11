@@ -12,11 +12,14 @@ import type { BandPlan, Project } from './domain.js';
  * provides the full record; anything that can answer this shape will do.
  */
 export interface HardwareProfile {
+  /** Range of the carrier — of the block's centre for a WMAS entry. */
   tuningRangeKHz: readonly [number, number];
   stepKHz: number;
   channelWidthKHz: number;
   /** Clearances this model needs, overriding the global guards field by field. */
   guards?: Partial<Guards>;
+  /** `wmas` for a wideband multichannel block (D-026); narrowband otherwise. */
+  kind?: 'narrowband' | 'wmas';
 }
 
 export class UnknownHardwareError extends Error {
@@ -51,6 +54,7 @@ export function toCoordinateInput(
         tuningRangeKHz: profile.tuningRangeKHz,
         stepKHz: profile.stepKHz,
         channelWidthKHz: profile.channelWidthKHz,
+        ...(profile.kind ? { kind: profile.kind } : {}),
         ...(profile.guards ? { guards: profile.guards } : {}),
         ...(link.locked && link.assignedFreqKHz !== undefined
           ? { lockedFreqKHz: link.assignedFreqKHz }

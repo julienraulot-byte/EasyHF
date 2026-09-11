@@ -25,11 +25,22 @@ export function findHardware(id: string): HardwareEntry | undefined {
 
 /** What the engine needs from an entry — the shape `@easyhf/shared` bridges on. */
 export function hardwareProfile(entry: HardwareEntry): HardwareProfile {
+  const guards = entry.guards ? { guards: entry.guards } : {};
+  if (entry.type !== 'wmas') {
+    return { tuningRangeKHz: entry.tuningRangeKHz, stepKHz: entry.stepKHz, channelWidthKHz: entry.channelWidthKHz, ...guards };
+  }
+  // A WMAS entry gives the RF range its block may occupy; the engine places
+  // the block's centre, which must keep the whole block inside that range
+  // and on the tuning grid.
+  const half = Math.ceil(entry.channelWidthKHz / 2);
+  const inset = Math.ceil(half / entry.stepKHz) * entry.stepKHz;
+  const [from, to] = entry.tuningRangeKHz;
   return {
-    tuningRangeKHz: entry.tuningRangeKHz,
+    tuningRangeKHz: [from + inset, to - inset],
     stepKHz: entry.stepKHz,
     channelWidthKHz: entry.channelWidthKHz,
-    ...(entry.guards ? { guards: entry.guards } : {}),
+    kind: 'wmas',
+    ...guards,
   };
 }
 

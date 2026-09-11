@@ -61,6 +61,11 @@ describe('validator', () => {
     expect(findings([{ ...wide, type: 'wmas' as const }])).toEqual([]);
   });
 
+  it('rejects a WMAS entry whose range cannot hold its block', () => {
+    const narrow = { ...base, id: 'test-narrow-wmas', type: 'wmas' as const, channelWidthKHz: 6_000, tuningRangeKHz: [470_000, 475_000] as [number, number] };
+    expect(findings([narrow])).toEqual(['test-narrow-wmas : plage 470000–475000 kHz plus étroite que le bloc de 6000 kHz']);
+  });
+
   it('rejects a duplicate id', () => {
     expect(findings([base, base])).toEqual(['shure-ulxd-g51 : identifiant en double']);
   });
@@ -72,6 +77,12 @@ describe('lookup', () => {
     expect(entry?.tuningRangeKHz).toEqual([470_125, 534_000]);
     expect(hardwareProfile(entry!)).toEqual({ tuningRangeKHz: [470_125, 534_000], stepKHz: 25, channelWidthKHz: 200 });
     expect(hardwareProfileById('nope')).toBeUndefined();
+  });
+
+  it('turns a WMAS entry into a block whose centre keeps it inside the RF range', () => {
+    const profile = hardwareProfileById('sennheiser-spectera-uhf-6mhz')!;
+    expect(profile).toMatchObject({ kind: 'wmas', channelWidthKHz: 6_000, tuningRangeKHz: [473_000, 691_000] });
+    expect(hardwareProfileById('sennheiser-spectera-uhf-8mhz')?.tuningRangeKHz).toEqual([474_000, 690_000]);
   });
 
   it('searches by any words of brand, series, model or band', () => {
