@@ -31,7 +31,7 @@ docs/              Journal des décisions et protocole de validation.
 ```
 
 Règle de dépendance : `engine` ne dépend de rien. `shared` dépend de `engine`.
-`hardware-db` dépend des deux. Jamais l'inverse — c'est vérifié par un test,
+`hardware-db` dépend des deux. Jamais l'inverse — c'est vérifié par un test dans chaque paquet,
 pas par la discipline.
 
 ## Développer
