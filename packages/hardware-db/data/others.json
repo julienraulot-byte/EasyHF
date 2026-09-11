@@ -34,5 +34,29 @@
     "tuningRangeKHz": [480000, 544000], "stepKHz": 25, "channelWidthKHz": 200,
     "notes": "Code de bande et bornes à confirmer sur la fiche MiPro ; entrée la moins sûre de la base.",
     "source": "https://www.mipro.com.tw/en/product/ACT-828", "verified": false
+  },
+  {
+    "id": "sounddevices-astral-a20-nexus", "brand": "Sound Devices", "series": "Astral", "model": "A20-Nexus / A20-Nexus Go", "bandVariant": "SpectraBand", "type": "receiver",
+    "tuningRangeKHz": [470000, 1525000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Récepteur multicanal (8 à 16 canaux). Plage SpectraBand 470–1525 MHz annoncée ; seules les portions 470–694 et 1240–1260 MHz sont utilisables en France, le plan de bandes exclut le reste. Bornes exactes, pas et largeur de canal à confirmer sur la fiche Sound Devices.",
+    "source": "https://www.sounddevices.com/product/a20-nexus/", "verified": false
+  },
+  {
+    "id": "sounddevices-astral-a20-mini", "brand": "Sound Devices", "series": "Astral", "model": "A20-Mini", "bandVariant": "SpectraBand", "type": "bodypack",
+    "tuningRangeKHz": [470000, 1525000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Émetteur ceinture. Plage SpectraBand 470–1525 MHz annoncée ; seules les portions 470–694 et 1240–1260 MHz sont utilisables en France, le plan de bandes exclut le reste. Bornes exactes, pas et largeur de canal à confirmer sur la fiche Sound Devices.",
+    "source": "https://www.sounddevices.com/product/a20-nexus/", "verified": false
+  },
+  {
+    "id": "sounddevices-astral-a20-tx", "brand": "Sound Devices", "series": "Astral", "model": "A20-TX", "bandVariant": "SpectraBand", "type": "bodypack",
+    "tuningRangeKHz": [470000, 1525000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Émetteur portable / plug-on. Plage SpectraBand 470–1525 MHz annoncée ; seules les portions 470–694 et 1240–1260 MHz sont utilisables en France, le plan de bandes exclut le reste. Bornes exactes, pas et largeur de canal à confirmer sur la fiche Sound Devices.",
+    "source": "https://www.sounddevices.com/product/a20-nexus/", "verified": false
+  },
+  {
+    "id": "sounddevices-astral-a20-rx", "brand": "Sound Devices", "series": "Astral", "model": "A20-RX", "bandVariant": "SpectraBand", "type": "iem",
+    "tuningRangeKHz": [470000, 1525000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Récepteur ceinture (retour / IFB). Plage SpectraBand 470–1525 MHz annoncée ; seules les portions 470–694 et 1240–1260 MHz sont utilisables en France, le plan de bandes exclut le reste. Bornes exactes, pas et largeur de canal à confirmer sur la fiche Sound Devices.",
+    "source": "https://www.sounddevices.com/product/a20-nexus/", "verified": false
   }
 ]

@@ -28,6 +28,9 @@ describe('data files', () => {
       'Sony DWX',
       'Audio-Technica 3000 (4e génération)',
       'MiPro ACT-8',
+      'Shure Axient Digital PSM',
+      'Sennheiser Spectera',
+      'Sound Devices Astral',
     ]) {
       expect(series, wanted).toContain(wanted);
     }
@@ -35,7 +38,7 @@ describe('data files', () => {
 
   it('cite an official source on every entry, and none is verified yet', () => {
     for (const entry of HARDWARE) {
-      expect(entry.source, entry.id).toMatch(/^https:\/\/(www\.)?(shure|sennheiser|wisycom|audio-technica|mipro)\.|^https:\/\/pro\.sony\//);
+      expect(entry.source, entry.id).toMatch(/^https:\/\/(www\.)?(shure|sennheiser|wisycom|audio-technica|mipro|sounddevices)\.|^https:\/\/pro\.sony\//);
       expect(entry.verified, `${entry.id} : verified doit rester false tant que Julien n'a pas contrôlé`).toBe(false);
     }
   });

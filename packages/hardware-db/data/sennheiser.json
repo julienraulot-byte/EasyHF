@@ -134,5 +134,17 @@
     "tuningRangeKHz": [626000, 698000], "stepKHz": 25, "channelWidthKHz": 300,
     "notes": "694–698 MHz hors bande PMSE en France.",
     "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/2000-series", "verified": false
+  },
+  {
+    "id": "sennheiser-spectera-uhf-6mhz", "brand": "Sennheiser", "series": "Spectera", "model": "Base Station + SEK (bodypack bidirectionnel)", "bandVariant": "UHF, canal 6 MHz", "type": "wmas",
+    "tuningRangeKHz": [470000, 694000], "stepKHz": 25, "channelWidthKHz": 6000,
+    "notes": "WMAS : un seul canal large bande de 6 MHz (8 MHz en option) porte micros et retours. En v1 le moteur le traite comme une porteuse de 6 MHz — la coexistence avec les liaisons étroites est bien empêchée par l'espacement élargi, mais les produits d'intermodulation d'un bloc large bande ne sont pas modélisés (feuille de route v3). Plage, pas de placement et variantes de bande à confirmer sur la fiche Sennheiser.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/spectera", "verified": false
+  },
+  {
+    "id": "sennheiser-spectera-uhf-8mhz", "brand": "Sennheiser", "series": "Spectera", "model": "Base Station + SEK (bodypack bidirectionnel)", "bandVariant": "UHF, canal 8 MHz", "type": "wmas",
+    "tuningRangeKHz": [470000, 694000], "stepKHz": 25, "channelWidthKHz": 8000,
+    "notes": "Même remarque que la variante 6 MHz.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/spectera", "verified": false
   }
 ]

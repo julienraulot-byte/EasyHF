@@ -1,6 +1,6 @@
 import type { Guards } from '@easyhf/engine';
 
-export type HardwareType = 'handheld' | 'bodypack' | 'iem' | 'intercom' | 'receiver';
+export type HardwareType = 'handheld' | 'bodypack' | 'iem' | 'intercom' | 'receiver' | 'wmas';
 
 /** One tunable model in one band variant, as sold. See `schema/hardware.schema.json`. */
 export interface HardwareEntry {

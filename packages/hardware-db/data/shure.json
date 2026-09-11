@@ -143,5 +143,17 @@
     "tuningRangeKHz": [823000, 832000], "stepKHz": 25, "channelWidthKHz": 200,
     "notes": "Bornes à confirmer dans WWB (BLX4).",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/blx_wireless", "verified": false
+  },
+  {
+    "id": "shure-adpsm-g56", "brand": "Shure", "series": "Axient Digital PSM", "model": "ADTQ (émetteur) / récepteur ceinture AD PSM", "bandVariant": "G56", "type": "iem",
+    "tuningRangeKHz": [470000, 636000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "IEM numérique Axient Digital. Nom exact du récepteur ceinture, bandes vendues en France et largeur de canal à confirmer dans WWB (Equipment profiles).",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/axient_digital", "verified": false
+  },
+  {
+    "id": "shure-adpsm-k54", "brand": "Shure", "series": "Axient Digital PSM", "model": "ADTQ (émetteur) / récepteur ceinture AD PSM", "bandVariant": "K54", "type": "iem",
+    "tuningRangeKHz": [606000, 663000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "À confirmer dans WWB.",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/axient_digital", "verified": false
   }
 ]

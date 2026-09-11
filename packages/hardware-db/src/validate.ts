@@ -37,7 +37,12 @@ export function findings(entries: readonly HardwareEntry[]): string[] {
     if (from < 100_000 || to > 2_000_000) {
       out.push(`${label} : plage ${from}–${to} kHz hors de tout usage PMSE plausible (100 MHz – 2 GHz)`);
     }
-    if (entry.channelWidthKHz > 2_000) out.push(`${label} : largeur de canal ${entry.channelWidthKHz} kHz invraisemblable`);
+    // Narrowband links top out around 200–300 kHz; a WMAS entry describes a
+    // whole multichannel block (Spectera: 6 or 8 MHz), modelled as one carrier.
+    const maxWidth = entry.type === 'wmas' ? 10_000 : 2_000;
+    if (entry.channelWidthKHz > maxWidth) {
+      out.push(`${label} : largeur de canal ${entry.channelWidthKHz} kHz invraisemblable pour le type ${entry.type}`);
+    }
     if (entry.stepKHz > 1_000) out.push(`${label} : pas d'accord ${entry.stepKHz} kHz invraisemblable`);
     if (entry.verified && !entry.verifiedAt) out.push(`${label} : verified: true sans verifiedAt`);
     if (!entry.verified && entry.verifiedAt) out.push(`${label} : verifiedAt sans verified: true`);

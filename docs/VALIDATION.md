@@ -143,7 +143,7 @@ Kill question de la phase 1 :
 | Élément | État |
 |---|---|
 | Schéma JSON et validateur en CI | fait |
-| Entrées sourcées | 55 entrées, 19 séries, toutes `verified: false` |
+| Entrées sourcées | 63 entrées, 22 séries, toutes `verified: false` |
 | Gardes par modèle dans le moteur (D-023) | fait, comparaison exhaustive à gardes mélangées |
 | Le moteur respecte plages et pas réels | testé sur un parc mixte Shure / Sennheiser |
 | **Validation des chiffres par Julien** | **à faire** — contre Wireless Workbench (D-024) |

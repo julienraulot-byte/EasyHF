@@ -12,7 +12,7 @@
     "series": { "type": "string", "minLength": 1, "description": "Product line, e.g. ULX-D." },
     "model": { "type": "string", "minLength": 1, "description": "The unit the range applies to, e.g. ULXD4 (receiver)." },
     "bandVariant": { "type": "string", "minLength": 1, "description": "Manufacturer band code, e.g. G51." },
-    "type": { "type": "string", "enum": ["handheld", "bodypack", "iem", "intercom", "receiver"] },
+    "type": { "type": "string", "enum": ["handheld", "bodypack", "iem", "intercom", "receiver", "wmas"] },
     "tuningRangeKHz": {
       "type": "array", "items": { "type": "integer", "minimum": 1 }, "minItems": 2, "maxItems": 2,
       "description": "Inclusive [from, to] in kHz."

@@ -527,3 +527,27 @@ leur source officielle et, quand un chiffre n'est pas sûr, une note qui le dit.
 Le validateur (`pnpm validate:hardware`, en CI) impose le schéma, l'unicité
 des identifiants, des plages plausibles, et `verifiedAt` dès que `verified`
 passe à vrai. Rien ne passe à `verified: true` sans un relevé de Julien.
+
+## D-025 — Spectera (WMAS) entre dans la base en v1, modélisé comme une porteuse large
+
+*Phase 1, 11/09/2026, à la demande de Julien.* Les deux références du retour
+d'oreille aujourd'hui sont Sennheiser Spectera et Shure Axient Digital PSM ;
+Dushow France vient d'investir dans Sound Devices Astral. Les trois entrent
+dans la base (Spectera 6 et 8 MHz, ADPSM G56 et K54, A20-Nexus / A20-Mini /
+A20-TX / A20-RX), toutes `verified: false` avec source officielle.
+
+ADPSM et Astral sont des liaisons à bande étroite classiques : rien à changer
+dans le moteur. Spectera est un système **WMAS** (bloc multicanal de 6 ou
+8 MHz, bidirectionnel), que le brief place en non-objectif v1 et en feuille de
+route v3. En v1, une entrée Spectera est modélisée comme **une seule porteuse
+de 6 000 ou 8 000 kHz de large** : le vérificateur élargit l'espacement par la
+largeur de canal (D-023), donc aucune liaison étroite ne peut être posée dans
+le bloc, ce qui est le comportement attendu. Ce que ce modèle **ne fait pas** :
+les produits d'intermodulation d'un bloc large ne sont pas calculés (la
+porteuse centrale sert de générateur, ce qui est faux pour un bloc OFDM), et
+la répartition interne des canaux du bloc n'est pas gérée. Le type `wmas` est
+ajouté au schéma pour que la v3 sache quelles entrées reprendre ; le validateur
+tolère les largeurs jusqu'à 10 MHz pour ce seul type.
+
+`[À VALIDER JULIEN]` : rester sur ce modèle en v1 (recommandé, conforme au
+brief) ou avancer la modélisation par bloc à la phase 1.
