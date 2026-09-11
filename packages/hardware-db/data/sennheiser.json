@@ -139,14 +139,12 @@
   {
     "id": "sennheiser-spectera-uhf-6mhz", "brand": "Sennheiser", "series": "Spectera", "model": "Base Station + SEK (bodypack bidirectionnel)", "bandVariant": "UHF, canal 6 MHz", "type": "wmas",
     "tuningRangeKHz": [470000, 694000], "stepKHz": 25, "channelWidthKHz": 6000,
-    "guards": {"im3TwoTxKHz": 0, "im3ThreeTxKHz": 0, "im5TwoTxKHz": 0},
-    "notes": "WMAS : un seul canal large bande de 6 MHz (8 MHz en option) porte micros et retours. En v1 le moteur le traite comme une porteuse de 6 MHz — la coexistence avec les liaisons étroites est bien empêchée par l'espacement élargi, mais les produits d'intermodulation d'un bloc large bande ne sont pas modélisés (feuille de route v3) ; ses gardes IM sont à 0 pour qu'un bloc OFDM ne soit pas déclaré victime de produits calculés sur sa fréquence centrale, ce qui n'a pas de sens physique. Plage, pas de placement et variantes de bande à confirmer sur la fiche Sennheiser.",
+    "notes": "WMAS : un canal large bande de 6 MHz (8 MHz en option) porte micros et retours, bidirectionnel, géré par la station de base. Modélisé comme un bloc (D-026) : espacement et exclusions comptés depuis le bord du bloc, produits d'intermodulation des liaisons étroites comptés dès qu'ils tombent dans le bloc ou à moins de la garde de son bord ; le bloc ne génère pas de produits par défaut. Plage, pas de placement du centre, largeurs exactes, garde de bord recommandée par Sennheiser et capacité par canal à confirmer sur la documentation Sennheiser.",
     "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/spectera", "verified": false
   },
   {
     "id": "sennheiser-spectera-uhf-8mhz", "brand": "Sennheiser", "series": "Spectera", "model": "Base Station + SEK (bodypack bidirectionnel)", "bandVariant": "UHF, canal 8 MHz", "type": "wmas",
     "tuningRangeKHz": [470000, 694000], "stepKHz": 25, "channelWidthKHz": 8000,
-    "guards": {"im3TwoTxKHz": 0, "im3ThreeTxKHz": 0, "im5TwoTxKHz": 0},
     "notes": "Même remarque que la variante 6 MHz.",
     "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/spectera", "verified": false
   }

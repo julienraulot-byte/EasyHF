@@ -145,6 +145,7 @@ Kill question de la phase 1 :
 | Schéma JSON et validateur en CI | fait |
 | Entrées sourcées | 63 entrées, 22 séries, toutes `verified: false` |
 | Gardes par modèle dans le moteur (D-023) | fait, comparaison exhaustive à gardes mélangées |
+| Blocs WMAS dans le moteur (D-026) | fait, comparaison exhaustive bloc verrouillé / bloc libre / blocs générateurs ; chiffres Spectera à sourcer |
 | Le moteur respecte plages et pas réels | testé sur un parc mixte Shure / Sennheiser |
 | **Validation des chiffres par Julien** | **à faire** — contre Wireless Workbench (D-024) |
 
