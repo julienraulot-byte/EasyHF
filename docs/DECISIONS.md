@@ -129,9 +129,44 @@ Capacité mesurée (`pnpm --filter @easyhf/engine bench`), 470–694 MHz, pas
 | 50 kHz | 46 | 39 |
 | 25 kHz | 57 | 52 |
 
-**Ce qui est attendu de Julien :** la valeur de 100 kHz est un choix
-d'ingénierie, pas une mesure. Elle doit être recalée sur les réglages par défaut
-de Wireless Workbench et d'IAS lors de la campagne de validation (phase 0, §4.4).
+**Relevé Wireless Workbench 7.8.3.18 (11/09/2026, Julien).** Profils de
+compatibilité livrés par Shure pour un récepteur ULXD4 bande G50, en kHz :
+
+| Mode | Profil | Espacement | 2T3O | 2T5O | 3T3O |
+|---|---|---|---|---|---|
+| Standard | More Frequencies | 350 | 0 | 0 | 0 |
+| Standard | **Standard** (défaut) | 350 | **75** | 0 | **0** |
+| Standard | Robust | 350 | 150 | 0 | 0 |
+| HD | Standard | 125 | 150 | 0 | 0 |
+| HD | Robust | 125 | 200 | 0 | 150 |
+
+Trois enseignements :
+
+1. **Shure ne vérifie ni le 3ᵉ ordre à 3 émetteurs ni le 5ᵉ ordre par défaut.**
+   3T3O n'est activé qu'en HD Robust ; 2T5O est à 0 dans tous les profils. Nos
+   défauts (200 / 100 / 90) sont plus conservateurs que le profil Robust de
+   Shure (150 / 0 / 0).
+2. **Ces valeurs sont propres à chaque série de matériel** — l'espacement lui-même
+   (350 kHz pour l'ULX-D en mode Standard, 125 en HD) est une propriété du
+   profil matériel, pas un réglage de coordination. Les gardes devraient donc
+   être portées par la base matériel (phase 1), avec un jeu global en repli. Le
+   brief le prévoyait (« spacing rules par modèle », §4 Phase 0) ; c'est
+   maintenant étayé.
+3. **Filtre d'entrée ±100 MHz, fixe.** WWB ne compte un produit que si ses
+   générateurs sont à moins de 100 MHz de la victime. EasyHF compte tout. Sur
+   des plans étalés sur plus de 100 MHz (C10 : 534 à 656 MHz), WWB signalera
+   moins qu'EasyHF, par choix de modèle et non par erreur. À décider en phase 1
+   si le filtre d'entrée entre dans la base matériel.
+
+Au passage, les préférences de coordination de WWB exposent « Number of
+passes : 10 000 » et « Maximum fruitless experiments : 5 000 » : son
+auto-coordination est une recherche aléatoire bornée. Cela éclaire D-015 — le
+palier atteint par un glouton n'est pas celui d'un outil qui tire au sort.
+
+**Ce qui est attendu de Julien :** la valeur de 100 kHz reste un choix
+d'ingénierie. Le relevé ci-dessus donne l'échelle de Shure ; il faudrait le
+même pour Axient Digital et pour une série Sennheiser (via un profil tiers de
+WWB) avant de figer des défauts par modèle en phase 1.
 
 ## D-007 — Placement par défaut : compact **[À VALIDER JULIEN]**
 
