@@ -36,7 +36,8 @@ Jamais l'inverse — c'est vérifié par un test, pas par la discipline.
 
 ```sh
 pnpm install
-pnpm test                              # toute la suite
+pnpm test                              # toute la suite, sauf le budget de performance
+pnpm test:perf                         # 40 liaisons < 3 s, seul, sur machine calme
 pnpm coverage                          # couverture (seuil engine : 90 %)
 pnpm typecheck                         # sources et tests
 pnpm --filter @easyhf/engine bench     # mesures de capacité (quelques minutes)

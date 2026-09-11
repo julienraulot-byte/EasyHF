@@ -11,9 +11,10 @@
   "scripts": {
     "build": "pnpm -r --filter './packages/*' run build",
     "typecheck": "pnpm -r run typecheck",
-    "test": "vitest run",
+    "test": "vitest run --exclude 'packages/*/test/performance.test.ts'",
     "test:watch": "vitest",
-    "coverage": "vitest run --coverage --exclude 'packages/*/test/performance.test.ts'"
+    "coverage": "vitest run --coverage --exclude 'packages/*/test/performance.test.ts'",
+    "test:perf": "vitest run packages/engine/test/performance.test.ts"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^3.2.4",

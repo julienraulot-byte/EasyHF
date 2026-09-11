@@ -32,7 +32,7 @@ export const DEFAULT_CONFIG: EngineConfig = {
   enableIm5TwoTx: true,
   allowTemporaryBands: true,
   robustnessLadder: DEFAULT_ROBUSTNESS_LADDER,
-  maxBacktrackSteps: 100,
+  maxBacktrackSteps: 50,
   placementStrategy: 'compact',
 };
 

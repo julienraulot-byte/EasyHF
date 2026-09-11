@@ -118,16 +118,16 @@ produit à 2 émetteurs. Les outils constructeurs règlent d'ailleurs ces deux
 familles séparément.
 
 Capacité mesurée (`pnpm --filter @easyhf/engine bench`), 470–694 MHz, pas
-25 kHz, canal 200 kHz, 100 retours arrière par passe :
+25 kHz, canal 200 kHz, 50 retours arrière par passe :
 
 | Garde IM3 3tx | placement compact | placement spread |
 |---|---|---|
 | 200 kHz | 27 | 24 |
 | 150 kHz | 29 | 26 |
-| **100 kHz** | **37** | 30 |
-| 75 kHz | 38 | 33 |
+| **100 kHz** | **37** | 29 |
+| 75 kHz | 37 | 32 |
 | 50 kHz | 46 | 39 |
-| 25 kHz | 57 | 52 |
+| 25 kHz | 57 | 51 |
 
 **Relevé Wireless Workbench 7.8.3.18 (11/09/2026, Julien).** Profils de
 compatibilité livrés par Shure pour un récepteur ULXD4 bande G50, en kHz :
@@ -185,25 +185,26 @@ est donc `compact`, `spread` reste offert.
 **Ce qui est attendu de Julien :** confirmer que la pratique de terrain va bien
 vers le plan le plus compact, et non vers l'étalement.
 
-## D-008 — Budget de retour arrière : 100 pas par passe
+## D-008 — Budget de retour arrière : 50 pas par passe
 
-*Phase 0.* Le retour arrière chronologique rend très peu sur ce problème : la
-liaison qui échoue est rarement celle qu'il faudrait déplacer. Mesuré sur
-40 liaisons à gardes nominales, placement compact :
+*Phase 0, révisé.* Le retour arrière chronologique rend très peu sur ce
+problème : la liaison qui échoue est rarement celle qu'il faudrait déplacer.
+Mesuré sur 40 liaisons à gardes nominales, placement compact :
 
 | Budget | Liaisons placées | Durée |
 |---|---|---|
-| 0 | 36 | 58 ms |
-| 50 | 37 | 0,3 s |
-| **100** | **37** | 0,55 s |
+| 0 | 36 | 0,1 s |
+| **50** | **37** | 0,5 s |
+| 100 | 37 | 0,9 s |
 | 200 | 37 | 1,1 s |
 | 2 000 | 37 | 9,7 s |
 
-Au-delà de 50, on paie des secondes pour rien. Le défaut est 100 **par passe** :
-depuis D-016, chaque palier de l'échelle fait deux passes (avec, puis sans la
-préférence pour les fréquences propres au 5ᵉ ordre), de sorte qu'un palier coûte
-au plus 200 pas — ce que coûtait un palier avant — sans rien perdre en
-liaisons placées. Le paramètre reste exposé (`maxBacktrackSteps`).
+Au-delà de 50, on paie des secondes pour rien — et on les paie surtout sur les
+**paliers qui échouent** : chaque pas reconstruit un masque en O(m³), deux
+passes par palier (D-016), trois paliers ratés avant le bon sur une charge de
+40 liaisons. À 100 pas, ce cas coûtait 2,7 s sur la machine de build ; à 50,
+1,7 s, pour la même capacité (au plus une liaison d'écart sur tout le tableau
+de D-006). Le paramètre reste exposé (`maxBacktrackSteps`).
 
 ## D-009 — Échelle de robustesse, et sur quelles gardes le plan est jugé
 
