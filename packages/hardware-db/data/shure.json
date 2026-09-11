@@ -45,7 +45,7 @@
   {
     "id": "shure-qlxd-l51", "brand": "Shure", "series": "QLX-D", "model": "QLXD4", "bandVariant": "L51", "type": "receiver",
     "tuningRangeKHz": [632000, 696000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "694–696 MHz hors bande PMSE en France.",
+    "notes": "694–696 MHz hors bande PMSE en France. Doute sur le code de bande : QLX-D est vendu en L52 (632–694 MHz) ; L51 632–696 est la variante ULX-D. À trancher dans WWB.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/qlx-d_digital_wireless", "verified": false
   },
   {
@@ -129,19 +129,19 @@
   {
     "id": "shure-blx-h8e", "brand": "Shure", "series": "BLX", "model": "BLX4", "bandVariant": "H8E", "type": "receiver",
     "tuningRangeKHz": [518000, 542000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Analogique, entrée de gamme, fréquent sur les petits événements. Bornes à confirmer dans WWB (BLX4).",
+    "notes": "Analogique, entrée de gamme, fréquent sur les petits événements. Bornes à confirmer dans WWB (BLX4). Un BLX4 ne s'accorde pas librement au pas de 25 kHz : il n'offre que des groupes et canaux préréglés, que le schéma ne sait pas décrire. Une fréquence proposée par le moteur peut donc ne pas être affichable (D-017) ; à traiter avant tout passage à verified: true.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/blx_wireless", "verified": false
   },
   {
     "id": "shure-blx-k3e", "brand": "Shure", "series": "BLX", "model": "BLX4", "bandVariant": "K3E", "type": "receiver",
     "tuningRangeKHz": [606000, 630000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Bornes à confirmer dans WWB (BLX4).",
+    "notes": "Bornes à confirmer dans WWB (BLX4). Même remarque que H8E sur les canaux préréglés.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/blx_wireless", "verified": false
   },
   {
     "id": "shure-blx-s8", "brand": "Shure", "series": "BLX", "model": "BLX4", "bandVariant": "S8", "type": "receiver",
     "tuningRangeKHz": [823000, 832000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Bornes à confirmer dans WWB (BLX4).",
+    "notes": "Bornes à confirmer dans WWB (BLX4). Même remarque que H8E sur les canaux préréglés.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/blx_wireless", "verified": false
   },
   {

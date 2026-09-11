@@ -23,6 +23,7 @@
   {
     "id": "sennheiser-ew100g4-gb", "brand": "Sennheiser", "series": "EW 100 G4", "model": "EM 100 G4", "bandVariant": "GB", "type": "receiver",
     "tuningRangeKHz": [606000, 678000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Doute fort sur la borne haute : la bande GB de la génération G3 s'arrêtait à 648 MHz, et les bandes de l'ew 100 G4 font 42 à 46 MHz ; 606–678 est la largeur de la GBW des 300/500 G4. À trancher dans WWB ou sur la fiche Sennheiser.",
     "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-100-g4", "verified": false
   },
   {
@@ -138,12 +139,14 @@
   {
     "id": "sennheiser-spectera-uhf-6mhz", "brand": "Sennheiser", "series": "Spectera", "model": "Base Station + SEK (bodypack bidirectionnel)", "bandVariant": "UHF, canal 6 MHz", "type": "wmas",
     "tuningRangeKHz": [470000, 694000], "stepKHz": 25, "channelWidthKHz": 6000,
-    "notes": "WMAS : un seul canal large bande de 6 MHz (8 MHz en option) porte micros et retours. En v1 le moteur le traite comme une porteuse de 6 MHz — la coexistence avec les liaisons étroites est bien empêchée par l'espacement élargi, mais les produits d'intermodulation d'un bloc large bande ne sont pas modélisés (feuille de route v3). Plage, pas de placement et variantes de bande à confirmer sur la fiche Sennheiser.",
+    "guards": {"im3TwoTxKHz": 0, "im3ThreeTxKHz": 0, "im5TwoTxKHz": 0},
+    "notes": "WMAS : un seul canal large bande de 6 MHz (8 MHz en option) porte micros et retours. En v1 le moteur le traite comme une porteuse de 6 MHz — la coexistence avec les liaisons étroites est bien empêchée par l'espacement élargi, mais les produits d'intermodulation d'un bloc large bande ne sont pas modélisés (feuille de route v3) ; ses gardes IM sont à 0 pour qu'un bloc OFDM ne soit pas déclaré victime de produits calculés sur sa fréquence centrale, ce qui n'a pas de sens physique. Plage, pas de placement et variantes de bande à confirmer sur la fiche Sennheiser.",
     "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/spectera", "verified": false
   },
   {
     "id": "sennheiser-spectera-uhf-8mhz", "brand": "Sennheiser", "series": "Spectera", "model": "Base Station + SEK (bodypack bidirectionnel)", "bandVariant": "UHF, canal 8 MHz", "type": "wmas",
     "tuningRangeKHz": [470000, 694000], "stepKHz": 25, "channelWidthKHz": 8000,
+    "guards": {"im3TwoTxKHz": 0, "im3ThreeTxKHz": 0, "im5TwoTxKHz": 0},
     "notes": "Même remarque que la variante 6 MHz.",
     "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/spectera", "verified": false
   }
