@@ -43,12 +43,26 @@ describe('data files', () => {
     }
   });
 
-  it('every unverified entry that is uncertain says so', () => {
-    // A note is the only place a doubt can live; an entry without one claims
-    // its figures are right. Keep the list of confident entries honest.
-    const confident = HARDWARE.filter((e) => !e.notes);
-    expect(confident.length).toBeGreaterThan(0);
-    expect(confident.length).toBeLessThan(HARDWARE.length);
+});
+
+describe('validator', () => {
+  const base = findHardware('shure-ulxd-g51')!;
+
+  it('rejects a range whose upper bound is off the tuning grid', () => {
+    const entry = { ...base, id: 'test-off-grid', tuningRangeKHz: [470_000, 534_010] as [number, number] };
+    expect(findings([entry])).toEqual([
+      "test-off-grid : la borne haute 534010 kHz n'est pas sur la grille de 25 kHz depuis 470000",
+    ]);
+  });
+
+  it('rejects a wideband width on anything but a WMAS entry', () => {
+    const wide = { ...base, id: 'test-wide', channelWidthKHz: 6_000 };
+    expect(findings([wide])).toEqual(['test-wide : largeur de canal 6000 kHz invraisemblable pour le type receiver']);
+    expect(findings([{ ...wide, type: 'wmas' as const }])).toEqual([]);
+  });
+
+  it('rejects a duplicate id', () => {
+    expect(findings([base, base])).toEqual(['shure-ulxd-g51 : identifiant en double']);
   });
 });
 

@@ -44,6 +44,9 @@ export function findings(entries: readonly HardwareEntry[]): string[] {
       out.push(`${label} : largeur de canal ${entry.channelWidthKHz} kHz invraisemblable pour le type ${entry.type}`);
     }
     if (entry.stepKHz > 1_000) out.push(`${label} : pas d'accord ${entry.stepKHz} kHz invraisemblable`);
+    if (entry.stepKHz > 0 && (to - from) % entry.stepKHz !== 0) {
+      out.push(`${label} : la borne haute ${to} kHz n'est pas sur la grille de ${entry.stepKHz} kHz depuis ${from}`);
+    }
     if (entry.verified && !entry.verifiedAt) out.push(`${label} : verified: true sans verifiedAt`);
     if (!entry.verified && entry.verifiedAt) out.push(`${label} : verifiedAt sans verified: true`);
     if (entry.guards) {
