@@ -214,7 +214,13 @@ export const VALIDATION_CASES: ValidationCase[] = [
     rationale:
       "Charge réaliste de bout en bout. Verrouille le plan produit, donc toute régression du moteur.",
     mode: 'coordinate',
-    input: { links: festival(), bands: FR_BANDS, config: { guards: { spacingKHz: 350 } } },
+    input: {
+      links: festival(),
+      bands: FR_BANDS,
+      // Analysed in WWB as a single RF zone: both stages fully coupled.
+      zonePolicies: { scene1: 'full-intermod', scene2: 'full-intermod' },
+      config: { guards: { spacingKHz: 350 } },
+    },
     // Three WWB groups: ULXD4 H50 (SC1, profile EasyHF2), Axient Digital K54
     // (IEM) and K55 (SC2), the latter two on a copy of their Robust profile
     // whose exact spacings were not re-read. All 24 compatible; TV channels

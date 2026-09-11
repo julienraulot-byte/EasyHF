@@ -145,8 +145,21 @@ describe('checkPlan — zones', () => {
     { linkId: 'B', freqKHz: 500_100 },
   ];
 
-  it('constrains zones fully by default', () => {
+  it('keeps spacing but not intermodulation between undeclared zones', () => {
+    // The default is what Wireless Workbench does between RF zones (D-010).
     expect(checkPlan({ links, plan }).violations.map((v) => v.kind)).toEqual(['spacing']);
+
+    const trio = [link('A', { zoneId: 'x' }), link('B', { zoneId: 'x' }), link('C', { zoneId: 'y' })];
+    const onProduct = [
+      { linkId: 'A', freqKHz: 500_000 },
+      { linkId: 'B', freqKHz: 506_000 },
+      { linkId: 'C', freqKHz: 494_000 }, // 2·A − B, in the other zone
+    ];
+    expect(checkPlan({ links: trio, plan: onProduct }).violations).toHaveLength(0);
+    expect(
+      checkPlan({ links: trio, plan: onProduct, zonePolicies: { x: 'full-intermod', y: 'full-intermod' } })
+        .violations.map((v) => v.kind),
+    ).toEqual(['im3-2tx', 'im3-2tx']);
   });
 
   it('drops every constraint between isolated zones', () => {

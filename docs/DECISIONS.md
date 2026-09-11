@@ -93,7 +93,7 @@ supposé, c'est **imposé** par `resolveConfig` :
 utilisateur abaissant l'espacement sous la garde IM3 perdrait silencieusement
 des détections.
 
-## D-006 — Garde IM3 séparée entre 2 et 3 émetteurs **[À VALIDER JULIEN]**
+## D-006 — Garde IM3 séparée entre 2 et 3 émetteurs **[VALIDÉ 11/09/2026]**
 
 *Phase 0.* Le brief donne une garde IM3 unique (≥ 200 kHz). Appliquée telle
 quelle aux produits à 3 émetteurs, elle rend les charges réelles inatteignables :
@@ -163,12 +163,13 @@ passes : 10 000 » et « Maximum fruitless experiments : 5 000 » : son
 auto-coordination est une recherche aléatoire bornée. Cela éclaire D-015 — le
 palier atteint par un glouton n'est pas celui d'un outil qui tire au sort.
 
-**Ce qui est attendu de Julien :** la valeur de 100 kHz reste un choix
-d'ingénierie. Le relevé ci-dessus donne l'échelle de Shure ; il faudrait le
-même pour Axient Digital et pour une série Sennheiser (via un profil tiers de
-WWB) avant de figer des défauts par modèle en phase 1.
+**Décision de Julien (11/09/2026) :** le jeu global reste **200 / 100 / 90**,
+plus conservateur que le profil Robust de Shure. En phase 1, chaque modèle de
+la base matériel peut déclarer ses propres gardes ; le jeu global ne
+s'applique qu'aux modèles qui n'en déclarent pas. Le relevé Axient Digital et
+une série Sennheiser restent à faire pour alimenter ces valeurs par modèle.
 
-## D-007 — Placement par défaut : compact **[À VALIDER JULIEN]**
+## D-007 — Placement par défaut : compact **[VALIDÉ 11/09/2026]**
 
 *Phase 0.* Deux stratégies déterministes sont disponibles :
 
@@ -182,8 +183,7 @@ Sur 12 liaisons dans 534–598 MHz : `compact` occupe 15,7 MHz, `spread` 62,0 MH
 `compact` place aussi 10 à 23 % de liaisons de plus (tableau D-006). Le défaut
 est donc `compact`, `spread` reste offert.
 
-**Ce qui est attendu de Julien :** confirmer que la pratique de terrain va bien
-vers le plan le plus compact, et non vers l'étalement.
+**Décision de Julien (11/09/2026) :** compact par défaut, confirmé.
 
 ## D-008 — Budget de retour arrière : 50 pas par passe
 
@@ -218,13 +218,24 @@ avec les nominales : sinon `ok` serait faux pour un plan que le moteur assume.
 C'est `robustness.level > 0` qui signale la dégradation, et l'interface devra le
 montrer sans ambiguïté.
 
-## D-010 — Deux zones en désaccord : la plus contraignante gagne
+## D-010 — Deux zones en désaccord : la plus contraignante gagne ; sans politique, espacement seul
 
-*Phase 0.* `interZonePolicy` est déclarée par zone, donc deux zones peuvent se
-contredire (l'une `isolated`, l'autre `full-intermod`). EasyHF retient la plus
-contraignante des deux. Un plan ne doit jamais être desserré parce qu'une seule
-des deux zones était optimiste. Les zones sans politique déclarée valent
-`full-intermod`.
+*Phase 0, révisé le 11/09/2026.* `interZonePolicy` est déclarée par zone, donc
+deux zones peuvent se contredire (l'une `isolated`, l'autre `full-intermod`).
+EasyHF retient la plus contraignante des deux. Un plan ne doit jamais être
+desserré parce qu'une seule des deux zones était optimiste.
+
+**Les zones sans politique déclarée valent `spacing-only`** — décision de
+Julien après le relevé Wireless Workbench (D-022) : entre RF zones, WWB
+conserve l'espacement et ne calcule aucune intermodulation. Jusqu'au 11/09 le
+défaut était `full-intermod`, plus strict que la référence du métier, et il
+sur-contraignait un festival à deux scènes éloignées. Une zone peut toujours
+être déclarée `full-intermod` (co-localisée) ou `isolated` (site séparé)
+explicitement, et le modèle de domaine (`Zone.interZonePolicy`) l'exige.
+
+Le cas de référence C10 déclare ses deux scènes `full-intermod` : c'est ainsi
+que WWB l'a analysé, en une seule RF zone, et son plan témoin doit rester
+celui que WWB a validé.
 
 ## D-011 — Les largeurs de canal élargissent les gardes
 
@@ -332,7 +343,7 @@ Tout passe par `compareIds` (`order.ts`), qui compare par unités de code. Le te
 d'architecture interdit désormais `localeCompare` et `Intl.` au même titre que
 `Math.random`.
 
-## D-019 — Bande 863–865 MHz : question ouverte **[À VALIDER JULIEN]**
+## D-019 — Bande 863–865 MHz : pas en v1 **[VALIDÉ 11/09/2026]**
 
 *Phase 0.* `data/bands/fr.json` ne contient pas la bande 863–865 MHz, utilisée
 par des micros sans fil d'entrée de gamme au titre des dispositifs à faible
@@ -341,8 +352,8 @@ c'est probablement une omission — mais je ne l'ajoute pas : le §7 du brief
 interdit de trancher seul sur du réglementaire, et la règle « pas de
 modification sans source » vaut aussi pour les ajouts.
 
-**Ce qui est attendu de Julien :** confirmer le statut et la puissance admise en
-France, et fournir la source à citer dans le commit.
+**Décision de Julien (11/09/2026) :** pas en v1. La cible est le matériel
+professionnel en UHF ; la bande sera revue en v1.5 avec sa source.
 
 ## D-020 — Le modèle de visibilité est écrit, parce qu'il s'est déjà trompé
 
@@ -409,7 +420,7 @@ n'est pas une simplification tant que ses **conditions de visibilité** n'ont pa
 été écrites à côté de son algèbre. Et un test de cohérence ne remplace jamais un
 test de détection.
 
-## D-022 — Le modèle de visibilité est « côté récepteur » **[À VALIDER JULIEN]**
+## D-022 — Le modèle de visibilité est « côté récepteur » **[VALIDÉ 11/09/2026]**
 
 *Phase 0.* Tout le moteur repose sur une seule règle : un produit compte contre
 une victime quand **chacun de ses générateurs est visible de la victime**. C'est
@@ -438,10 +449,9 @@ politique est plus conservateur que la pratique de Shure. Le garder rend le
 moteur plus strict que la référence ; passer à `spacing-only` l'aligne dessus.
 Les deux se défendent, et ce n'est pas à moi de trancher.
 
-**Ce qui est attendu de Julien :** confirmer que « visible de la victime » est
-la bonne sémantique pour les politiques inter-zones, ou décrire le cas de
-terrain qui la met en défaut — et choisir le défaut inter-zones : strict
-(`full-intermod`, actuel) ou comme WWB (`spacing-only`).
+**Décision de Julien (11/09/2026) :** défaut inter-zones `spacing-only`,
+comme WWB (voir D-010). Le modèle côté récepteur est conservé. Le diagnostic
+par liaison non placée reste un livrable de la phase 4.
 
 **Le cas concret à trancher, trouvé par la troisième revue.** Deux zones
 `isolated` (deux salles qui réutilisent le spectre — c'est leur raison d'être)

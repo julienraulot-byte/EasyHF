@@ -51,7 +51,7 @@ export interface EngineBand {
 }
 
 export interface ZonePolicies {
-  /** Zone id -> policy. Zones absent from the map default to `full-intermod`. */
+  /** Zone id -> policy. Zones absent from the map default to `spacing-only`. */
   readonly [zoneId: string]: InterZonePolicy;
 }
 
