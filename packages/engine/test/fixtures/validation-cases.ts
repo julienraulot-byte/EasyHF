@@ -67,6 +67,7 @@ export const VALIDATION_CASES: ValidationCase[] = [
       plan: plan({ HF01: 500_000, HF02: 510_000 }),
       bands: FR_BANDS,
     },
+    wwbReference: { ...WWB_RUN, incompatible: [], compatible: ['HF01', 'HF02'] },
   },
   {
     id: 'C02-im3-2tx-direct',
@@ -94,6 +95,8 @@ export const VALIDATION_CASES: ValidationCase[] = [
       plan: plan({ HF01: 500_000, HF02: 506_000, HF03: 494_200 }),
       bands: FR_BANDS,
     },
+    // WWB says compatible at exactly 200 kHz: its rule is strict too.
+    wwbReference: { ...WWB_RUN, incompatible: [], compatible: ['HF01', 'HF02', 'HF03'] },
   },
   {
     id: 'C04-im3-3tx',
@@ -106,27 +109,36 @@ export const VALIDATION_CASES: ValidationCase[] = [
       plan: plan({ HF01: 500_000, HF02: 505_300, HF03: 508_400, HF04: 513_700 }),
       bands: FR_BANDS,
     },
+    // No 2-transmitter product within 2 MHz of any carrier: WWB's four verdicts
+    // can only come from its 3-transmitter check.
+    wwbReference: {
+      ...WWB_RUN,
+      incompatible: ['HF01', 'HF02', 'HF03', 'HF04'].map((victimLinkId) => ({ victimLinkId })),
+      compatible: [],
+    },
   },
   {
     id: 'C05-im5-2tx',
     title: 'Porteuse sur 3·f1 − 2·f2, hors de tout produit IM3',
-    rationale: "Isole le 5e ordre : il doit être signalé en avertissement, pas en critique.",
+    rationale:
+      "Isole le 5e ordre : il doit être signalé en avertissement, pas en critique. Écarts ≥ 800 kHz : le profil ULX-D de WWB exige 700 kHz entre porteuses, et un écart plus court masquerait tout sous « spacing ».",
     mode: 'check',
     input: {
       links: [uhf('HF01'), uhf('HF02'), uhf('HF03')],
-      plan: plan({ HF01: 500_000, HF02: 500_300, HF03: 499_400 }),
+      // 3 × 500 000 − 2 × 500 800 = 498 400. Nearest IM3 product: 800 kHz away.
+      plan: plan({ HF01: 500_000, HF02: 500_800, HF03: 498_400 }),
       bands: FR_BANDS,
     },
   },
   {
     id: 'C06-peigne-8',
-    title: 'Huit porteuses sur un peigne à 400 kHz',
+    title: 'Huit porteuses sur un peigne à 800 kHz',
     rationale:
-      "Le pire cas classique : un pas régulier fait retomber les produits sur les porteuses elles-mêmes.",
+      "Le pire cas classique : un pas régulier fait retomber les produits sur les porteuses elles-mêmes. Pas de 800 kHz pour rester au-dessus des 700 kHz d'espacement du profil ULX-D de WWB.",
     mode: 'check',
     input: {
       links: comb8,
-      plan: comb8.map((l, i) => ({ linkId: l.id, freqKHz: 500_000 + i * 400 })),
+      plan: comb8.map((l, i) => ({ linkId: l.id, freqKHz: 500_000 + i * 800 })),
       bands: FR_BANDS,
     },
   },

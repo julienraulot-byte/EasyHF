@@ -5,22 +5,22 @@
       "kind": "im5-2tx",
       "severity": "warning",
       "victimLinkId": "HF03",
-      "victimFreqKHz": 499400,
+      "victimFreqKHz": 498400,
       "sourceLinkIds": [
         "HF01",
         "HF02"
       ],
-      "offenderFreqKHz": 499400,
+      "offenderFreqKHz": 498400,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×HF01 − 2×HF02 tombe à 499.400 MHz, soit 0 kHz de HF03 (499.400 MHz), minimum requis 90 kHz."
+      "message": "IM5 (2 émetteurs) 3×HF01 − 2×HF02 tombe à 498.400 MHz, soit 0 kHz de HF03 (498.400 MHz), minimum requis 90 kHz."
     }
   ],
   "margins": {
-    "im3TwoTxKHz": 300,
+    "im3TwoTxKHz": null,
     "im3ThreeTxKHz": null,
     "im5TwoTxKHz": 0,
-    "spacingKHz": 300,
+    "spacingKHz": 800,
     "exclusionKHz": null
   },
   "engineVersion": "0.1.0"
