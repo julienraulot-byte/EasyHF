@@ -1,0 +1,138 @@
+[
+  {
+    "id": "sennheiser-ew100g4-a1", "brand": "Sennheiser", "series": "EW 100 G4", "model": "EM 100 G4", "bandVariant": "A1", "type": "receiver",
+    "tuningRangeKHz": [470000, 516000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Les séries EW 100, 300 et 500 G4 partagent les mêmes plages.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-100-g4", "verified": false
+  },
+  {
+    "id": "sennheiser-ew100g4-a", "brand": "Sennheiser", "series": "EW 100 G4", "model": "EM 100 G4", "bandVariant": "A", "type": "receiver",
+    "tuningRangeKHz": [516000, 558000], "stepKHz": 25, "channelWidthKHz": 200,
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-100-g4", "verified": false
+  },
+  {
+    "id": "sennheiser-ew100g4-g", "brand": "Sennheiser", "series": "EW 100 G4", "model": "EM 100 G4", "bandVariant": "G", "type": "receiver",
+    "tuningRangeKHz": [566000, 608000], "stepKHz": 25, "channelWidthKHz": 200,
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-100-g4", "verified": false
+  },
+  {
+    "id": "sennheiser-ew100g4-b", "brand": "Sennheiser", "series": "EW 100 G4", "model": "EM 100 G4", "bandVariant": "B", "type": "receiver",
+    "tuningRangeKHz": [626000, 668000], "stepKHz": 25, "channelWidthKHz": 200,
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-100-g4", "verified": false
+  },
+  {
+    "id": "sennheiser-ew100g4-gb", "brand": "Sennheiser", "series": "EW 100 G4", "model": "EM 100 G4", "bandVariant": "GB", "type": "receiver",
+    "tuningRangeKHz": [606000, 678000], "stepKHz": 25, "channelWidthKHz": 200,
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-100-g4", "verified": false
+  },
+  {
+    "id": "sennheiser-ew100g4-e", "brand": "Sennheiser", "series": "EW 100 G4", "model": "EM 100 G4", "bandVariant": "E", "type": "receiver",
+    "tuningRangeKHz": [823000, 865000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Seul 823–832 MHz est utilisable en France en v1 (D-019) ; le plan de bandes exclut le reste.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-100-g4", "verified": false
+  },
+  {
+    "id": "sennheiser-ew300g4-a1", "brand": "Sennheiser", "series": "EW 300 G4", "model": "EM 300-500 G4", "bandVariant": "A1", "type": "receiver",
+    "tuningRangeKHz": [470000, 516000], "stepKHz": 25, "channelWidthKHz": 200,
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-300-g4", "verified": false
+  },
+  {
+    "id": "sennheiser-ew300g4-aw", "brand": "Sennheiser", "series": "EW 300 G4", "model": "EM 300-500 G4", "bandVariant": "AW+", "type": "receiver",
+    "tuningRangeKHz": [470000, 558000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Variante large 88 MHz propre aux 300/500 G4. Bornes à confirmer.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-300-g4", "verified": false
+  },
+  {
+    "id": "sennheiser-ew300g4-gw", "brand": "Sennheiser", "series": "EW 300 G4", "model": "EM 300-500 G4", "bandVariant": "GW", "type": "receiver",
+    "tuningRangeKHz": [558000, 626000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Bornes à confirmer.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-300-g4", "verified": false
+  },
+  {
+    "id": "sennheiser-ew500g4-aw", "brand": "Sennheiser", "series": "EW 500 G4", "model": "EM 300-500 G4", "bandVariant": "AW+", "type": "receiver",
+    "tuningRangeKHz": [470000, 558000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Même récepteur que la 300 G4. Bornes à confirmer.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-500-g4", "verified": false
+  },
+  {
+    "id": "sennheiser-ew500g4-gw", "brand": "Sennheiser", "series": "EW 500 G4", "model": "EM 300-500 G4", "bandVariant": "GW", "type": "receiver",
+    "tuningRangeKHz": [558000, 626000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Bornes à confirmer.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-500-g4", "verified": false
+  },
+  {
+    "id": "sennheiser-ewd-q1-6", "brand": "Sennheiser", "series": "EW-D", "model": "EW-D EM", "bandVariant": "Q1-6", "type": "receiver",
+    "tuningRangeKHz": [470200, 526000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Numérique entrée de gamme, grille d'accord équidistante. Pas à confirmer.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-d", "verified": false
+  },
+  {
+    "id": "sennheiser-ewd-r1-6", "brand": "Sennheiser", "series": "EW-D", "model": "EW-D EM", "bandVariant": "R1-6", "type": "receiver",
+    "tuningRangeKHz": [520000, 576000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Pas à confirmer.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-d", "verified": false
+  },
+  {
+    "id": "sennheiser-ewd-s1-7", "brand": "Sennheiser", "series": "EW-D", "model": "EW-D EM", "bandVariant": "S1-7", "type": "receiver",
+    "tuningRangeKHz": [606200, 662000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Pas à confirmer.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-d", "verified": false
+  },
+  {
+    "id": "sennheiser-ewdx-q1-9", "brand": "Sennheiser", "series": "EW-DX", "model": "EW-DX EM 2 / EM 4", "bandVariant": "Q1-9", "type": "receiver",
+    "tuningRangeKHz": [470200, 550000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Pas à confirmer.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-dx", "verified": false
+  },
+  {
+    "id": "sennheiser-ewdx-r1-9", "brand": "Sennheiser", "series": "EW-DX", "model": "EW-DX EM 2 / EM 4", "bandVariant": "R1-9", "type": "receiver",
+    "tuningRangeKHz": [520000, 608000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Pas à confirmer.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-dx", "verified": false
+  },
+  {
+    "id": "sennheiser-ewdx-s1-10", "brand": "Sennheiser", "series": "EW-DX", "model": "EW-DX EM 2 / EM 4", "bandVariant": "S1-10", "type": "receiver",
+    "tuningRangeKHz": [606200, 694000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Pas à confirmer.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-dx", "verified": false
+  },
+  {
+    "id": "sennheiser-ewdx-y1-3", "brand": "Sennheiser", "series": "EW-DX", "model": "EW-DX EM 2 / EM 4", "bandVariant": "Y1-3", "type": "receiver",
+    "tuningRangeKHz": [1785200, 1799800], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Variante 1,8 GHz. Pas à confirmer.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-dx", "verified": false
+  },
+  {
+    "id": "sennheiser-6000-a1-a4", "brand": "Sennheiser", "series": "Digital 6000", "model": "EM 6000", "bandVariant": "A1-A4", "type": "receiver",
+    "tuningRangeKHz": [470000, 558000], "stepKHz": 25, "channelWidthKHz": 200,
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/digital-6000", "verified": false
+  },
+  {
+    "id": "sennheiser-6000-a5-a8", "brand": "Sennheiser", "series": "Digital 6000", "model": "EM 6000", "bandVariant": "A5-A8", "type": "receiver",
+    "tuningRangeKHz": [550000, 638000], "stepKHz": 25, "channelWidthKHz": 200,
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/digital-6000", "verified": false
+  },
+  {
+    "id": "sennheiser-6000-b1-b4", "brand": "Sennheiser", "series": "Digital 6000", "model": "EM 6000", "bandVariant": "B1-B4", "type": "receiver",
+    "tuningRangeKHz": [630000, 718000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Au-delà de 694 MHz, hors bande PMSE en France.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/digital-6000", "verified": false
+  },
+  {
+    "id": "sennheiser-2000iem-aw", "brand": "Sennheiser", "series": "2000 IEM", "model": "EK 2000 IEM", "bandVariant": "Aw", "type": "iem",
+    "tuningRangeKHz": [516000, 558000], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "Largeur de canal d'un IEM stéréo, à confirmer.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/2000-series", "verified": false
+  },
+  {
+    "id": "sennheiser-2000iem-gw", "brand": "Sennheiser", "series": "2000 IEM", "model": "EK 2000 IEM", "bandVariant": "Gw", "type": "iem",
+    "tuningRangeKHz": [558000, 626000], "stepKHz": 25, "channelWidthKHz": 300,
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/2000-series", "verified": false
+  },
+  {
+    "id": "sennheiser-2000iem-bw", "brand": "Sennheiser", "series": "2000 IEM", "model": "EK 2000 IEM", "bandVariant": "Bw", "type": "iem",
+    "tuningRangeKHz": [626000, 698000], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "694–698 MHz hors bande PMSE en France.",
+    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/2000-series", "verified": false
+  }
+]

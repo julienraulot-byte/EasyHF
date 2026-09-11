@@ -1,0 +1,21 @@
+{
+  "name": "@easyhf/hardware-db",
+  "version": "0.1.0",
+  "private": true,
+  "description": "EasyHF hardware database: tuning ranges, steps and per-model guards, sourced and versioned as JSON.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
+    "validate": "tsx src/validate.ts"
+  },
+  "dependencies": {
+    "@easyhf/engine": "workspace:*",
+    "@easyhf/shared": "workspace:*"
+  }
+}

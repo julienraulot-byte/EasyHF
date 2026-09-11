@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://easyhf.fr/schema/hardware.schema.json",
+  "title": "EasyHF hardware entry",
+  "description": "One tunable model in one band variant, as sold. Frequencies are whole kHz.",
+  "type": "object",
+  "required": ["id", "brand", "series", "model", "bandVariant", "type", "tuningRangeKHz", "stepKHz", "channelWidthKHz", "source", "verified"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "description": "Stable id: brand-series-band, lower case, e.g. shure-ulxd-g51." },
+    "brand": { "type": "string", "minLength": 1 },
+    "series": { "type": "string", "minLength": 1, "description": "Product line, e.g. ULX-D." },
+    "model": { "type": "string", "minLength": 1, "description": "The unit the range applies to, e.g. ULXD4 (receiver)." },
+    "bandVariant": { "type": "string", "minLength": 1, "description": "Manufacturer band code, e.g. G51." },
+    "type": { "type": "string", "enum": ["handheld", "bodypack", "iem", "intercom", "receiver"] },
+    "tuningRangeKHz": {
+      "type": "array", "items": { "type": "integer", "minimum": 1 }, "minItems": 2, "maxItems": 2,
+      "description": "Inclusive [from, to] in kHz."
+    },
+    "stepKHz": { "type": "integer", "minimum": 1 },
+    "channelWidthKHz": { "type": "integer", "minimum": 1, "description": "Occupied RF bandwidth of one carrier." },
+    "guards": {
+      "type": "object", "additionalProperties": false,
+      "description": "Per-model clearances, kHz. Missing fields fall back to the engine defaults (DECISIONS.md D-006).",
+      "properties": {
+        "im3TwoTxKHz": { "type": "integer", "minimum": 0 },
+        "im3ThreeTxKHz": { "type": "integer", "minimum": 0 },
+        "im5TwoTxKHz": { "type": "integer", "minimum": 0 },
+        "spacingKHz": { "type": "integer", "minimum": 0 },
+        "exclusionKHz": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "notes": { "type": "string" },
+    "source": { "type": "string", "pattern": "^https://", "description": "Official specification page or document." },
+    "verified": { "type": "boolean", "description": "True only once Julien has checked every figure against the source." },
+    "verifiedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" }
+  }
+}

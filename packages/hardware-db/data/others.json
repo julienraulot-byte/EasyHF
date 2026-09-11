@@ -1,0 +1,38 @@
+[
+  {
+    "id": "wisycom-mcr54-uhf", "brand": "Wisycom", "series": "MCR54", "model": "MCR54", "bandVariant": "470–1260", "type": "receiver",
+    "tuningRangeKHz": [470000, 1260000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Récepteur ultra-large bande. Bornes exactes et pas d'accord à confirmer sur la fiche Wisycom ; la portion 1240–1260 MHz relève d'une bande temporaire (fr.json).",
+    "source": "https://www.wisycom.com/products/mcr54", "verified": false
+  },
+  {
+    "id": "wisycom-mtp60-uhf", "brand": "Wisycom", "series": "MTP60", "model": "MTP60", "bandVariant": "470–1260", "type": "bodypack",
+    "tuningRangeKHz": [470000, 1260000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Émetteur ceinture ultra-large bande. Bornes exactes et pas à confirmer.",
+    "source": "https://www.wisycom.com/products/mtp60", "verified": false
+  },
+  {
+    "id": "sony-dwx-ce", "brand": "Sony", "series": "DWX", "model": "DWR-S03D", "bandVariant": "CE", "type": "receiver",
+    "tuningRangeKHz": [470025, 614000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Plage à confirmer sur la fiche Sony Professional ; la génération et la variante régionale changent les bornes.",
+    "source": "https://pro.sony/en_GB/products/wireless-systems/dwr-s03d", "verified": false
+  },
+  {
+    "id": "audiotechnica-3000-de2", "brand": "Audio-Technica", "series": "3000 (4e génération)", "model": "ATW-R3210", "bandVariant": "DE2", "type": "receiver",
+    "tuningRangeKHz": [470125, 529975], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Bornes à confirmer.",
+    "source": "https://www.audio-technica.com/en-eu/atw-3211", "verified": false
+  },
+  {
+    "id": "audiotechnica-3000-ee1", "brand": "Audio-Technica", "series": "3000 (4e génération)", "model": "ATW-R3210", "bandVariant": "EE1", "type": "receiver",
+    "tuningRangeKHz": [530000, 589975], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Bornes à confirmer.",
+    "source": "https://www.audio-technica.com/en-eu/atw-3211", "verified": false
+  },
+  {
+    "id": "mipro-act828-5e", "brand": "MiPro", "series": "ACT-8", "model": "ACT-828", "bandVariant": "5E", "type": "receiver",
+    "tuningRangeKHz": [480000, 544000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Code de bande et bornes à confirmer sur la fiche MiPro ; entrée la moins sûre de la base.",
+    "source": "https://www.mipro.com.tw/en/product/ACT-828", "verified": false
+  }
+]

@@ -19,6 +19,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
+      - run: pnpm validate:hardware
       - run: pnpm test
       - run: pnpm test:perf
       - run: pnpm coverage

@@ -1,0 +1,147 @@
+[
+  {
+    "id": "shure-ulxd-g50", "brand": "Shure", "series": "ULX-D", "model": "ULXD4", "bandVariant": "G50", "type": "receiver",
+    "tuningRangeKHz": [470125, 534000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Plage et pas lus dans Wireless Workbench 7.8 (Equipment profiles) le 11/09/2026. Variante US ; l'équivalent européen est G51.",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/ulx-d_digital_wireless", "verified": false
+  },
+  {
+    "id": "shure-ulxd-g51", "brand": "Shure", "series": "ULX-D", "model": "ULXD4", "bandVariant": "G51", "type": "receiver",
+    "tuningRangeKHz": [470000, 534000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Variante européenne courante en France.",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/ulx-d_digital_wireless", "verified": false
+  },
+  {
+    "id": "shure-ulxd-h51", "brand": "Shure", "series": "ULX-D", "model": "ULXD4", "bandVariant": "H51", "type": "receiver",
+    "tuningRangeKHz": [534000, 598000], "stepKHz": 25, "channelWidthKHz": 200,
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/ulx-d_digital_wireless", "verified": false
+  },
+  {
+    "id": "shure-ulxd-k51", "brand": "Shure", "series": "ULX-D", "model": "ULXD4", "bandVariant": "K51", "type": "receiver",
+    "tuningRangeKHz": [606000, 670000], "stepKHz": 25, "channelWidthKHz": 200,
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/ulx-d_digital_wireless", "verified": false
+  },
+  {
+    "id": "shure-ulxd-l51", "brand": "Shure", "series": "ULX-D", "model": "ULXD4", "bandVariant": "L51", "type": "receiver",
+    "tuningRangeKHz": [632000, 696000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "694–696 MHz hors bande PMSE en France : le moteur l'exclut par le plan de bandes.",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/ulx-d_digital_wireless", "verified": false
+  },
+  {
+    "id": "shure-qlxd-g51", "brand": "Shure", "series": "QLX-D", "model": "QLXD4", "bandVariant": "G51", "type": "receiver",
+    "tuningRangeKHz": [470000, 534000], "stepKHz": 25, "channelWidthKHz": 200,
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/qlx-d_digital_wireless", "verified": false
+  },
+  {
+    "id": "shure-qlxd-h51", "brand": "Shure", "series": "QLX-D", "model": "QLXD4", "bandVariant": "H51", "type": "receiver",
+    "tuningRangeKHz": [534000, 598000], "stepKHz": 25, "channelWidthKHz": 200,
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/qlx-d_digital_wireless", "verified": false
+  },
+  {
+    "id": "shure-qlxd-k51", "brand": "Shure", "series": "QLX-D", "model": "QLXD4", "bandVariant": "K51", "type": "receiver",
+    "tuningRangeKHz": [606000, 670000], "stepKHz": 25, "channelWidthKHz": 200,
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/qlx-d_digital_wireless", "verified": false
+  },
+  {
+    "id": "shure-qlxd-l51", "brand": "Shure", "series": "QLX-D", "model": "QLXD4", "bandVariant": "L51", "type": "receiver",
+    "tuningRangeKHz": [632000, 696000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "694–696 MHz hors bande PMSE en France.",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/qlx-d_digital_wireless", "verified": false
+  },
+  {
+    "id": "shure-qlxd-s50", "brand": "Shure", "series": "QLX-D", "model": "QLXD4", "bandVariant": "S50", "type": "receiver",
+    "tuningRangeKHz": [823000, 832000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "La variante S50 couvre aussi 863–865 MHz, hors plan de bandes v1 (D-019) ; seule la partie 823–832 est saisie.",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/qlx-d_digital_wireless", "verified": false
+  },
+  {
+    "id": "shure-slxd-g59", "brand": "Shure", "series": "SLX-D", "model": "SLXD4", "bandVariant": "G59", "type": "receiver",
+    "tuningRangeKHz": [470000, 514000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Code de bande et bornes à confirmer dans WWB (Equipment profiles → SLXD4).",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/slx-d_digital_wireless", "verified": false
+  },
+  {
+    "id": "shure-slxd-h55", "brand": "Shure", "series": "SLX-D", "model": "SLXD4", "bandVariant": "H55", "type": "receiver",
+    "tuningRangeKHz": [514000, 558000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Code de bande et bornes à confirmer dans WWB.",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/slx-d_digital_wireless", "verified": false
+  },
+  {
+    "id": "shure-slxd-k59", "brand": "Shure", "series": "SLX-D", "model": "SLXD4", "bandVariant": "K59", "type": "receiver",
+    "tuningRangeKHz": [606000, 650000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Code de bande et bornes à confirmer dans WWB.",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/slx-d_digital_wireless", "verified": false
+  },
+  {
+    "id": "shure-ad-g56", "brand": "Shure", "series": "Axient Digital", "model": "AD4D / AD4Q", "bandVariant": "G56", "type": "receiver",
+    "tuningRangeKHz": [470000, 636000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Bornes à confirmer dans WWB (Equipment profiles → AD4D). Largeur de canal du mode Standard ; le mode HD est plus étroit.",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/axient_digital", "verified": false
+  },
+  {
+    "id": "shure-ad-k54", "brand": "Shure", "series": "Axient Digital", "model": "AD4D / AD4Q", "bandVariant": "K54", "type": "receiver",
+    "tuningRangeKHz": [606000, 663000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Utilisée dans le relevé WWB C10 (606–608 MHz). Bornes à confirmer dans WWB.",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/axient_digital", "verified": false
+  },
+  {
+    "id": "shure-ad-k55", "brand": "Shure", "series": "Axient Digital", "model": "AD4D / AD4Q", "bandVariant": "K55", "type": "receiver",
+    "tuningRangeKHz": [606000, 694000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Utilisée dans le relevé WWB C10 (616–657 MHz). Borne haute à confirmer dans WWB.",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/axient_digital", "verified": false
+  },
+  {
+    "id": "shure-psm1000-g10e", "brand": "Shure", "series": "PSM 1000", "model": "P10R", "bandVariant": "G10E", "type": "iem",
+    "tuningRangeKHz": [470000, 542000], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "Largeur de canal d'un IEM stéréo MPX, à confirmer. Bornes à confirmer dans WWB (P10R).",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/psm1000", "verified": false
+  },
+  {
+    "id": "shure-psm1000-j8e", "brand": "Shure", "series": "PSM 1000", "model": "P10R", "bandVariant": "J8E", "type": "iem",
+    "tuningRangeKHz": [554000, 626000], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "Bornes à confirmer dans WWB (P10R).",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/psm1000", "verified": false
+  },
+  {
+    "id": "shure-psm1000-k10e", "brand": "Shure", "series": "PSM 1000", "model": "P10R", "bandVariant": "K10E", "type": "iem",
+    "tuningRangeKHz": [596000, 668000], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "Bornes à confirmer dans WWB (P10R).",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/psm1000", "verified": false
+  },
+  {
+    "id": "shure-psm900-g6e", "brand": "Shure", "series": "PSM 900", "model": "P9RA", "bandVariant": "G6E", "type": "iem",
+    "tuningRangeKHz": [470000, 506000], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "Bornes à confirmer dans WWB (P9RA).",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/psm900", "verified": false
+  },
+  {
+    "id": "shure-psm900-g7e", "brand": "Shure", "series": "PSM 900", "model": "P9RA", "bandVariant": "G7E", "type": "iem",
+    "tuningRangeKHz": [506000, 542000], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "Bornes à confirmer dans WWB (P9RA).",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/psm900", "verified": false
+  },
+  {
+    "id": "shure-psm900-k1e", "brand": "Shure", "series": "PSM 900", "model": "P9RA", "bandVariant": "K1E", "type": "iem",
+    "tuningRangeKHz": [596000, 632000], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "Bornes à confirmer dans WWB (P9RA).",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/psm900", "verified": false
+  },
+  {
+    "id": "shure-blx-h8e", "brand": "Shure", "series": "BLX", "model": "BLX4", "bandVariant": "H8E", "type": "receiver",
+    "tuningRangeKHz": [518000, 542000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Analogique, entrée de gamme, fréquent sur les petits événements. Bornes à confirmer dans WWB (BLX4).",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/blx_wireless", "verified": false
+  },
+  {
+    "id": "shure-blx-k3e", "brand": "Shure", "series": "BLX", "model": "BLX4", "bandVariant": "K3E", "type": "receiver",
+    "tuningRangeKHz": [606000, 630000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Bornes à confirmer dans WWB (BLX4).",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/blx_wireless", "verified": false
+  },
+  {
+    "id": "shure-blx-s8", "brand": "Shure", "series": "BLX", "model": "BLX4", "bandVariant": "S8", "type": "receiver",
+    "tuningRangeKHz": [823000, 832000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Bornes à confirmer dans WWB (BLX4).",
+    "source": "https://www.shure.com/en-GB/products/wireless-systems/blx_wireless", "verified": false
+  }
+]
