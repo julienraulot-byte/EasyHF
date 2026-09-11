@@ -425,9 +425,22 @@ métier à ma connaissance. Mais il mérite d'être vu par quelqu'un qui coordon
 réellement, parce qu'il détermine ce que `spacing-only` et `isolated`
 signifient sur le terrain.
 
+**Ce que fait Wireless Workbench (relevé du 11/09/2026).** Deux sondes en
+RF zones distinctes : `500.000` et `494.000 = 2×500.000 − 506.000` en zones
+séparées → compatibles ; `500.000` et `500.100` en zones séparées →
+incompatibles, « channel spacing ». **WWB conserve l'espacement entre zones et
+ne calcule aucune intermodulation entre elles : c'est exactement notre
+`spacing-only`.** Il n'offre ni `full-intermod` ni `isolated` entre zones.
+
+Conséquence pour D-010 : notre défaut `full-intermod` pour une zone sans
+politique est plus conservateur que la pratique de Shure. Le garder rend le
+moteur plus strict que la référence ; passer à `spacing-only` l'aligne dessus.
+Les deux se défendent, et ce n'est pas à moi de trancher.
+
 **Ce qui est attendu de Julien :** confirmer que « visible de la victime » est
 la bonne sémantique pour les politiques inter-zones, ou décrire le cas de
-terrain qui la met en défaut.
+terrain qui la met en défaut — et choisir le défaut inter-zones : strict
+(`full-intermod`, actuel) ou comme WWB (`spacing-only`).
 
 **Le cas concret à trancher, trouvé par la troisième revue.** Deux zones
 `isolated` (deux salles qui réutilisent le spectre — c'est leur raison d'être)

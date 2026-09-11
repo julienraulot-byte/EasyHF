@@ -168,6 +168,12 @@ export const VALIDATION_CASES: ValidationCase[] = [
       // verdict on this plan can only come from intermodulation.
       config: { guards: { spacingKHz: 350 } },
     },
+    // TV channels 28–33 excluded in WWB (France table) before the run.
+    wwbReference: {
+      ...WWB_RUN,
+      incompatible: [],
+      compatible: ['HF01', 'HF02', 'HF03', 'HF04', 'HF05', 'HF06'],
+    },
   },
   {
     id: 'C08-bande-interdite',
@@ -180,6 +186,8 @@ export const VALIDATION_CASES: ValidationCase[] = [
       plan: plan({ HF01: 700_000 }),
       bands: FR_BANDS,
     },
+    // ULXD4 band M19 (694.5–702.7 MHz). WWB knows no French band rule: compatible.
+    wwbReference: { ...WWB_RUN, incompatible: [], compatible: ['HF01'] },
   },
   {
     id: 'C09-deux-zones-spacing-only',
