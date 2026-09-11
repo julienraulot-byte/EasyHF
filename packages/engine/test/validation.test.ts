@@ -66,15 +66,17 @@ describe('comparison with Wireless Workbench', () => {
               },
             })
           : run(testCase);
-      const critical = result.violations.filter((v) => v.severity === 'critical');
-      const victims = new Set(critical.map((v) => v.victimLinkId));
+      // WWB has one verdict, « Incompatible »; EasyHF grades. A warning counts
+      // as flagged — what matters is that nothing WWB sees goes unmentioned.
+      const flagged = result.violations;
+      const victims = new Set(flagged.map((v) => v.victimLinkId));
       for (const expected of reference.incompatible) {
         expect(victims, `${testCase.id} : ${expected.victimLinkId} incompatible pour WWB, rien chez EasyHF`).toContain(
           expected.victimLinkId,
         );
         if (expected.sourceLinkIds) {
           const key = [...expected.sourceLinkIds].sort().join('+');
-          const sources = critical
+          const sources = flagged
             .filter((v) => v.victimLinkId === expected.victimLinkId)
             .map((v) => [...v.sourceLinkIds].sort().join('+'));
           expect(sources, `${testCase.id} : ${expected.victimLinkId} <= ${key}`).toContain(key);

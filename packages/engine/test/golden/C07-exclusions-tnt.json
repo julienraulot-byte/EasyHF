@@ -7,23 +7,23 @@
     },
     {
       "linkId": "HF02",
-      "freqKHz": 510300
+      "freqKHz": 510350
     },
     {
       "linkId": "HF03",
-      "freqKHz": 510800
+      "freqKHz": 510900
     },
     {
       "linkId": "HF04",
-      "freqKHz": 511900
+      "freqKHz": 512100
     },
     {
       "linkId": "HF05",
-      "freqKHz": 512300
+      "freqKHz": 512550
     },
     {
       "linkId": "HF06",
-      "freqKHz": 513200
+      "freqKHz": 513550
     }
   ],
   "unassignedLinkIds": [],
@@ -32,7 +32,7 @@
     "im3TwoTxKHz": 200,
     "im3ThreeTxKHz": 100,
     "im5TwoTxKHz": 100,
-    "spacingKHz": 300,
+    "spacingKHz": 350,
     "exclusionKHz": null
   },
   "robustness": {
@@ -42,7 +42,7 @@
       "im3TwoTxKHz": 200,
       "im3ThreeTxKHz": 100,
       "im5TwoTxKHz": 90,
-      "spacingKHz": 300,
+      "spacingKHz": 350,
       "exclusionKHz": 250
     },
     "ladderLength": 5

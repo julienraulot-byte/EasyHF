@@ -114,7 +114,7 @@
       "im3TwoTxKHz": 200,
       "im3ThreeTxKHz": 100,
       "im5TwoTxKHz": 90,
-      "spacingKHz": 300,
+      "spacingKHz": 350,
       "exclusionKHz": 250
     },
     "ladderLength": 5

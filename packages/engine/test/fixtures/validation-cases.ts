@@ -121,7 +121,7 @@ export const VALIDATION_CASES: ValidationCase[] = [
     id: 'C05-im5-2tx',
     title: 'Porteuse sur 3·f1 − 2·f2, hors de tout produit IM3',
     rationale:
-      "Isole le 5e ordre : il doit être signalé en avertissement, pas en critique. Écarts ≥ 800 kHz : le profil ULX-D de WWB exige 700 kHz entre porteuses, et un écart plus court masquerait tout sous « spacing ».",
+      "Isole le 5e ordre : il doit être signalé en avertissement, pas en critique. Écarts ≥ 800 kHz, au-dessus des 350 kHz d'espacement du profil ULX-D de WWB, pour qu'aucun verdict ne vienne de l'espacement.",
     mode: 'check',
     input: {
       links: [uhf('HF01'), uhf('HF02'), uhf('HF03')],
@@ -129,17 +129,28 @@ export const VALIDATION_CASES: ValidationCase[] = [
       plan: plan({ HF01: 500_000, HF02: 500_800, HF03: 498_400 }),
       bands: FR_BANDS,
     },
+    // WWB: « Channel to 2T5O intermod spacing violation » on 498.400.
+    wwbReference: {
+      ...WWB_RUN,
+      incompatible: [{ victimLinkId: 'HF03', sourceLinkIds: ['HF01', 'HF02'] }],
+      compatible: ['HF01', 'HF02'],
+    },
   },
   {
     id: 'C06-peigne-8',
     title: 'Huit porteuses sur un peigne à 800 kHz',
     rationale:
-      "Le pire cas classique : un pas régulier fait retomber les produits sur les porteuses elles-mêmes. Pas de 800 kHz pour rester au-dessus des 700 kHz d'espacement du profil ULX-D de WWB.",
+      "Le pire cas classique : un pas régulier fait retomber les produits sur les porteuses elles-mêmes. Pas de 800 kHz, au-dessus des 350 kHz d'espacement du profil ULX-D de WWB.",
     mode: 'check',
     input: {
       links: comb8,
       plan: comb8.map((l, i) => ({ linkId: l.id, freqKHz: 500_000 + i * 800 })),
       bands: FR_BANDS,
+    },
+    wwbReference: {
+      ...WWB_RUN,
+      incompatible: comb8.map((l) => ({ victimLinkId: l.id })),
+      compatible: [],
     },
   },
   {
@@ -153,6 +164,9 @@ export const VALIDATION_CASES: ValidationCase[] = [
       ),
       exclusions: [28, 29, 30, 31, 32, 33].map(tntChannel),
       bands: FR_BANDS,
+      // Aligned on WWB's ULX-D profile (350 kHz between carriers), so that its
+      // verdict on this plan can only come from intermodulation.
+      config: { guards: { spacingKHz: 350 } },
     },
   },
   {
@@ -183,6 +197,8 @@ export const VALIDATION_CASES: ValidationCase[] = [
       zonePolicies: { scene1: 'spacing-only', scene2: 'spacing-only' },
       bands: FR_BANDS,
     },
+    // WWB RF zones: no intermodulation across zones either.
+    wwbReference: { ...WWB_RUN, incompatible: [], compatible: ['A1', 'A2', 'B1'] },
   },
   {
     id: 'C10-festival-24',
@@ -190,6 +206,6 @@ export const VALIDATION_CASES: ValidationCase[] = [
     rationale:
       "Charge réaliste de bout en bout. Verrouille le plan produit, donc toute régression du moteur.",
     mode: 'coordinate',
-    input: { links: festival(), bands: FR_BANDS },
+    input: { links: festival(), bands: FR_BANDS, config: { guards: { spacingKHz: 350 } } },
   },
 ];
