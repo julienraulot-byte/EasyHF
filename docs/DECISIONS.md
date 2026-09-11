@@ -87,11 +87,26 @@ triplet équidistant A, B, C à 400 kHz — le cas d'IM3 le plus classique du m�
 — passait sans violation dès que B seule voyait A et C. L'algèbre était juste,
 la visibilité non. Voir D-021.
 
-Le raisonnement suppose enfin que les gardes gardent leur ordre. Ce n'est pas
-supposé, c'est **imposé** par `resolveConfig` :
-`im3ThreeTx ≤ im3TwoTx ≤ espacement`, et `2 × espacement ≥ im5`. Sans quoi un
-utilisateur abaissant l'espacement sous la garde IM3 perdrait silencieusement
-des détections.
+**Révision du 11/09/2026, phase 1.** Ce raisonnement supposait
+`im3ThreeTx ≤ im3TwoTx ≤ espacement`, imposé par `resolveConfig`. Le fuzz à
+gardes mélangées l'a fait tomber sur un profil réel : **HD Robust de Shure
+espace les porteuses à 125 kHz et garde les produits à 2 émetteurs à 200**. Un
+matériel du commerce contredisait l'invariant, donc l'invariant était faux.
+
+La règle devient :
+
+- les formes à **2 émetteurs** ne sont jamais confrontées à leurs propres
+  générateurs, **quelle que soit la valeur de l'espacement**. Le produit est à
+  la distance d'une porteuse voisine que l'espacement autorise ou interdit
+  déjà, et il est plus faible qu'elle : l'espacement décide. C'est la seule
+  lecture sous laquelle les profils HD de Shure sont cohérents ;
+- les formes à **3 émetteurs** impliquent un troisième porteur, donc une autre
+  règle avec une autre garde. Elles sont écartées seulement si cette règle
+  tourne effectivement **et avec une garde au moins aussi large que celle de
+  la victime** — comparée explicitement, ligne par ligne, dans `intermod.ts`
+  et dans `assign.ts`.
+
+`resolveConfig` n'exige plus que des entiers positifs.
 
 ## D-006 — Garde IM3 séparée entre 2 et 3 émetteurs **[VALIDÉ 11/09/2026]**
 
@@ -468,3 +483,47 @@ voisin `full-intermod` (D-010), et (2) quoi qu'il en soit, le résultat doit
 dire **pourquoi** une liaison n'est pas placée. Le second point est un
 livrable de la phase 4 (écran « Coordonner »), et demandera au moteur un
 diagnostic par liaison non assignée — à concevoir après la réponse au premier.
+
+## D-023 — Gardes par modèle, lues côté récepteur
+
+*Phase 1, 11/09/2026.* Chaque `EngineLink` peut porter ses propres gardes,
+champ par champ au-dessus du jeu global (D-006) ; la base matériel les fournit
+via `HardwareProfile.guards`. Sémantique, alignée sur Wireless Workbench où le
+profil de compatibilité appartient à l'appareil :
+
+| Contrainte | Garde appliquée |
+|---|---|
+| Produit d'intermodulation | celle de la **porteuse touchée** (la victime) |
+| Espacement d'une paire | la **plus grande** des deux, élargie par les largeurs de canal |
+| Exclusion | celle de la porteuse elle-même |
+
+L'échelle de robustesse (D-009) multiplie les gardes de chaque liaison par le
+même facteur que le jeu global, et la re-vérification finale du plan reçoit les
+gardes exactes de chaque liaison au palier retenu.
+
+Conséquence sur D-005 : une règle « couvrante » peut désormais tourner avec une
+garde plus petite que celle de la victime ; les cas à 3 émetteurs comparent les
+gardes avant d'être écartés. Deux tests de détection le verrouillent sur le
+vérificateur seul (`check.test.ts`, « per-model guards »), et la comparaison
+exhaustive parcourt cinq jeux de gardes mélangés — du profil Standard de Shure
+(75 / 0 / 0) au nôtre — sur trois zones.
+
+Les valeurs par modèle elles-mêmes restent à saisir : la base livre les plages
+et les pas, les gardes viendront des relevés WWB (Axient Digital, Sennheiser)
+demandés à Julien.
+
+## D-024 — La base matériel est validée contre Wireless Workbench, pas contre les PDF
+
+*Phase 1, 11/09/2026.* Les sites constructeurs ne se laissent pas lire depuis
+l'environnement de build (applications JavaScript, 403). Or **WWB embarque la
+base d'équipements de Shure** — plages, pas, filtre d'entrée, profils de
+compatibilité — pour ses séries et pour des marques tierces, et elle est sur
+l'écran de Julien. C'est une source constructeur, plus fiable qu'une fiche
+commerciale.
+
+Les 55 entrées initiales (19 séries ; System 10 d'Audio-Technica, en 2,4 GHz,
+est différé faute de bande dans `fr.json`) sont toutes `verified: false`, avec
+leur source officielle et, quand un chiffre n'est pas sûr, une note qui le dit.
+Le validateur (`pnpm validate:hardware`, en CI) impose le schéma, l'unicité
+des identifiants, des plages plausibles, et `verifiedAt` dès que `verified`
+passe à vrai. Rien ne passe à `verified: true` sans un relevé de Julien.

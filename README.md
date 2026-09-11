@@ -14,7 +14,7 @@ journal des décisions.
 | Phase | Contenu | État |
 |---|---|---|
 | 0 | Moteur d'intermodulation `@easyhf/engine` | **validée** — 10 / 10 cas concordants avec Wireless Workbench 7.8 (`phase-0-done`) |
-| 1 | Base matériel `@easyhf/hardware-db` | non démarrée |
+| 1 | Base matériel `@easyhf/hardware-db` | **en cours** — 55 entrées sourcées sur 19 séries, gardes par modèle dans le moteur ; validation des chiffres par Julien contre WWB |
 | 2 | ETL ANFR + service TNT | non démarrée |
 | 3 | Formats d'échange `@easyhf/formats` | non démarrée |
 | 4 | PWA `apps/web` | non démarrée |
@@ -23,14 +23,16 @@ journal des décisions.
 ## Structure
 
 ```
-packages/engine/   Moteur intermod et assignation. TypeScript pur, zéro dépendance.
-packages/shared/   Modèle de domaine (projets, zones, liaisons) et pont vers le moteur.
+packages/engine/       Moteur intermod et assignation. TypeScript pur, zéro dépendance.
+packages/shared/       Modèle de domaine (projets, zones, liaisons) et pont vers le moteur.
+packages/hardware-db/  Base matériel : JSON versionnés, schéma, validateur.
 data/bands/        Bandes réglementaires, en JSON éditable.
 docs/              Journal des décisions et protocole de validation.
 ```
 
 Règle de dépendance : `engine` ne dépend de rien. `shared` dépend de `engine`.
-Jamais l'inverse — c'est vérifié par un test, pas par la discipline.
+`hardware-db` dépend des deux. Jamais l'inverse — c'est vérifié par un test,
+pas par la discipline.
 
 ## Développer
 
@@ -39,6 +41,7 @@ pnpm install
 pnpm test                              # toute la suite, sauf le budget de performance
 pnpm test:perf                         # 40 liaisons < 3 s, seul, sur machine calme
 pnpm coverage                          # couverture (seuil engine : 90 %)
+pnpm validate:hardware                 # schéma et cohérence de la base matériel
 pnpm typecheck                         # sources et tests
 pnpm --filter @easyhf/engine bench     # mesures de capacité (quelques minutes)
 UPDATE_GOLDEN=1 pnpm test              # régénère les fichiers témoins de validation

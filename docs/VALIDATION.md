@@ -128,3 +128,28 @@ sous-détection découvert, avant même sa correction.
 - **Aucune mesure RF réelle** n'intervient ici. Un plan validé sur table reste à
   confronter au terrain, et un scan sur site reste recommandé en toutes
   circonstances.
+
+---
+
+# Validation de la base matériel — phase 1
+
+Kill question de la phase 1 :
+
+> Les 20 modèles sont-ils sourcés, validés par Julien, et le moteur produit-il
+> des plans corrects en respectant plages et pas réels ?
+
+État au 11 septembre 2026 :
+
+| Élément | État |
+|---|---|
+| Schéma JSON et validateur en CI | fait |
+| Entrées sourcées | 55 entrées, 19 séries, toutes `verified: false` |
+| Gardes par modèle dans le moteur (D-023) | fait, comparaison exhaustive à gardes mélangées |
+| Le moteur respecte plages et pas réels | testé sur un parc mixte Shure / Sennheiser |
+| **Validation des chiffres par Julien** | **à faire** — contre Wireless Workbench (D-024) |
+
+Mode opératoire de validation : dans WWB, *Tools → Equipment profiles…*, pour
+chaque série de la base, lire le cadre *Tuning* (From / To / Step Size) de
+chaque bande et le comparer à l'entrée. Toute correction est envoyée telle
+quelle ; l'entrée passe alors à `verified: true` avec `verifiedAt`. Les gardes
+par modèle sont lues dans les profils *Standard* / *Robust* de la même fenêtre.
