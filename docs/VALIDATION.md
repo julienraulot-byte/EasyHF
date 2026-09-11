@@ -6,11 +6,21 @@ Ce document est le support de la **kill question de la phase 0** :
 > relevées par Wireless Workbench, avec un plan auto-assigné valide et
 > reproductible ?
 
-La réponse ne peut pas venir du code seul : elle demande d'exécuter les mêmes
-cas dans Wireless Workbench et de comparer. Tant que ces exécutions n'ont pas eu
-lieu, **la phase 0 n'est pas franchie**, quel que soit l'état des tests.
+**Réponse, le 11 septembre 2026 : oui.** Dix cas exécutés dans Wireless
+Workbench 7.8.3.18 par Julien, dix concordants. Sur les trois cas
+d'intermodulation du 3ᵉ ordre (C02, C04, C06), EasyHF signale exactement les
+victimes que WWB déclare incompatibles ; sur le cas limite (C03), les deux
+outils sont stricts à la garde exacte ; sur le 5ᵉ ordre (C05), concordant ; et
+les deux plans produits par EasyHF (C07, C10) passent WWB sans conflit. Le seul
+écart est C08, où EasyHF rejette 700 MHz que WWB accepte — WWB ne connaît pas
+la réglementation française, c'est du sur-signalement assumé.
 
-## Ce qui est déjà acquis
+Le détail des relevés, le mode opératoire réel et les pièges rencontrés sont
+dans `WWB-RELEVES.md`. Les relevés eux-mêmes sont dans le code, champ
+`wwbReference` de chaque cas, et `validation.test.ts` les rejoue à chaque
+exécution de la suite.
+
+## Ce qui est acquis
 
 | Élément | État |
 |---|---|
@@ -21,9 +31,9 @@ lieu, **la phase 0 n'est pas franchie**, quel que soit l'état des tests.
 | Accord exhaustif entre l'assignateur et le vérificateur | testé candidat par candidat : 27 combinaisons de politiques × 3 zones de départ, exclusions et bandes, grilles mélangées, scènes aléatoires |
 | Détection inter-zones sur le vérificateur seul | deux cas construits à la main (D-021) |
 | Reproductibilité octet pour octet | testée par propriétés ; vraie par construction entre machines (D-018) |
-| Budget de performance (40 liaisons < 3 s) | tenu, ~1,7 s sur la machine de build |
+| Budget de performance (40 liaisons < 3 s) | tenu, 1,7 s sur la machine de build, mesuré seul (`pnpm test:perf`) |
 | Couverture `engine` | 99,9 % lignes, 99,2 % branches (seuil : 90 %) |
-| **Comparaison avec Wireless Workbench** | **à faire — voir plus bas** |
+| **Comparaison avec Wireless Workbench** | **10 / 10 concordants** |
 
 ## Les dix cas
 
@@ -91,8 +101,6 @@ wwbReference: {
 WWB signale. Le sur-signalement est accepté — EasyHF applique aussi ses propres
 règles d'espacement et de bande — le sous-signalement ne l'est pas.
 
-Tant qu'aucun cas ne porte de `wwbReference`, la suite affiche le test
-« en attente des relevés Wireless Workbench — la phase 0 reste ouverte ».
 
 ## Deux familles de tests, qui ne se remplacent pas
 

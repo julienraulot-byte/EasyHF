@@ -80,7 +80,7 @@ Profil ULXD4 G50 « EasyHF2 » : espacement 350, 2T3O 200, 2T5O 90, 3T3O 100.
 | C07 | plan EasyHF, TNT 28–33 cochés | tout compatible | rien | concordant — le plan passe |
 | C08 | 700.000 (ULXD4 M19) | compatible | hors bande | sur-signalement EasyHF assumé |
 | C09 | 500.000 · 506.000 en scene1, 494.000 en scene2 | tout compatible | rien (`spacing-only`) | concordant |
-| C10 | plan EasyHF 24 liaisons, 3 bandes | *en cours* | rien | — |
+| C10 | plan EasyHF 24 liaisons, 3 bandes (H50, AD K54, AD K55) | les 24 compatibles | rien | concordant — le plan passe |
 
 Sondes hors cas :
 

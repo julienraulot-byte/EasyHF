@@ -13,7 +13,7 @@ journal des décisions.
 
 | Phase | Contenu | État |
 |---|---|---|
-| 0 | Moteur d'intermodulation `@easyhf/engine` | **construit — en attente des relevés Wireless Workbench** |
+| 0 | Moteur d'intermodulation `@easyhf/engine` | **validée** — 10 / 10 cas concordants avec Wireless Workbench 7.8 (`phase-0-done`) |
 | 1 | Base matériel `@easyhf/hardware-db` | non démarrée |
 | 2 | ETL ANFR + service TNT | non démarrée |
 | 3 | Formats d'échange `@easyhf/formats` | non démarrée |

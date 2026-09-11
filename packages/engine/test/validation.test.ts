@@ -46,9 +46,9 @@ describe('reference cases (docs/VALIDATION.md)', () => {
 });
 
 describe('comparison with Wireless Workbench', () => {
-  const withReference = VALIDATION_CASES.filter((c) => c.wwbReference);
+  const withReference = VALIDATION_CASES;
 
-  it.skipIf(withReference.length === 0)('flags every frequency Wireless Workbench finds incompatible', () => {
+  it('flags every frequency Wireless Workbench finds incompatible', () => {
     for (const testCase of withReference) {
       const reference = testCase.wwbReference as WwbReference;
       // Same spacings on both sides, or the comparison means nothing.
@@ -85,7 +85,7 @@ describe('comparison with Wireless Workbench', () => {
     }
   });
 
-  it.skipIf(withReference.length === 0)('records where EasyHF is stricter than Wireless Workbench', () => {
+  it('records where EasyHF is stricter than Wireless Workbench', () => {
     // Over-reporting is accepted by the gate; it is still worth seeing.
     for (const testCase of withReference) {
       const reference = testCase.wwbReference as WwbReference;
@@ -97,10 +97,11 @@ describe('comparison with Wireless Workbench', () => {
     }
   });
 
-  it.skipIf(withReference.length > 0)(
-    'is still waiting for the Wireless Workbench reference runs — Phase 0 gate is open',
-    () => {
-      expect(withReference).toHaveLength(0);
-    },
-  );
+  it('carries a Wireless Workbench reading for every case — the gate is closed', () => {
+    // Phase 0 was validated on all ten cases on 2026-09-11. A case without a
+    // reading would mean one was dropped, and the comparison would be blind
+    // to a regression there.
+    expect(VALIDATION_CASES.filter((c) => !c.wwbReference).map((c) => c.id)).toEqual([]);
+  });
+
 });
