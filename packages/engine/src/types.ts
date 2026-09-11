@@ -32,6 +32,13 @@ export interface EngineLink {
   channelWidthKHz: number;
   /** Pre-imposed frequency. The engine never moves it; it plans around it. */
   lockedFreqKHz?: FreqKHz;
+  /**
+   * Clearances this hardware needs, overriding the global guards field by
+   * field (DECISIONS.md D-006, D-023). Read receiver-side: intermodulation
+   * guards are those of the carrier being hit, spacing is the larger of the
+   * two carriers', the exclusion guard is the carrier's own.
+   */
+  guards?: Partial<Guards>;
 }
 
 /** A span of spectrum the plan must stay clear of. */

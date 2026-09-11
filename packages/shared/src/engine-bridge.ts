@@ -2,6 +2,7 @@ import type {
   CoordinateInput,
   CoordinationResult,
   EngineLink,
+  Guards,
   InterZonePolicy,
 } from '@easyhf/engine';
 import type { BandPlan, Project } from './domain.js';
@@ -14,6 +15,8 @@ export interface HardwareProfile {
   tuningRangeKHz: readonly [number, number];
   stepKHz: number;
   channelWidthKHz: number;
+  /** Clearances this model needs, overriding the global guards field by field. */
+  guards?: Partial<Guards>;
 }
 
 export class UnknownHardwareError extends Error {
@@ -48,6 +51,7 @@ export function toCoordinateInput(
         tuningRangeKHz: profile.tuningRangeKHz,
         stepKHz: profile.stepKHz,
         channelWidthKHz: profile.channelWidthKHz,
+        ...(profile.guards ? { guards: profile.guards } : {}),
         ...(link.locked && link.assignedFreqKHz !== undefined
           ? { lockedFreqKHz: link.assignedFreqKHz }
           : {}),

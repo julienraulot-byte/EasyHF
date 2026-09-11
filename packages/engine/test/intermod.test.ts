@@ -1,20 +1,30 @@
 import { describe, expect, it } from 'vitest';
 import { forEachImHit, type ImHit, type ImOptions } from '../src/intermod.js';
+import type { Guards } from '../src/types.js';
 
 const oneZone: ImOptions['relation'] = () => 'full';
 
-function collect(freqs: number[], options: Partial<ImOptions> = {}): ImHit[] {
+const UNIFORM: Guards = { im3TwoTxKHz: 200, im3ThreeTxKHz: 200, im5TwoTxKHz: 90, spacingKHz: 300, exclusionKHz: 250 };
+
+interface CollectOptions extends Partial<Omit<ImOptions, 'guards'>> {
+  guards?: Partial<Guards>;
+}
+
+/** Every carrier held to the same guards, one zone, no margin window. */
+function collect(freqs: number[], options: CollectOptions = {}): ImHit[] {
   const hits: ImHit[] = [];
+  const { guards, ...rest } = options;
+  const each: Guards = { ...UNIFORM, ...guards };
   forEachImHit(
     freqs,
     {
-      im3TwoTxKHz: 200,
-      im3ThreeTxKHz: 200,
-      im5TwoTxKHz: 90,
+      guards: freqs.map(() => each),
+      windowFactor: 1,
       enableIm3ThreeTx: true,
       enableIm5TwoTx: true,
       relation: oneZone,
-      ...options,
+      spacingRequired: () => each.spacingKHz,
+      ...rest,
     },
     (hit) => hits.push(hit),
   );
@@ -108,7 +118,7 @@ describe('a product hitting its own generator, within one zone', () => {
     // 2·f1 − f2 against f1 is |f1 − f2|; against f2 it is 2·|f1 − f2|. Same for
     // the 5th-order forms. None of them is intermodulation.
     expect(collect([500_000, 500_100])).toHaveLength(0);
-    expect(collect([500_000, 500_030], { im3TwoTxKHz: 1_000, im5TwoTxKHz: 1_000 })).toHaveLength(0);
+    expect(collect([500_000, 500_030], { guards: { im3TwoTxKHz: 1_000, im5TwoTxKHz: 1_000, spacingKHz: 1_000 } })).toHaveLength(0);
   });
 
   it('reports f1 + f2 − 2·f3 as the 2-transmitter product it actually is', () => {

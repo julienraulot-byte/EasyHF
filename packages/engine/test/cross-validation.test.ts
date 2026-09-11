@@ -8,6 +8,7 @@ import type {
   EngineConfigInput,
   EngineExclusion,
   EngineLink,
+  Guards,
   InterZonePolicy,
   ZonePolicies,
 } from '../src/types.js';
@@ -38,6 +39,15 @@ function pinned(id: string, zoneId: string, freqKHz: number, stepKHz = 25): Engi
   };
 }
 
+/** Guard sets a hardware entry might carry, from Shure's loosest to ours. */
+const GUARD_SETS: (Partial<Guards> | undefined)[] = [
+  undefined,
+  { im3TwoTxKHz: 75, im3ThreeTxKHz: 0, im5TwoTxKHz: 0, spacingKHz: 350 },
+  { im3TwoTxKHz: 150, im3ThreeTxKHz: 0, im5TwoTxKHz: 0, spacingKHz: 350 },
+  { im3TwoTxKHz: 200, im3ThreeTxKHz: 150, im5TwoTxKHz: 0, spacingKHz: 125 },
+  { im3TwoTxKHz: 50, im3ThreeTxKHz: 50, im5TwoTxKHz: 40, spacingKHz: 60, exclusionKHz: 100 },
+];
+
 /**
  * Offers every candidate frequency to the search one at a time, and requires
  * the search to accept exactly those the checker finds free of critical
@@ -49,11 +59,12 @@ function crossValidate(
   zonePolicies: ZonePolicies,
   zoneOfFreeLink: string,
   config: EngineConfigInput,
-  statics: { exclusions?: EngineExclusion[]; bands?: EngineBand[] } = {},
+  statics: { exclusions?: EngineExclusion[]; bands?: EngineBand[]; freeGuards?: Partial<Guards> } = {},
 ): { accepted: number; rejected: number } {
   let accepted = 0;
   let rejected = 0;
   const merged = { ...NOMINAL, ...config };
+  const { freeGuards, ...spectrum } = statics;
 
   for (const freqKHz of candidates) {
     const free: EngineLink = {
@@ -62,9 +73,10 @@ function crossValidate(
       tuningRangeKHz: [freqKHz, freqKHz],
       stepKHz: 25,
       channelWidthKHz: 200,
+      ...(freeGuards ? { guards: freeGuards } : {}),
     };
     const links = [...locked, free];
-    const search = coordinate({ links, zonePolicies, config: merged, ...statics });
+    const search = coordinate({ links, zonePolicies, config: merged, ...spectrum });
     const searchAccepted = search.unassignedLinkIds.length === 0;
 
     const verdict = checkPlan({
@@ -75,7 +87,7 @@ function crossValidate(
       ],
       zonePolicies,
       config: merged,
-      ...statics,
+      ...spectrum,
     });
     // Only violations the free link takes part in: a conflict between two
     // locked carriers is not something the search can act on, and the mask
@@ -177,6 +189,36 @@ describe('assignment and checking agree, candidate by candidate', () => {
     }
   });
 
+  it('with per-model guards mixed across carriers and zones', () => {
+    // Every combination of guard sets over three locked carriers and the free
+    // link, in the topology where a product may only be covered by a rule that
+    // runs with a smaller guard than the victim's own.
+    for (const [ga, gb, gc, gf] of [
+      [GUARD_SETS[1], GUARD_SETS[1], GUARD_SETS[3], GUARD_SETS[0]],
+      [GUARD_SETS[3], GUARD_SETS[1], GUARD_SETS[1], GUARD_SETS[4]],
+      [GUARD_SETS[4], GUARD_SETS[4], GUARD_SETS[0], GUARD_SETS[3]],
+      [GUARD_SETS[2], GUARD_SETS[0], GUARD_SETS[4], GUARD_SETS[1]],
+    ]) {
+      const locked = [
+        { ...pinned('LA', 'a', 500_000), ...(ga ? { guards: ga } : {}) },
+        { ...pinned('LB', 'b', 520_000), ...(gb ? { guards: gb } : {}) },
+        { ...pinned('LC', 'c', 507_400, 5), channelWidthKHz: 25, ...(gc ? { guards: gc } : {}) },
+      ];
+      for (const policies of [
+        { a: 'full-intermod', b: 'full-intermod', c: 'full-intermod' },
+        { a: 'spacing-only', b: 'full-intermod', c: 'spacing-only' },
+        { a: 'isolated', b: 'full-intermod', c: 'isolated' },
+      ] as ZonePolicies[]) {
+        for (const freeZone of ['a', 'b']) {
+          bothOutcomes(
+            crossValidate(locked, grid(499_000, 900), policies, freeZone, {}, gf ? { freeGuards: gf } : {}),
+            `gardes ${JSON.stringify([ga, gb, gc, gf])}, ${JSON.stringify(policies)}, libre en ${freeZone}`,
+          );
+        }
+      }
+    }
+  });
+
   it('on randomly generated scenes', () => {
     fc.assert(
       fc.property(
@@ -184,6 +226,7 @@ describe('assignment and checking agree, candidate by candidate', () => {
           fc.record({
             freqKHz: fc.integer({ min: 20_000, max: 20_999 }).map((k) => 500_000 + k * 10),
             zoneId: fc.constantFrom('a', 'b', 'c'),
+            guardSet: fc.integer({ min: 0, max: GUARD_SETS.length - 1 }),
           }),
           { minLength: 2, maxLength: 5 },
         ),
@@ -193,12 +236,15 @@ describe('assignment and checking agree, candidate by candidate', () => {
           c: fc.constantFrom<InterZonePolicy>('full-intermod', 'spacing-only', 'isolated'),
         }),
         fc.constantFrom('a', 'b', 'c'),
-        (carriers, zonePolicies, freeZone) => {
-          const locked = carriers.map((carrier, i) =>
-            pinned(`L${i + 1}`, carrier.zoneId, carrier.freqKHz),
-          );
+        fc.integer({ min: 0, max: GUARD_SETS.length - 1 }),
+        (carriers, zonePolicies, freeZone, freeGuardSet) => {
+          const locked = carriers.map((carrier, i) => {
+            const guards = GUARD_SETS[carrier.guardSet];
+            return { ...pinned(`L${i + 1}`, carrier.zoneId, carrier.freqKHz), ...(guards ? { guards } : {}) };
+          });
           const unique = new Map(locked.map((l) => [l.lockedFreqKHz, l]));
-          crossValidate([...unique.values()], grid(700_000, 200), zonePolicies, freeZone, {});
+          const freeGuards = GUARD_SETS[freeGuardSet];
+          crossValidate([...unique.values()], grid(700_000, 200), zonePolicies, freeZone, {}, freeGuards ? { freeGuards } : {});
         },
       ),
       { numRuns: 25 },

@@ -4,7 +4,12 @@ import { applyPlan, toCoordinateInput, UnknownHardwareError } from '../src/engin
 import type { BandPlan, Project } from '../src/domain.js';
 
 const HARDWARE = {
-  'shure-ulxd-h51': { tuningRangeKHz: [534_000, 598_000] as const, stepKHz: 25, channelWidthKHz: 200 },
+  'shure-ulxd-h51': {
+    tuningRangeKHz: [534_000, 598_000] as const,
+    stepKHz: 25,
+    channelWidthKHz: 200,
+    guards: { im3TwoTxKHz: 150, spacingKHz: 350 },
+  },
   'sennheiser-ew-dx-s2': { tuningRangeKHz: [606_000, 678_000] as const, stepKHz: 25, channelWidthKHz: 200 },
 };
 const lookup = (ref: string) => HARDWARE[ref as keyof typeof HARDWARE];
@@ -66,6 +71,12 @@ describe('toCoordinateInput', () => {
     expect(input.links[0]?.zoneId).toBe('scene1');
     expect(input.links[0]?.tuningRangeKHz).toEqual([534_000, 598_000]);
     expect(input.links[3]?.tuningRangeKHz).toEqual([606_000, 678_000]);
+  });
+
+  it('carries the model guards through, and only when the model has some', () => {
+    const input = toCoordinateInput(project(), lookup, BAND_PLAN);
+    expect(input.links[0]?.guards).toEqual({ im3TwoTxKHz: 150, spacingKHz: 350 });
+    expect(input.links[3]?.guards).toBeUndefined();
   });
 
   it('carries the zone policies and the band plan through', () => {

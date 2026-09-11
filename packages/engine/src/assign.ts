@@ -8,7 +8,7 @@ import {
   requiredSpacingKHz,
   validExclusions,
 } from './check.js';
-import { resolveConfig, scaleGuards } from './config.js';
+import { resolveConfig, resolveLinkGuards, scaleGuards } from './config.js';
 import { compareIds } from './order.js';
 import { RELATION_RANK, relationBetween } from './zones.js';
 import { ENGINE_VERSION } from './version.js';
@@ -53,6 +53,7 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
   const config: EngineConfig = resolveConfig(input.config);
   const links = input.links;
   const n = links.length;
+  const nominalLinkGuards = resolveLinkGuards(links, config.guards);
   const bands = input.bands ?? [];
   const spans = allowedSpans(bands, config.allowTemporaryBands);
   const exclusions = validExclusions(input.exclusions);
@@ -85,7 +86,7 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
   }
 
   /** Bands + exclusions + tuning range: independent of what is already placed. */
-  const staticMask = (linkIndex: number, guards: Guards): Uint8Array => {
+  const staticMask = (linkIndex: number, guards: readonly Guards[]): Uint8Array => {
     const link = links[linkIndex] as EngineLink;
     const grid = grids[linkIndex] as CandidateGrid;
     const mask = new Uint8Array(grid.count);
@@ -95,7 +96,7 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
         if (!fitsAllowedSpan(freqAt(grid, k), half, spans)) mask[k] = 1;
       }
     }
-    const exclusionGuard = requiredExclusionKHz(link, guards.exclusionKHz);
+    const exclusionGuard = requiredExclusionKHz(link, (guards[linkIndex] as Guards).exclusionKHz);
     for (const exclusion of exclusions) {
       markBlocked(
         mask,
@@ -135,20 +136,28 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
   const buildMask = (
     linkIndex: number,
     placed: readonly Placed[],
-    guards: Guards,
+    guards: readonly Guards[],
     base: Uint8Array,
   ): Masks => {
     const link = links[linkIndex] as EngineLink;
     const grid = grids[linkIndex] as CandidateGrid;
     const hard = base.slice();
     const block = blockerFor(hard, grid);
-    const g3a = guards.im3TwoTxKHz;
-    const g3b = guards.im3ThreeTxKHz;
+    const own = guards[linkIndex] as Guards;
+    const g3a = own.im3TwoTxKHz;
+    const g3b = own.im3ThreeTxKHz;
     const threeTx = config.enableIm3ThreeTx;
+    const spacingWith = (a: number, b: number): number =>
+      requiredSpacingKHz(
+        links[a] as EngineLink,
+        links[b] as EngineLink,
+        (guards[a] as Guards).spacingKHz,
+        (guards[b] as Guards).spacingKHz,
+      );
 
     for (const p of placed) {
       if (rel(linkIndex, p.linkIndex) === REL.none) continue;
-      block.around(p.freqKHz, requiredSpacingKHz(link, links[p.linkIndex] as EngineLink, guards.spacingKHz));
+      block.around(p.freqKHz, spacingWith(linkIndex, p.linkIndex));
     }
 
     // Carriers full with this link: the generators of any product it can fall
@@ -183,11 +192,16 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
           // f as its own generator, with pa and pb the other two:
           const relAB = rel(pa.linkIndex, pb.linkIndex);
           // f + pa − pb hits f  ⇒  |pa − pb| < g3b, for every f. Covered by
-          // spacing(pa, pb) unless the two never constrain each other.
-          if (relAB === REL.none && Math.abs(pa.freqKHz - pb.freqKHz) < g3b) hard.fill(1);
+          // spacing(pa, pb) when it runs with at least this guard.
+          const spacingCovers = relAB !== REL.none && spacingWith(pa.linkIndex, pb.linkIndex) >= g3b;
+          if (!spacingCovers && Math.abs(pa.freqKHz - pb.freqKHz) < g3b) hard.fill(1);
           // pa + pb − f hits f  ⇒  |pa + pb − 2f| < g3b. Covered by the
-          // 2-transmitter form only when pa and pb see each other.
-          if (relAB !== REL.full) block.range(3 * (sum - g3b) + 1, 3 * (sum + g3b) - 1);
+          // 2-transmitter form when pa and pb see each other and either one's
+          // 2-transmitter guard is at least this guard.
+          const twoTxCovers =
+            relAB === REL.full &&
+            Math.max((guards[pa.linkIndex] as Guards).im3TwoTxKHz, (guards[pb.linkIndex] as Guards).im3TwoTxKHz) >= g3b;
+          if (!twoTxCovers) block.range(3 * (sum - g3b) + 1, 3 * (sum + g3b) - 1);
         }
       }
     }
@@ -197,27 +211,32 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
     for (let vi = 0; vi < m; vi += 1) {
       const victim = visible[vi] as Placed;
       const fv = victim.freqKHz;
+      const gv = guards[victim.linkIndex] as Guards;
+      const v3a = gv.im3TwoTxKHz;
+      const v3b = gv.im3ThreeTxKHz;
       const sources = sourcesFor[vi] as Placed[];
       const s = sources.length;
 
       for (let pi = 0; pi < s; pi += 1) {
         const p = sources[pi] as Placed;
         const fp = p.freqKHz;
-        // 2f − p hits v  ⇒  6f ∈ (3(fp + fv − g3a), 3(fp + fv + g3a))
-        block.range(3 * (fp + fv - g3a) + 1, 3 * (fp + fv + g3a) - 1);
-        // 2p − f hits v  ⇒  |2fp − fv − f| < g3a
-        block.around(2 * fp - fv, g3a);
+        // 2f − p hits v  ⇒  6f ∈ (3(fp + fv − v3a), 3(fp + fv + v3a))
+        block.range(3 * (fp + fv - v3a) + 1, 3 * (fp + fv + v3a) - 1);
+        // 2p − f hits v  ⇒  |2fp − fv − f| < v3a
+        block.around(2 * fp - fv, v3a);
 
         if (!threeTx) continue;
         const relFP = rel(linkIndex, p.linkIndex);
         // v as additive generator alongside f (f + v − p) or alongside p
-        // (p + v − f): residual |f − p|, covered by spacing(f, p) unless f and
-        // p never constrain each other.
-        if (relFP === REL.none) block.around(fp, g3b);
+        // (p + v − f): residual |f − p|, covered by spacing(f, p) when it runs
+        // with at least v's guard.
+        if (!(relFP !== REL.none && spacingWith(linkIndex, p.linkIndex) >= v3b)) block.around(fp, v3b);
         // v as subtractive generator (f + p − v hits v): residual |f + p − 2v|,
-        // the 2-transmitter form 2v − p against f, which only runs when f
-        // sees p.
-        if (relFP !== REL.full) block.around(2 * fv - fp, g3b);
+        // the 2-transmitter form against f or against p, which runs when f and
+        // p see each other, with the larger of their 2-transmitter guards.
+        const twoTxCovers =
+          relFP === REL.full && Math.max(g3a, (guards[p.linkIndex] as Guards).im3TwoTxKHz) >= v3b;
+        if (!twoTxCovers) block.around(2 * fv - fp, v3b);
       }
 
       if (!threeTx || s < 2) continue;
@@ -225,12 +244,12 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
         const fp1 = (sources[i1] as Placed).freqKHz;
         for (let i2 = 0; i2 < s; i2 += 1) {
           if (i2 === i1) continue;
-          // f + p1 − p2 hits v  ⇒  f ∈ (fv + fp2 − fp1 ± g3b)
-          block.around(fv + (sources[i2] as Placed).freqKHz - fp1, g3b);
+          // f + p1 − p2 hits v  ⇒  f ∈ (fv + fp2 − fp1 ± v3b)
+          block.around(fv + (sources[i2] as Placed).freqKHz - fp1, v3b);
         }
         for (let i2 = i1 + 1; i2 < s; i2 += 1) {
-          // p1 + p2 − f hits v  ⇒  f ∈ (fp1 + fp2 − fv ± g3b)
-          block.around(fp1 + (sources[i2] as Placed).freqKHz - fv, g3b);
+          // p1 + p2 − f hits v  ⇒  f ∈ (fp1 + fp2 − fv ± v3b)
+          block.around(fp1 + (sources[i2] as Placed).freqKHz - fv, v3b);
         }
       }
     }
@@ -240,7 +259,7 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
     // --- Fifth order, on the soft mask only.
     const soft = hard.slice();
     const blockSoft = blockerFor(soft, grid);
-    const g5 = guards.im5TwoTxKHz;
+    const g5 = own.im5TwoTxKHz;
     for (let a = 0; a < m; a += 1) {
       const fa = (visible[a] as Placed).freqKHz;
       for (let b = 0; b < m; b += 1) {
@@ -249,13 +268,15 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
       }
     }
     for (let vi = 0; vi < m; vi += 1) {
-      const fv = (visible[vi] as Placed).freqKHz;
+      const victim = visible[vi] as Placed;
+      const fv = victim.freqKHz;
+      const v5 = (guards[victim.linkIndex] as Guards).im5TwoTxKHz;
       for (const p of sourcesFor[vi] as Placed[]) {
         const fp = p.freqKHz;
-        // 3f − 2p ⇒ 6f ∈ (2(2fp + fv − g5), 2(2fp + fv + g5))
-        blockSoft.range(2 * (2 * fp + fv - g5) + 1, 2 * (2 * fp + fv + g5) - 1);
-        // 3p − 2f ⇒ 6f ∈ (3(3fp − fv − g5), 3(3fp − fv + g5))
-        blockSoft.range(3 * (3 * fp - fv - g5) + 1, 3 * (3 * fp - fv + g5) - 1);
+        // 3f − 2p ⇒ 6f ∈ (2(2fp + fv − v5), 2(2fp + fv + v5))
+        blockSoft.range(2 * (2 * fp + fv - v5) + 1, 2 * (2 * fp + fv + v5) - 1);
+        // 3p − 2f ⇒ 6f ∈ (3(3fp − fv − v5), 3(3fp − fv + v5))
+        blockSoft.range(3 * (3 * fp - fv - v5) + 1, 3 * (3 * fp - fv + v5) - 1);
       }
     }
     return { hard, soft };
@@ -269,7 +290,7 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
    * and with a bounded backtracking budget a different path can fail where the
    * plain one succeeds — so a level is only given up after both have been tried.
    */
-  const runLevel = (guards: Guards, preferIm5Clean: boolean): Attempt => {
+  const runLevel = (guards: readonly Guards[], preferIm5Clean: boolean): Attempt => {
     const statics = new Map<number, Uint8Array>();
     const staticFor = (i: number): Uint8Array => {
       let cached = statics.get(i);
@@ -371,24 +392,28 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
   let totalBacktracks = 0;
   let totalCandidates = 0;
 
+  let linkGuards: Guards[] = nominalLinkGuards;
   ladder: for (const [index, factor] of config.robustnessLadder.entries()) {
     const levelGuards = scaleGuards(config.guards, factor);
+    const levelLinkGuards = nominalLinkGuards.map((g) => scaleGuards(g, factor));
     levelsTried += 1;
     // Fifth-order-clean first; then, before giving up a rung of real guards
     // over what is only a warning, the same rung without the preference.
     for (const preferIm5Clean of config.enableIm5TwoTx ? [true, false] : [false]) {
-      const result = runLevel(levelGuards, preferIm5Clean);
+      const result = runLevel(levelLinkGuards, preferIm5Clean);
       totalBacktracks += result.backtrackSteps;
       totalCandidates += result.candidatesEvaluated;
       if (!attempt || result.assignments.size > attempt.assignments.size) {
         attempt = result;
         level = index;
         guards = levelGuards;
+        linkGuards = levelLinkGuards;
       }
       if (result.complete) {
         attempt = result;
         level = index;
         guards = levelGuards;
+        linkGuards = levelLinkGuards;
         break ladder;
       }
     }
@@ -405,8 +430,10 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
     .filter((id) => !assignedIds.has(id))
     .sort(compareIds);
 
+  // Re-checked against the guards each link was actually held to at the
+  // rung that produced the plan — including the scaled per-link overrides.
   const verification = checkPlan({
-    links,
+    links: links.map((link, i) => ({ ...link, guards: linkGuards[i] as Guards })),
     plan: assignmentsList,
     exclusions,
     bands,

@@ -1,4 +1,4 @@
-import { resolveConfig } from './config.js';
+import { resolveConfig, resolveLinkGuards } from './config.js';
 import { compareIds } from './order.js';
 import { forEachImHit, type ImKind } from './intermod.js';
 import { relationBetween } from './zones.js';
@@ -10,6 +10,7 @@ import type {
   EngineConfig,
   EngineExclusion,
   EngineLink,
+  Guards,
   Margins,
   Severity,
   Violation,
@@ -79,9 +80,17 @@ export function halfWidthKHz(link: EngineLink): number {
   return Math.ceil(link.channelWidthKHz / 2);
 }
 
-/** Minimum carrier-to-carrier distance for a pair, widened by both channels. */
-export function requiredSpacingKHz(a: EngineLink, b: EngineLink, spacingKHz: number): number {
-  return Math.max(spacingKHz, Math.ceil((a.channelWidthKHz + b.channelWidthKHz) / 2));
+/**
+ * Minimum carrier-to-carrier distance for a pair: the larger of the two
+ * carriers' own spacings, widened by both channels.
+ */
+export function requiredSpacingKHz(
+  a: EngineLink,
+  b: EngineLink,
+  spacingAKHz: number,
+  spacingBKHz: number,
+): number {
+  return Math.max(spacingAKHz, spacingBKHz, Math.ceil((a.channelWidthKHz + b.channelWidthKHz) / 2));
 }
 
 /** Minimum carrier-to-exclusion-edge distance, widened by the carrier itself. */
@@ -184,15 +193,17 @@ export function checkPlan(input: CheckInput): CheckResult {
     if (byId.has(link.id)) throw new Error(`Liaison en double dans links : ${link.id}`);
     byId.set(link.id, link);
   }
+  const linkGuards = resolveLinkGuards(input.links, config.guards);
+  const guardsById = new Map(input.links.map((link, i) => [link.id, linkGuards[i] as Guards]));
 
-  const assigned: { link: EngineLink; freqKHz: number }[] = [];
+  const assigned: { link: EngineLink; freqKHz: number; guards: Guards }[] = [];
   const seen = new Set<string>();
   for (const entry of input.plan) {
     const link = byId.get(entry.linkId);
     if (!link) throw new Error(`Le plan référence une liaison inconnue : ${entry.linkId}`);
     if (seen.has(entry.linkId)) throw new Error(`Liaison assignée deux fois : ${entry.linkId}`);
     seen.add(entry.linkId);
-    assigned.push({ link, freqKHz: entry.freqKHz });
+    assigned.push({ link, freqKHz: entry.freqKHz, guards: guardsById.get(link.id) as Guards });
   }
   // Stable, frequency-ordered evaluation so that identical inputs given in a
   // different order produce byte-identical output.
@@ -206,11 +217,7 @@ export function checkPlan(input: CheckInput): CheckResult {
     spacingKHz: null,
     exclusionKHz: null,
   };
-  const guardFor: Record<ImKind, number> = {
-    'im3-2tx': config.guards.im3TwoTxKHz,
-    'im3-3tx': config.guards.im3ThreeTxKHz,
-    'im5-2tx': config.guards.im5TwoTxKHz,
-  };
+
 
   // --- Hardware limits. A frequency the receiver cannot be tuned to is not a
   // plan, whatever the rest of the analysis says about it. Reached through
@@ -256,8 +263,8 @@ export function checkPlan(input: CheckInput): CheckResult {
   }
 
   // --- Exclusions (TNT, scans, manual, regulatory).
-  for (const { link, freqKHz } of assigned) {
-    const required = requiredExclusionKHz(link, config.guards.exclusionKHz);
+  for (const { link, freqKHz, guards } of assigned) {
+    const required = requiredExclusionKHz(link, guards.exclusionKHz);
     for (const exclusion of exclusions) {
       const actual = distanceToInterval(freqKHz, exclusion.fromKHz, exclusion.toKHz);
       if (actual <= required * MARGIN_WINDOW_FACTOR) {
@@ -285,12 +292,17 @@ export function checkPlan(input: CheckInput): CheckResult {
   }
 
   // --- Carrier spacing.
+  const spacingRequired = (i: number, j: number): number => {
+    const a = assigned[i] as (typeof assigned)[number];
+    const b = assigned[j] as (typeof assigned)[number];
+    return requiredSpacingKHz(a.link, b.link, a.guards.spacingKHz, b.guards.spacingKHz);
+  };
   for (let i = 0; i < assigned.length; i += 1) {
-    const a = assigned[i] as { link: EngineLink; freqKHz: number };
+    const a = assigned[i] as (typeof assigned)[number];
     for (let j = i + 1; j < assigned.length; j += 1) {
-      const b = assigned[j] as { link: EngineLink; freqKHz: number };
+      const b = assigned[j] as (typeof assigned)[number];
       if (relationBetween(a.link.zoneId, b.link.zoneId, input.zonePolicies) === 'none') continue;
-      const required = requiredSpacingKHz(a.link, b.link, config.guards.spacingKHz);
+      const required = spacingRequired(i, j);
       const actual = Math.abs(a.freqKHz - b.freqKHz);
       if (actual <= required * MARGIN_WINDOW_FACTOR) {
         margins.spacingKHz = tighten(margins.spacingKHz, actual);
@@ -315,9 +327,8 @@ export function checkPlan(input: CheckInput): CheckResult {
   forEachImHit(
     freqs,
     {
-      im3TwoTxKHz: config.guards.im3TwoTxKHz * MARGIN_WINDOW_FACTOR,
-      im3ThreeTxKHz: config.guards.im3ThreeTxKHz * MARGIN_WINDOW_FACTOR,
-      im5TwoTxKHz: config.guards.im5TwoTxKHz * MARGIN_WINDOW_FACTOR,
+      guards: assigned.map((entry) => entry.guards),
+      windowFactor: MARGIN_WINDOW_FACTOR,
       enableIm3ThreeTx: config.enableIm3ThreeTx,
       enableIm5TwoTx: config.enableIm5TwoTx,
       relation: (a, b) =>
@@ -326,9 +337,10 @@ export function checkPlan(input: CheckInput): CheckResult {
           (assigned[b] as { link: EngineLink }).link.zoneId,
           input.zonePolicies,
         ),
+      spacingRequired,
     },
     (hit) => {
-      const guard = guardFor[hit.kind];
+      const guard = hit.requiredKHz;
       const key = MARGIN_KEY_BY_KIND[hit.kind];
       margins[key] = tighten(margins[key], hit.distanceKHz);
       if (hit.distanceKHz >= guard) return;

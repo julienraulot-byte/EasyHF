@@ -37,39 +37,19 @@ export const DEFAULT_CONFIG: EngineConfig = {
 };
 
 /**
- * Checks the guards against each other.
+ * Guards are whole, non-negative kHz. Nothing more is required of them.
  *
- * A product hitting one of its own generators is skipped whenever another rule
- * covers that case — and "covers" must mean "at least as strictly", which only
- * holds while the guards keep the order below (see `intermod.ts`). So the order
- * is enforced rather than assumed: a user who lowers the carrier spacing below
- * the IM3 guard would otherwise silently lose detections.
+ * An earlier version also enforced `im3ThreeTx ≤ im3TwoTx ≤ spacing`, on the
+ * grounds that the degeneracy rules in `intermod.ts` relied on it. Real
+ * hardware profiles break that order — Shure's HD Robust profile spaces
+ * carriers at 125 kHz and guards 2-transmitter products at 200 — so the rules
+ * now compare guards explicitly where it matters instead (D-005, D-023).
  */
-function validateGuards(guards: Guards): void {
+export function validateGuards(guards: Guards, label = 'gardes'): void {
   for (const [name, value] of Object.entries(guards)) {
     if (!Number.isInteger(value) || value < 0) {
-      throw new Error(`Garde ${name} invalide : ${value} kHz (entier ≥ 0 attendu)`);
+      throw new Error(`${label} : garde ${name} invalide : ${value} kHz (entier ≥ 0 attendu)`);
     }
-  }
-  if (guards.im3ThreeTxKHz > guards.im3TwoTxKHz) {
-    throw new Error(
-      `La garde IM3 à 3 émetteurs (${guards.im3ThreeTxKHz} kHz) ne peut pas dépasser celle à ` +
-        `2 émetteurs (${guards.im3TwoTxKHz} kHz) : un produit à 3 émetteurs qui retombe sur son ` +
-        `propre générateur soustractif est vérifié sous sa forme à 2 émetteurs.`,
-    );
-  }
-  if (guards.spacingKHz < guards.im3TwoTxKHz) {
-    throw new Error(
-      `L'espacement co-canal (${guards.spacingKHz} kHz) ne peut pas être inférieur à la garde IM3 ` +
-        `à 2 émetteurs (${guards.im3TwoTxKHz} kHz) : c'est lui qui couvre les produits retombant ` +
-        `sur leurs propres générateurs.`,
-    );
-  }
-  if (2 * guards.spacingKHz < guards.im5TwoTxKHz) {
-    throw new Error(
-      `L'espacement co-canal (${guards.spacingKHz} kHz) doit valoir au moins la moitié de la garde ` +
-        `IM5 (${guards.im5TwoTxKHz} kHz), pour la même raison.`,
-    );
   }
 }
 
@@ -107,4 +87,21 @@ export function scaleGuards(guards: Guards, factor: number): Guards {
     spacingKHz,
     exclusionKHz: Math.floor(guards.exclusionKHz * factor),
   };
+}
+
+/**
+ * The guards each link is actually held to: its own overrides on top of the
+ * global set, validated one by one so that a hardware entry cannot break the
+ * ordering the degeneracy rules rely on.
+ */
+export function resolveLinkGuards(
+  links: readonly { id: string; guards?: Partial<Guards> }[],
+  globalGuards: Guards,
+): Guards[] {
+  return links.map((link) => {
+    if (!link.guards) return globalGuards;
+    const merged: Guards = { ...globalGuards, ...link.guards };
+    validateGuards(merged, `Liaison « ${link.id} »`);
+    return merged;
+  });
 }

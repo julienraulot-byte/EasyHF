@@ -5,10 +5,11 @@ import { FR_BANDS, link, tntChannel } from './fixtures/links.js';
 import type { Guards } from '../src/types.js';
 
 describe('helpers', () => {
-  it('widens the carrier spacing by the two channel widths', () => {
+  it('widens the carrier spacing by the two channel widths, and takes the larger spacing', () => {
     const wide = link('A', { channelWidthKHz: 800 });
-    expect(requiredSpacingKHz(link('A'), link('B'), 300)).toBe(300);
-    expect(requiredSpacingKHz(wide, wide, 300)).toBe(800);
+    expect(requiredSpacingKHz(link('A'), link('B'), 300, 300)).toBe(300);
+    expect(requiredSpacingKHz(wide, wide, 300, 300)).toBe(800);
+    expect(requiredSpacingKHz(link('A'), link('B'), 300, 350)).toBe(350);
   });
 
   it('widens the exclusion guard by the carrier half-width', () => {
@@ -282,6 +283,102 @@ describe('checkPlan — a product hitting its own generator across zones', () =>
   });
 });
 
+describe('checkPlan — per-model guards (D-023)', () => {
+  const loose = { im3TwoTxKHz: 75, im3ThreeTxKHz: 0, im5TwoTxKHz: 0, spacingKHz: 350 };
+
+  it('holds a product to the guard of the carrier it hits, not of its generators', () => {
+    // 2 × 500 000 − 506 000 = 494 000. The victim sits 150 kHz away.
+    const links = [
+      link('A', { guards: loose }),
+      link('B', { guards: loose }),
+      link('C', { guards: { im3TwoTxKHz: 200 } }),
+    ];
+    const plan = [
+      { linkId: 'A', freqKHz: 500_000 },
+      { linkId: 'B', freqKHz: 506_000 },
+      { linkId: 'C', freqKHz: 494_150 },
+    ];
+    const hit = checkPlan({ links, plan });
+    expect(hit.violations.map((v) => [v.kind, v.victimLinkId, v.requiredKHz])).toEqual([['im3-2tx', 'C', 200]]);
+
+    // Same geometry, the loose receiver as the victim: 150 kHz clears 75.
+    const swapped = checkPlan({
+      links: [link('A', { guards: loose }), link('B', { guards: { im3TwoTxKHz: 200 } }), link('C', { guards: { im3TwoTxKHz: 200 } })],
+      plan: [
+        { linkId: 'A', freqKHz: 494_150 },
+        { linkId: 'B', freqKHz: 506_000 },
+        { linkId: 'C', freqKHz: 500_000 },
+      ],
+    });
+    expect(swapped.violations.filter((v) => v.victimLinkId === 'A')).toEqual([]);
+  });
+
+  it('spaces a pair by the larger of the two spacings', () => {
+    const result = checkPlan({
+      links: [link('A', { guards: { spacingKHz: 350 } }), link('B')],
+      plan: [
+        { linkId: 'A', freqKHz: 500_000 },
+        { linkId: 'B', freqKHz: 500_325 },
+      ],
+    });
+    expect(result.violations.map((v) => [v.kind, v.requiredKHz])).toEqual([['spacing', 350]]);
+  });
+
+  it('keeps each carrier clear of exclusions by its own guard', () => {
+    const links = [link('A', { guards: { exclusionKHz: 500 } }), link('B')];
+    const exclusions = [tntChannel(30)]; // 542–550 MHz
+    const plan = [
+      { linkId: 'A', freqKHz: 550_400 },
+      { linkId: 'B', freqKHz: 550_800 },
+    ];
+    expect(checkPlan({ links, plan, exclusions }).violations.map((v) => v.victimLinkId)).toEqual(['A']);
+  });
+
+  it('reports a 3-transmitter hit that the 2-transmitter form no longer covers', () => {
+    // A + B − 2C = 100 kHz. With uniform guards the 2-transmitter form
+    // (2C − A against B, guard 200) reports it. Here A and B only carry a
+    // 75 kHz 2-transmitter guard: 100 kHz clears it, and only C's own
+    // 3-transmitter guard of 150 can see the product.
+    const links = [
+      link('A', { guards: { im3TwoTxKHz: 75, im3ThreeTxKHz: 75 } }),
+      link('B', { guards: { im3TwoTxKHz: 75, im3ThreeTxKHz: 75 } }),
+      link('C', { guards: { im3ThreeTxKHz: 150 } }),
+    ];
+    const plan = [
+      { linkId: 'A', freqKHz: 500_000 },
+      { linkId: 'B', freqKHz: 505_000 },
+      { linkId: 'C', freqKHz: 502_450 },
+    ];
+    const result = checkPlan({ links, plan });
+    expect(result.violations.map((v) => [v.kind, v.victimLinkId, v.actualKHz])).toEqual([['im3-3tx', 'C', 100]]);
+  });
+
+  it('reports two near-co-channel carriers beating in a receiver whose guard exceeds their spacing', () => {
+    // B and C are 100 kHz apart, which their own tiny spacing allows. A's
+    // 3-transmitter guard is 150: A + B − C lands 100 kHz from A.
+    const tiny = { im3TwoTxKHz: 50, im3ThreeTxKHz: 50, im5TwoTxKHz: 40, spacingKHz: 60 };
+    const links = [
+      link('A', { guards: { im3ThreeTxKHz: 150 } }),
+      link('B', { guards: tiny, channelWidthKHz: 25 }),
+      link('C', { guards: tiny, channelWidthKHz: 25 }),
+    ];
+    const plan = [
+      { linkId: 'A', freqKHz: 500_000 },
+      { linkId: 'B', freqKHz: 510_000 },
+      { linkId: 'C', freqKHz: 510_100 },
+    ];
+    const result = checkPlan({ links, plan });
+    expect(result.violations.map((v) => v.kind)).toEqual(['im3-3tx', 'im3-3tx']);
+    expect(result.violations.every((v) => v.victimLinkId === 'A')).toBe(true);
+  });
+
+  it('names the link when its override is malformed', () => {
+    expect(() =>
+      checkPlan({ links: [link('A', { guards: { spacingKHz: -5 } })], plan: [] }),
+    ).toThrow(/Liaison « A »/);
+  });
+});
+
 describe('checkPlan — malformed input', () => {
   it('rejects an inverted exclusion rather than reading it two ways', () => {
     expect(() =>
@@ -365,23 +462,12 @@ describe('checkPlan — reporting', () => {
   });
 });
 
-describe('resolveConfig — cohérence des gardes', () => {
+describe('resolveConfig — gardes', () => {
   const withGuards = (guards: Partial<Guards>) =>
     checkPlan({ links: [link('A')], plan: [], config: { guards } });
 
-  it('refuse une garde IM3 3 émetteurs plus large que celle à 2 émetteurs', () => {
-    expect(() => withGuards({ im3ThreeTxKHz: 300 })).toThrow(/3 émetteurs/);
-  });
-
-  it('refuse un espacement inférieur à la garde IM3', () => {
-    // Sans cette règle, 2·f1 − f2 à 150 kHz de f1 ne serait signalé nulle part.
-    expect(() => withGuards({ spacingKHz: 100 })).toThrow(/espacement co-canal/i);
-  });
-
-  it('refuse un espacement inférieur à la moitié de la garde IM5', () => {
-    expect(() => withGuards({ im3TwoTxKHz: 40, im3ThreeTxKHz: 40, spacingKHz: 40, im5TwoTxKHz: 90 })).toThrow(
-      /moitié/,
-    );
+  it('accepte un espacement inférieur à la garde IM3, comme les profils HD de Shure', () => {
+    expect(() => withGuards({ spacingKHz: 125, im3TwoTxKHz: 200, im3ThreeTxKHz: 150 })).not.toThrow();
   });
 
   it('refuse une garde négative ou non entière', () => {
