@@ -34,6 +34,7 @@ export const DEFAULT_CONFIG: EngineConfig = {
   robustnessLadder: DEFAULT_ROBUSTNESS_LADDER,
   maxBacktrackSteps: 50,
   placementStrategy: 'compact',
+  wmasAsImGenerator: false,
 };
 
 /**

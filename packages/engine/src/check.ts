@@ -81,6 +81,20 @@ export function halfWidthKHz(link: EngineLink): number {
 }
 
 /**
+ * Half-width a link presents to intermodulation: a narrowband carrier is a
+ * point (WWB measures product distances centre to centre), a WMAS block is its
+ * whole width.
+ */
+export function imHalfWidthKHz(link: EngineLink): number {
+  return link.kind === 'wmas' ? halfWidthKHz(link) : 0;
+}
+
+/** Whether a link generates intermodulation products (D-026). */
+export function generatesIm(link: EngineLink, config: EngineConfig): boolean {
+  return link.kind !== 'wmas' || config.wmasAsImGenerator;
+}
+
+/**
  * Minimum carrier-to-carrier distance for a pair: the larger of the two
  * carriers' own spacings, widened by both channels.
  */
@@ -90,12 +104,21 @@ export function requiredSpacingKHz(
   spacingAKHz: number,
   spacingBKHz: number,
 ): number {
-  return Math.max(spacingAKHz, spacingBKHz, Math.ceil((a.channelWidthKHz + b.channelWidthKHz) / 2));
+  const guard = Math.max(spacingAKHz, spacingBKHz);
+  const widths = Math.ceil((a.channelWidthKHz + b.channelWidthKHz) / 2);
+  // Between narrowband carriers the guard is centre to centre, as WWB measures
+  // it. A wideband block keeps the guard clear *beyond* its edge (D-026).
+  if (a.kind === 'wmas' || b.kind === 'wmas') return widths + guard;
+  return Math.max(guard, widths);
 }
 
-/** Minimum carrier-to-exclusion-edge distance, widened by the carrier itself. */
+/**
+ * Minimum carrier-to-exclusion-edge distance, widened by the carrier itself.
+ * A wideband block keeps the guard clear beyond its edge (D-026).
+ */
 export function requiredExclusionKHz(link: EngineLink, exclusionKHz: number): number {
-  return Math.max(exclusionKHz, halfWidthKHz(link));
+  const half = halfWidthKHz(link);
+  return link.kind === 'wmas' ? half + exclusionKHz : Math.max(exclusionKHz, half);
 }
 
 /** Rejects an exclusion the two halves of the engine would read differently. */
@@ -337,6 +360,8 @@ export function checkPlan(input: CheckInput): CheckResult {
           (assigned[b] as { link: EngineLink }).link.zoneId,
           input.zonePolicies,
         ),
+      halfWidthKHz: assigned.map((entry) => imHalfWidthKHz(entry.link)),
+      generates: assigned.map((entry) => generatesIm(entry.link, config)),
     },
     (hit) => {
       const guard = hit.requiredKHz;
@@ -357,7 +382,10 @@ export function checkPlan(input: CheckInput): CheckResult {
         offenderFreqKHz: hit.productKHz,
         requiredKHz: guard,
         actualKHz: hit.distanceKHz,
-        message: `${IM_LABEL[hit.kind]} ${expression} tombe à ${mhz(hit.productKHz)} MHz, soit ${hit.distanceKHz} kHz de ${victim.link.id} (${mhz(victim.freqKHz)} MHz), minimum requis ${guard} kHz.`,
+        message:
+          victim.link.kind === 'wmas'
+            ? `${IM_LABEL[hit.kind]} ${expression} tombe à ${mhz(hit.productKHz)} MHz, soit ${hit.distanceKHz} kHz du bord du bloc ${victim.link.id} (${mhz(victim.freqKHz)} MHz ± ${halfWidthKHz(victim.link)} kHz), minimum requis ${guard} kHz.`
+            : `${IM_LABEL[hit.kind]} ${expression} tombe à ${mhz(hit.productKHz)} MHz, soit ${hit.distanceKHz} kHz de ${victim.link.id} (${mhz(victim.freqKHz)} MHz), minimum requis ${guard} kHz.`,
       });
     },
   );

@@ -577,5 +577,48 @@ la répartition interne des canaux du bloc n'est pas gérée. Le type `wmas` est
 ajouté au schéma pour que la v3 sache quelles entrées reprendre ; le validateur
 tolère les largeurs jusqu'à 10 MHz pour ce seul type.
 
-`[À VALIDER JULIEN]` : rester sur ce modèle en v1 (recommandé, conforme au
-brief) ou avancer la modélisation par bloc à la phase 1.
+~~`[À VALIDER JULIEN]` : rester sur ce modèle en v1 (recommandé, conforme au
+brief) ou avancer la modélisation par bloc à la phase 1.~~ **Tranché le
+11/09/2026 par Julien : « le WMAS est l'avenir, c'est à implémenter now ».**
+Le modèle par bloc est en phase 1 — voir D-026. Le non-objectif WMAS du brief
+est levé.
+
+## D-026 — Un système WMAS est un bloc : victime sur toute sa largeur, générateur sur demande
+
+*Phase 1, 11/09/2026, sur décision de Julien.* Un WMAS (Spectera : 6 ou
+8 MHz, OFDM/TDMA bidirectionnel, jusqu'à plusieurs dizaines de liaisons audio
+gérées par la station de base) entre dans le moteur comme une liaison de type
+`wmas` (`EngineLink.kind`). Sa `channelWidthKHz` est la largeur du bloc, sa
+plage d'accord celle du **centre** du bloc — la base matériel la dérive de la
+plage RF de l'entrée en la rentrant d'une demi-largeur, sur la grille.
+
+| Règle | Liaison étroite (inchangé) | Bloc WMAS |
+|---|---|---|
+| Espacement avec une autre porteuse | centre à centre, `max(garde, largeurs)` — comme WWB | **au-delà du bord** : `largeurs + garde` ; la garde d'espacement de l'entrée est donc sa garde de bord |
+| Exclusion (TNT, scan) | `max(garde, demi-largeur)` | `demi-largeur + garde` |
+| Bande autorisée | canal entier dans la bande | bloc entier dans la bande |
+| Victime d'un produit d'intermodulation | distance centre à produit | distance **au bord du bloc** : un produit qui tombe dedans est à 0 |
+| Générateur de produits | toujours | **non par défaut** ; `config.wmasAsImGenerator` l'active, le produit est alors l'intervalle qu'il peut occuper (`Σ|cᵢ|·hᵢ`) et la distance se mesure entre intervalles |
+
+Pourquoi le bloc ne génère pas par défaut : le produit d'un bloc OFDM de
+6 MHz avec une porteuse étroite s'étale sur 6 à 12 MHz ; sa densité dans un
+récepteur étroit est 15 à 18 dB sous celle d'un produit étroit de même
+puissance totale. Ce n'est pas nul, et l'option existe pour qui veut
+sur-signaler ; mais l'activer par défaut interdirait des dizaines de MHz
+autour de chaque bloc sans mesure derrière. `[À VALIDER JULIEN]` sur la
+documentation Sennheiser (recherche en cours) : garde de bord recommandée,
+immunité du bloc aux produits étroits qui y tombent (aujourd'hui comptés avec
+les gardes IM de l'entrée, lecture prudente), pas de placement du centre.
+
+Ce que le modèle ne fait toujours pas : la répartition interne des liaisons
+audio dans le bloc (c'est le travail de la station de base) et la capacité
+par bloc — donnée de la base matériel, à afficher en phase 4, pas une
+contrainte du moteur.
+
+Vérification : les deux moitiés du moteur sont comparées candidat par
+candidat avec un bloc verrouillé, avec le bloc comme liaison libre, avec deux
+blocs générateurs, et sur des scènes aléatoires où une porteuse sur six est un
+bloc et la liaison libre l'est une fois sur deux — générateur activé ou non.
+Les 137 tests à bande étroite sont inchangés, fichiers témoins compris : la
+généralisation est une extension stricte (toutes les demi-largeurs à 0
+redonnent l'arithmétique d'origine).

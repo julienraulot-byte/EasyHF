@@ -39,6 +39,14 @@ function pinned(id: string, zoneId: string, freqKHz: number, stepKHz = 25): Engi
   };
 }
 
+/** A locked 6 MHz WMAS block. */
+function block(id: string, zoneId: string, freqKHz: number): EngineLink {
+  return { ...pinned(id, zoneId, freqKHz, 125), kind: 'wmas', channelWidthKHz: 6_000 };
+}
+const FREE_BLOCK: Partial<EngineLink> = { kind: 'wmas', channelWidthKHz: 6_000, stepKHz: 125 };
+/** Three zones, each policy represented once. */
+const POLICIES_MIXED: ZonePolicies = { a: 'full-intermod', b: 'spacing-only', c: 'isolated' };
+
 /** Guard sets a hardware entry might carry, from Shure's loosest to ours. */
 const GUARD_SETS: (Partial<Guards> | undefined)[] = [
   undefined,
@@ -59,12 +67,18 @@ function crossValidate(
   zonePolicies: ZonePolicies,
   zoneOfFreeLink: string,
   config: EngineConfigInput,
-  statics: { exclusions?: EngineExclusion[]; bands?: EngineBand[]; freeGuards?: Partial<Guards> } = {},
+  statics: {
+    exclusions?: EngineExclusion[];
+    bands?: EngineBand[];
+    freeGuards?: Partial<Guards>;
+    /** Shape of the free link, e.g. a wideband block. */
+    freeLink?: Partial<EngineLink>;
+  } = {},
 ): { accepted: number; rejected: number } {
   let accepted = 0;
   let rejected = 0;
   const merged = { ...NOMINAL, ...config };
-  const { freeGuards, ...spectrum } = statics;
+  const { freeGuards, freeLink, ...spectrum } = statics;
 
   for (const freqKHz of candidates) {
     const free: EngineLink = {
@@ -74,6 +88,7 @@ function crossValidate(
       stepKHz: 25,
       channelWidthKHz: 200,
       ...(freeGuards ? { guards: freeGuards } : {}),
+      ...freeLink,
     };
     const links = [...locked, free];
     const search = coordinate({ links, zonePolicies, config: merged, ...spectrum });
@@ -219,6 +234,38 @@ describe('assignment and checking agree, candidate by candidate', () => {
     }
   });
 
+  it('with a wideband block among the locked carriers, whether or not it generates', () => {
+    const locked = [pinned('L1', 'a', 500_000), pinned('L2', 'b', 503_400), pinned('L3', 'a', 507_125), block('S', 'a', 520_000)];
+    for (const wmasAsImGenerator of [false, true]) {
+      for (const zone of ['a', 'b']) {
+        // Beyond the block, where its products (when it generates) and its
+        // edge spacing land; and around the narrowband carriers.
+        const counts = crossValidate(locked, [...grid(495_000, 120, 125), ...grid(522_000, 200, 125)], POLICIES_MIXED, zone, { wmasAsImGenerator });
+        bothOutcomes(counts, `bloc verrouillé, zone ${zone}, générateur ${wmasAsImGenerator}`);
+      }
+    }
+  });
+
+  it('with the free link being a wideband block', () => {
+    const locked = [pinned('L1', 'a', 500_000), pinned('L2', 'b', 503_400), pinned('L3', 'c', 507_125), pinned('L4', 'a', 511_000)];
+    for (const wmasAsImGenerator of [false, true]) {
+      for (const zone of ['a', 'c']) {
+        const counts = crossValidate(locked, grid(474_000, 520, 125), POLICIES_MIXED, zone, { wmasAsImGenerator }, {
+          freeLink: FREE_BLOCK,
+          exclusions: [tntChannel(23)],
+          bands: FR_BANDS,
+        });
+        bothOutcomes(counts, `bloc libre, zone ${zone}, générateur ${wmasAsImGenerator}`);
+      }
+    }
+  });
+
+  it('with two blocks and the free link narrowband, blocks generating', () => {
+    const locked = [block('S1', 'a', 500_000), block('S2', 'b', 512_000), pinned('L1', 'a', 520_000)];
+    const counts = crossValidate(locked, grid(470_000, 720, 125), POLICIES_MIXED, 'a', { wmasAsImGenerator: true });
+    bothOutcomes(counts, 'deux blocs générateurs');
+  });
+
   it('on randomly generated scenes', () => {
     fc.assert(
       fc.property(
@@ -227,6 +274,8 @@ describe('assignment and checking agree, candidate by candidate', () => {
             freqKHz: fc.integer({ min: 20_000, max: 20_999 }).map((k) => 500_000 + k * 10),
             zoneId: fc.constantFrom('a', 'b', 'c'),
             guardSet: fc.integer({ min: 0, max: GUARD_SETS.length - 1 }),
+            // One carrier in six is a wideband block.
+            wmas: fc.integer({ min: 0, max: 5 }).map((k) => k === 0),
           }),
           { minLength: 2, maxLength: 5 },
         ),
@@ -237,14 +286,20 @@ describe('assignment and checking agree, candidate by candidate', () => {
         }),
         fc.constantFrom('a', 'b', 'c'),
         fc.integer({ min: 0, max: GUARD_SETS.length - 1 }),
-        (carriers, zonePolicies, freeZone, freeGuardSet) => {
+        fc.boolean(),
+        fc.boolean(),
+        (carriers, zonePolicies, freeZone, freeGuardSet, freeIsBlock, wmasAsImGenerator) => {
           const locked = carriers.map((carrier, i) => {
             const guards = GUARD_SETS[carrier.guardSet];
-            return { ...pinned(`L${i + 1}`, carrier.zoneId, carrier.freqKHz), ...(guards ? { guards } : {}) };
+            const base = carrier.wmas ? block(`L${i + 1}`, carrier.zoneId, carrier.freqKHz) : pinned(`L${i + 1}`, carrier.zoneId, carrier.freqKHz);
+            return { ...base, ...(guards ? { guards } : {}) };
           });
           const unique = new Map(locked.map((l) => [l.lockedFreqKHz, l]));
           const freeGuards = GUARD_SETS[freeGuardSet];
-          crossValidate([...unique.values()], grid(700_000, 200), zonePolicies, freeZone, {}, freeGuards ? { freeGuards } : {});
+          crossValidate([...unique.values()], grid(700_000, 200), zonePolicies, freeZone, { wmasAsImGenerator }, {
+            ...(freeGuards ? { freeGuards } : {}),
+            ...(freeIsBlock ? { freeLink: FREE_BLOCK } : {}),
+          });
         },
       ),
       { numRuns: 25 },

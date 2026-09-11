@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { checkPlan, distanceToInterval, requiredExclusionKHz, requiredSpacingKHz } from '../src/check.js';
 import { ENGINE_VERSION } from '../src/version.js';
 import { FR_BANDS, link, tntChannel } from './fixtures/links.js';
-import type { Guards } from '../src/types.js';
+import type { EngineLink, Guards } from '../src/types.js';
 
 describe('helpers', () => {
   it('widens the carrier spacing by the two channel widths, and takes the larger spacing', () => {
@@ -490,5 +490,84 @@ describe('resolveConfig — gardes', () => {
   it('refuse une garde négative ou non entière', () => {
     expect(() => withGuards({ im5TwoTxKHz: -1 })).toThrow(/invalide/);
     expect(() => withGuards({ im5TwoTxKHz: 12.5 })).toThrow(/invalide/);
+  });
+});
+
+describe('checkPlan — wideband blocks (D-026)', () => {
+  const spectera = (id: string, overrides: Partial<EngineLink> = {}) =>
+    link(id, { kind: 'wmas', channelWidthKHz: 6_000, tuningRangeKHz: [473_000, 691_000], ...overrides });
+
+  it('spaces a narrowband carrier from the block edge by the spacing guard', () => {
+    // Block 517–523 MHz. B at 523.400: 400 from the edge, less than 300 + 100 (half of B).
+    const plan = (freqB: number) => ({
+      links: [spectera('S'), link('B')],
+      plan: [
+        { linkId: 'S', freqKHz: 520_000 },
+        { linkId: 'B', freqKHz: freqB },
+      ],
+    });
+    const tight = checkPlan(plan(523_375));
+    expect(tight.violations.map((v) => [v.kind, v.requiredKHz, v.actualKHz])).toEqual([['spacing', 3_400, 3_375]]);
+    expect(checkPlan(plan(523_400)).violations).toEqual([]);
+  });
+
+  it('reports a narrowband product landing in the block, measured to its edge', () => {
+    // 2 × 500 000 − 483 100 = 516 900, 100 kHz below the lower edge (517 000).
+    const result = checkPlan({
+      links: [link('A'), link('B'), spectera('S')],
+      plan: [
+        { linkId: 'A', freqKHz: 500_000 },
+        { linkId: 'B', freqKHz: 483_100 },
+        { linkId: 'S', freqKHz: 520_000 },
+      ],
+    });
+    expect(result.violations.map((v) => [v.kind, v.victimLinkId, v.actualKHz, v.requiredKHz])).toEqual([
+      ['im3-2tx', 'S', 100, 200],
+    ]);
+    expect(result.violations[0]?.message).toContain('du bord du bloc S (520.000 MHz ± 3000 kHz)');
+  });
+
+  it('keeps the whole block inside an allowed band and clear of exclusions', () => {
+    // 470–694 is the free band: a block centred on 472 000 spills below 470 000.
+    const low = checkPlan({ links: [spectera('S', { tuningRangeKHz: [470_000, 694_000] })], plan: [{ linkId: 'S', freqKHz: 472_000 }], bands: FR_BANDS });
+    expect(low.violations.map((v) => v.kind)).toEqual(['out-of-band']);
+    // TV channel 30 is 542–550 MHz: the block's lower edge must stay the 250 kHz
+    // exclusion guard above 550 000, so its centre must be at least 553 250.
+    const near = checkPlan({ links: [spectera('S')], plan: [{ linkId: 'S', freqKHz: 553_100 }], exclusions: [tntChannel(30)] });
+    expect(near.violations.map((v) => [v.kind, v.actualKHz, v.requiredKHz])).toEqual([['exclusion', 3_100, 3_250]]);
+    expect(checkPlan({ links: [spectera('S')], plan: [{ linkId: 'S', freqKHz: 553_250 }], exclusions: [tntChannel(30)] }).violations).toEqual([]);
+  });
+
+  it('lets a block generate interval products only when configured to', () => {
+    // 2 × 520 000 − 500 000 = 540 000 ± 6 000: C at 545 500 is inside the interval.
+    // And 2 × 520 000 − 545 500 = 494 500 ± 6 000 reaches A at 500 000 as well.
+    const input = {
+      links: [link('A'), spectera('S'), link('C')],
+      plan: [
+        { linkId: 'A', freqKHz: 500_000 },
+        { linkId: 'S', freqKHz: 520_000 },
+        { linkId: 'C', freqKHz: 545_500 },
+      ],
+    };
+    expect(checkPlan(input).violations).toEqual([]);
+    const generating = checkPlan({ ...input, config: { wmasAsImGenerator: true, enableIm3ThreeTx: false } });
+    expect(generating.violations.map((v) => `${v.kind} ${v.victimLinkId} <- ${v.sourceLinkIds.join(',')} d=${v.actualKHz}`).sort()).toEqual([
+      'im3-2tx A <- S,C d=0',
+      'im3-2tx C <- S,A d=0',
+    ]);
+  });
+
+  it('never holds a block against products of its own centre', () => {
+    // Two blocks and a carrier: with blocks not generating, only the carrier
+    // generates, and one generator makes no product.
+    const result = checkPlan({
+      links: [spectera('S1'), spectera('S2'), link('A')],
+      plan: [
+        { linkId: 'S1', freqKHz: 520_000 },
+        { linkId: 'S2', freqKHz: 530_000 },
+        { linkId: 'A', freqKHz: 540_000 },
+      ],
+    });
+    expect(result.violations).toEqual([]);
   });
 });

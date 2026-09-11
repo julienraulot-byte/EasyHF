@@ -28,8 +28,24 @@ export interface EngineLink {
   tuningRangeKHz: readonly [FreqKHz, FreqKHz];
   /** Tuning grid of the hardware, in kHz. Candidates are `from + n * step`. */
   stepKHz: number;
-  /** Occupied RF bandwidth of one carrier, in kHz. */
+  /**
+   * Occupied RF bandwidth, in kHz: one carrier for a narrowband link, the whole
+   * block for a WMAS link.
+   */
   channelWidthKHz: number;
+  /**
+   * `narrowband` (default): a single carrier. Spacing and exclusions are
+   * widened by the channel width; intermodulation distances are measured
+   * centre to centre, as Wireless Workbench measures them.
+   *
+   * `wmas`: a Wideband Multichannel Audio System block (e.g. Sennheiser
+   * Spectera, 6 or 8 MHz) carrying many audio links, coordinated internally by
+   * its base station. `tuningRangeKHz` bounds the block's centre. The block is
+   * a victim of every product that lands inside it or within its guard of its
+   * edge; it is not a generator of products unless
+   * `config.wmasAsImGenerator` says so (DECISIONS.md D-026).
+   */
+  kind?: 'narrowband' | 'wmas';
   /** Pre-imposed frequency. The engine never moves it; it plans around it. */
   lockedFreqKHz?: FreqKHz;
   /**
@@ -107,6 +123,13 @@ export interface EngineConfig {
   maxBacktrackSteps: number;
   /** Which free candidate to take for a link. */
   placementStrategy: PlacementStrategy;
+  /**
+   * Treat WMAS blocks as intermodulation generators. Off by default: a
+   * product of a 6 MHz OFDM block is spread over 6 to 12 MHz, so its density
+   * in a narrowband receiver is 15 to 18 dB below a narrowband product's. On,
+   * the product is taken as the whole interval it can occupy (D-026).
+   */
+  wmasAsImGenerator: boolean;
 }
 
 /**

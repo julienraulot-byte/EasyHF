@@ -10,7 +10,7 @@ interface CollectOptions extends Partial<Omit<ImOptions, 'guards'>> {
   guards?: Partial<Guards>;
 }
 
-/** Every carrier held to the same guards, one zone, no margin window. */
+/** Every carrier held to the same guards, one zone, no margin window, all narrowband. */
 function collect(freqs: number[], options: CollectOptions = {}): ImHit[] {
   const hits: ImHit[] = [];
   const { guards, ...rest } = options;
@@ -23,6 +23,8 @@ function collect(freqs: number[], options: CollectOptions = {}): ImHit[] {
       enableIm3ThreeTx: true,
       enableIm5TwoTx: true,
       relation: oneZone,
+      halfWidthKHz: freqs.map(() => 0),
+      generates: freqs.map(() => true),
       ...rest,
     },
     (hit) => hits.push(hit),
@@ -137,5 +139,43 @@ describe('degenerate inputs', () => {
   it('returns nothing for fewer than two carriers', () => {
     expect(collect([])).toHaveLength(0);
     expect(collect([500_000])).toHaveLength(0);
+  });
+});
+
+describe('wideband blocks (D-026)', () => {
+  // A 6 MHz block centred on 520 000: edges at 517 000 and 523 000.
+  const block = (freqs: number[], generates: boolean) => ({
+    halfWidthKHz: freqs.map((_, i) => (i === 2 ? 3_000 : 0)),
+    generates: freqs.map((_, i) => i !== 2 || generates),
+  });
+
+  it('measures a product to the edge of a block victim, not to its centre', () => {
+    // 2 × 500 000 − 483 100 = 516 900: 100 kHz below the lower edge, 3 100 from the centre.
+    const freqs = [500_000, 483_100, 520_000];
+    const hits = collect(freqs, { ...block(freqs, false), enableIm3ThreeTx: false, enableIm5TwoTx: false });
+    expect(hits.map((h) => [h.kind, h.victimIndex, h.distanceKHz])).toEqual([['im3-2tx', 2, 100]]);
+  });
+
+  it('reports a product landing inside the block at distance 0', () => {
+    const freqs = [500_000, 480_000, 520_000]; // 2 × 500 000 − 480 000 = 520 000, dead centre
+    const hits = collect(freqs, { ...block(freqs, false), enableIm3ThreeTx: false, enableIm5TwoTx: false });
+    expect(hits.map((h) => [h.victimIndex, h.distanceKHz])).toEqual([[2, 0]]);
+  });
+
+  it('does not let a block generate products unless told to', () => {
+    // 2 × 520 000 − 500 000 = 540 000, a narrowband carrier sits right there.
+    const freqs = [500_000, 540_000, 520_000];
+    expect(collect(freqs, { ...block(freqs, false), enableIm3ThreeTx: false, enableIm5TwoTx: false })).toEqual([]);
+    // Generating: the product is the interval 540 000 ± 6 000 (2 × 3 000), so a
+    // carrier 5 000 kHz off is still inside it — and 2 × 520 000 − 545 000 =
+    // 495 000 ± 6 000 reaches the first carrier the same way.
+    const generating = collect([500_000, 545_000, 520_000], { ...block(freqs, true), enableIm3ThreeTx: false, enableIm5TwoTx: false });
+    expect(generating.map((h) => `${h.kind} ${h.victimIndex} <- ${h.sourceIndices.join(',')} d=${h.distanceKHz}`).sort()).toEqual([
+      'im3-2tx 0 <- 2,1 d=0',
+      'im3-2tx 1 <- 2,0 d=0',
+    ]);
+    // 1 150 kHz further out, both carriers sit 150 from an interval's edge.
+    const edge = collect([500_000, 546_150, 520_000], { ...block(freqs, true), enableIm3ThreeTx: false, enableIm5TwoTx: false });
+    expect(edge.map((h) => [h.victimIndex, h.distanceKHz]).sort()).toEqual([[0, 150], [1, 150]]);
   });
 });

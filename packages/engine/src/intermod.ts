@@ -26,7 +26,12 @@ export interface ImHit {
   productKHz: number;
   /** Carrier the product falls on top of. */
   victimIndex: number;
-  /** `|productKHz − victimFreqKHz|`. */
+  /**
+   * Distance from the product to the victim: `|productKHz − victimFreqKHz|`
+   * between narrowband carriers, less the half-widths of a WMAS victim and of
+   * WMAS generators (the product is then an interval, measured edge to edge).
+   * Never negative.
+   */
   distanceKHz: number;
   /** Guard of the victim for this kind of product. */
   requiredKHz: number;
@@ -49,6 +54,14 @@ export interface ImOptions {
    * and `full` for a carrier with itself.
    */
   relation: (a: number, b: number) => Relation;
+  /**
+   * Half of the width each carrier occupies *for intermodulation*: 0 for a
+   * narrowband carrier (distances are centre to centre, as WWB measures them),
+   * half the block width for a WMAS carrier.
+   */
+  halfWidthKHz: readonly number[];
+  /** Whether each carrier generates products. A WMAS block does not by default. */
+  generates: readonly boolean[];
 }
 
 /*
@@ -74,9 +87,18 @@ export interface ImOptions {
  * The 3-transmitter cases involve a third carrier, so the covering rule is a
  * different rule with a different guard. They are skipped only when it
  * actually runs — spacing is skipped between `isolated` zones, and the
- * 2-transmitter form needs f2 to see f1 — **and** with a guard at least as
- * wide as the victim's own. Otherwise nothing else would report the product,
- * and it is reported here, under its own name.
+ * 2-transmitter form needs f2 to see f1 — and it then decides with its own
+ * guard, whatever its value, exactly as for the 2-transmitter families.
+ * Otherwise nothing else would report the product, and it is reported here,
+ * under its own name.
+ *
+ * Wideband blocks
+ * ---------------
+ * A WMAS block of half-width h is a victim over its whole width: a product is
+ * measured to its nearest edge, i.e. the centre distance less h. When such a
+ * block is allowed to generate (`generates`), the product is an interval of
+ * half-width Σ|cᵢ|·hᵢ and the distance is measured between the two intervals.
+ * Both reduce to the plain centre-to-centre distance when every h is 0.
  */
 
 /** Index of the first element of `sorted` that is >= `value`. */
@@ -105,8 +127,12 @@ export function forEachImHit(
 ): void {
   const n = freqs.length;
   if (n < 2) return;
-  const { relation, guards, windowFactor } = options;
+  const { relation, guards, windowFactor, halfWidthKHz: half, generates } = options;
   const sees = (victim: number, source: number): boolean => relation(victim, source) === 'full';
+  const gen = (i: number): boolean => generates[i] as boolean;
+  const h = (i: number): number => half[i] as number;
+  let widestHalf = 0;
+  for (let i = 0; i < n; i += 1) widestHalf = Math.max(widestHalf, h(i));
   const guardOf = (victim: number, kind: ImKind): number => {
     const g = guards[victim] as Guards;
     return kind === 'im3-2tx' ? g.im3TwoTxKHz : kind === 'im3-3tx' ? g.im3ThreeTxKHz : g.im5TwoTxKHz;
@@ -129,11 +155,13 @@ export function forEachImHit(
 
   const forEachVictim = (
     product: number,
+    productHalf: number,
     kind: ImKind,
-    searchWindow: number,
+    guardWindow: number,
     skip: (victim: number) => boolean,
     visit: (victim: number, distance: number, required: number) => void,
   ): void => {
+    const searchWindow = guardWindow + productHalf + widestHalf;
     let k = lowerBound(sorted, n, product - searchWindow);
     for (; k < n; k += 1) {
       const victimFreq = sorted[k] as number;
@@ -141,7 +169,7 @@ export function forEachImHit(
       const victim = order[k] as number;
       if (skip(victim)) continue;
       const required = guardOf(victim, kind);
-      const distance = Math.abs(product - victimFreq);
+      const distance = Math.max(0, Math.abs(product - victimFreq) - productHalf - h(victim));
       if (distance < required * windowFactor) visit(victim, distance, required);
     }
   };
@@ -149,12 +177,14 @@ export function forEachImHit(
   // --- IM3, two transmitters: 2·fi − fj (ordered pairs cover both directions).
   const window3a = widest('im3-2tx');
   for (let i = 0; i < n; i += 1) {
+    if (!gen(i)) continue;
     const fi = freqs[i] as number;
     for (let j = 0; j < n; j += 1) {
-      if (j === i) continue;
+      if (j === i || !gen(j)) continue;
       const product = 2 * fi - (freqs[j] as number);
       forEachVictim(
         product,
+        2 * h(i) + h(j),
         'im3-2tx',
         window3a,
         (victim) => victim === i || victim === j || !sees(victim, i) || !sees(victim, j),
@@ -176,14 +206,17 @@ export function forEachImHit(
   if (options.enableIm3ThreeTx && n >= 3) {
     const window3b = widest('im3-3tx');
     for (let i = 0; i < n; i += 1) {
+      if (!gen(i)) continue;
       const fi = freqs[i] as number;
       for (let j = i + 1; j < n; j += 1) {
+        if (!gen(j)) continue;
         const sum = fi + (freqs[j] as number);
         for (let k = 0; k < n; k += 1) {
-          if (k === i || k === j) continue;
+          if (k === i || k === j || !gen(k)) continue;
           const product = sum - (freqs[k] as number);
           forEachVictim(
             product,
+            h(i) + h(j) + h(k),
             'im3-3tx',
             window3b,
             (victim) => {
@@ -221,12 +254,14 @@ export function forEachImHit(
   if (options.enableIm5TwoTx) {
     const window5 = widest('im5-2tx');
     for (let i = 0; i < n; i += 1) {
+      if (!gen(i)) continue;
       const fi = freqs[i] as number;
       for (let j = 0; j < n; j += 1) {
-        if (j === i) continue;
+        if (j === i || !gen(j)) continue;
         const product = 3 * fi - 2 * (freqs[j] as number);
         forEachVictim(
           product,
+          3 * h(i) + 2 * h(j),
           'im5-2tx',
           window5,
           (victim) => victim === i || victim === j || !sees(victim, i) || !sees(victim, j),

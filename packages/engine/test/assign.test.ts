@@ -280,3 +280,33 @@ describe('coordinate — input validation', () => {
     expect(() => coordinate({ links: [link('A')], config: { robustnessLadder: [1, 0] } })).toThrow(/]0, 1]/);
   });
 });
+
+describe('coordinate — wideband blocks (D-026)', () => {
+  const spectera = (id: string) =>
+    link(id, { kind: 'wmas', channelWidthKHz: 6_000, tuningRangeKHz: [473_000, 691_000], stepKHz: 125 });
+
+  it('places a 6 MHz block among narrowband links, inside the band and clear of TV channels', () => {
+    const links = [spectera('S'), ...Array.from({ length: 10 }, (_, i) => link(`HF${i}`, { tuningRangeKHz: [470_000, 534_000] }))];
+    const exclusions = [tntChannel(21), tntChannel(22), tntChannel(25), tntChannel(28)];
+    const result = coordinate({ links, exclusions, bands: FR_BANDS });
+    expect(result.ok).toBe(true);
+    expect(result.robustness.level).toBe(0);
+    const block = result.assignments.find((a) => a.linkId === 'S')?.freqKHz as number;
+    for (const exclusion of exclusions) {
+      expect(block + 3_000 <= exclusion.fromKHz - 250 || block - 3_000 >= exclusion.toKHz + 250, `bloc ${block} vs ${exclusion.label}`).toBe(true);
+    }
+    for (const entry of result.assignments) {
+      if (entry.linkId === 'S') continue;
+      expect(Math.abs(entry.freqKHz - block)).toBeGreaterThanOrEqual(3_000 + 100 + 300);
+    }
+    const verified = checkPlan({ links, plan: result.assignments, exclusions, bands: FR_BANDS });
+    expect(verified.ok).toBe(true);
+  });
+
+  it('gives the same plan whether the block is listed first or last', () => {
+    const narrow = Array.from({ length: 6 }, (_, i) => link(`HF${i}`, { tuningRangeKHz: [470_000, 534_000] }));
+    const first = coordinate({ links: [spectera('S'), ...narrow], bands: FR_BANDS });
+    const last = coordinate({ links: [...narrow, spectera('S')], bands: FR_BANDS });
+    expect(first.assignments).toEqual(last.assignments);
+  });
+});
