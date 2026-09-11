@@ -218,6 +218,13 @@ export interface CoordinationResult {
     factor: number;
     /** The global guards at that level (nominal guards × factor). */
     guards: Guards;
+    /**
+     * The guards each link was actually held to, sorted by link id: its own
+     * overrides on top of the global set, both scaled by `factor`. Passing
+     * them back as each link's `guards` to `checkPlan`, with `guards` as the
+     * config, reproduces the verification exactly.
+     */
+    linkGuards: { linkId: string; guards: Guards }[];
     /** Ladder length, so the UI can render `level + 1 / of`. */
     ladderLength: number;
   };

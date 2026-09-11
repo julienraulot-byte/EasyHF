@@ -530,6 +530,12 @@ seul (`check.test.ts`, « per-model guards »), et la comparaison exhaustive
 parcourt cinq jeux de gardes mélangés — du profil Standard de Shure (75 / 0 / 0)
 au nôtre — sur trois zones.
 
+Le résultat de `coordinate` expose `robustness.linkGuards`, les gardes exactes
+auxquelles chaque liaison a été tenue au palier retenu : `robustness.guards`
+seul ne suffit plus à rejouer la vérification quand des liaisons portent des
+gardes propres, et un consommateur qui l'aurait fait aurait obtenu un `ok`
+contraire à celui du moteur.
+
 Les valeurs par modèle elles-mêmes restent à saisir : la base livre les plages
 et les pas, les gardes viendront des relevés WWB (Axient Digital, Sennheiser)
 demandés à Julien.

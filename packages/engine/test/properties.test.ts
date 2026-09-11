@@ -134,8 +134,9 @@ describe('coordinate (property)', () => {
     fc.assert(
       fc.property(linksArb, exclusionsArb, zonePoliciesArb, (links, exclusions, zonePolicies) => {
         const result = coordinate({ links, exclusions, zonePolicies });
+        const held = new Map(result.robustness.linkGuards.map((entry) => [entry.linkId, entry.guards]));
         const verified = checkPlan({
-          links,
+          links: links.map((l) => ({ ...l, guards: held.get(l.id)! })),
           plan: result.assignments,
           exclusions,
           zonePolicies,

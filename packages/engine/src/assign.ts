@@ -445,6 +445,9 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
       level,
       factor: config.robustnessLadder[level] as number,
       guards,
+      linkGuards: links
+        .map((link, i) => ({ linkId: link.id, guards: linkGuards[i] as Guards }))
+        .sort((a, b) => compareIds(a.linkId, b.linkId)),
       ladderLength: config.robustnessLadder.length,
     },
     stats: {

@@ -45,6 +45,68 @@
       "spacingKHz": 350,
       "exclusionKHz": 250
     },
+    "linkGuards": [
+      {
+        "linkId": "HF01",
+        "guards": {
+          "im3TwoTxKHz": 200,
+          "im3ThreeTxKHz": 100,
+          "im5TwoTxKHz": 90,
+          "spacingKHz": 350,
+          "exclusionKHz": 250
+        }
+      },
+      {
+        "linkId": "HF02",
+        "guards": {
+          "im3TwoTxKHz": 200,
+          "im3ThreeTxKHz": 100,
+          "im5TwoTxKHz": 90,
+          "spacingKHz": 350,
+          "exclusionKHz": 250
+        }
+      },
+      {
+        "linkId": "HF03",
+        "guards": {
+          "im3TwoTxKHz": 200,
+          "im3ThreeTxKHz": 100,
+          "im5TwoTxKHz": 90,
+          "spacingKHz": 350,
+          "exclusionKHz": 250
+        }
+      },
+      {
+        "linkId": "HF04",
+        "guards": {
+          "im3TwoTxKHz": 200,
+          "im3ThreeTxKHz": 100,
+          "im5TwoTxKHz": 90,
+          "spacingKHz": 350,
+          "exclusionKHz": 250
+        }
+      },
+      {
+        "linkId": "HF05",
+        "guards": {
+          "im3TwoTxKHz": 200,
+          "im3ThreeTxKHz": 100,
+          "im5TwoTxKHz": 90,
+          "spacingKHz": 350,
+          "exclusionKHz": 250
+        }
+      },
+      {
+        "linkId": "HF06",
+        "guards": {
+          "im3TwoTxKHz": 200,
+          "im3ThreeTxKHz": 100,
+          "im5TwoTxKHz": 90,
+          "spacingKHz": 350,
+          "exclusionKHz": 250
+        }
+      }
+    ],
     "ladderLength": 5
   },
   "stats": {

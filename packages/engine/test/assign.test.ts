@@ -29,6 +29,33 @@ describe('coordinate — basic guarantees', () => {
     expect(verified.ok).toBe(true);
   });
 
+  it('reports the guards each link was held to, so a re-check with per-model guards reproduces the verdict', () => {
+    // Six links whose own guards are far stricter than the global set, in a
+    // 2 MHz range: the ladder has to descend, and the scaled global guards
+    // alone would re-check the plan against the wrong numbers.
+    const strict = { spacingKHz: 500, im3TwoTxKHz: 400, im3ThreeTxKHz: 200 };
+    const links = Array.from({ length: 6 }, (_, i) =>
+      link(`L${i}`, { tuningRangeKHz: [500_000, 502_000], channelWidthKHz: 25, guards: strict }),
+    );
+    const result = coordinate({ links, config: { enableIm5TwoTx: false } });
+    expect(result.ok).toBe(true);
+    expect(result.robustness.level).toBeGreaterThan(0);
+
+    const held = new Map(result.robustness.linkGuards.map((entry) => [entry.linkId, entry.guards]));
+    expect(held.get('L0')?.spacingKHz).toBe(Math.floor(500 * result.robustness.factor));
+    const verified = checkPlan({
+      links: links.map((l) => ({ ...l, guards: held.get(l.id)! })),
+      plan: result.assignments,
+      config: { guards: result.robustness.guards, enableIm5TwoTx: false },
+    });
+    expect(verified.violations).toEqual(result.violations);
+    expect(verified.ok).toBe(true);
+
+    // The naive re-check — the global guards only — is not the verification
+    // the engine ran, and says so.
+    const naive = checkPlan({ links, plan: result.assignments, config: { guards: result.robustness.guards, enableIm5TwoTx: false } });
+    expect(naive.ok).toBe(false);
+  });
 
   it('keeps every carrier on its hardware tuning grid and inside its range', () => {
     const links = festival();
