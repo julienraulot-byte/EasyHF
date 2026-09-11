@@ -1,256 +1,125 @@
-# Relevés Wireless Workbench — mode opératoire
+# Relevés Wireless Workbench 7 — mode opératoire
 
-Ce document est le pas-à-pas de la porte de phase 0. Il complète
-`VALIDATION.md`, qui dit *pourquoi* ; celui-ci dit *comment*, cas par cas, avec
-les fréquences prêtes à saisir. Compter une heure et demie pour les dix cas.
+Pas-à-pas de la porte de phase 0, tel qu'il a été **réellement exécuté** le
+11 septembre 2026 sur Wireless Workbench **7.8.3.18** (macOS). La première
+version de ce document décrivait WWB 6 ; rien n'y correspondait à l'écran.
+Celle-ci ne décrit que ce qui a été vu.
 
-Précaution sur les noms d'écrans : les libellés ci-dessous (« Frequency
-Coordination », « Coordination Parameters », « 2T3O ») sont ceux de Wireless
-Workbench 6. Ils peuvent bouger d'une version à l'autre ; ce qui compte est ce
-que chaque étape cherche, pas le nom exact du bouton. Noter la version utilisée.
+`VALIDATION.md` dit *pourquoi* ; ce document dit *comment*. Les relevés
+eux-mêmes sont dans `packages/engine/test/fixtures/validation-cases.ts`,
+champ `wwbReference`, et le test `validation.test.ts` les compare.
 
-## 0. Préparation, une seule fois
+## 1. Ce que WWB 7 sait faire, et ne sait pas faire
 
-1. **Créer un show vierge** nommé `EasyHF-validation`. Ne pas réutiliser un show
-   de production : les paramètres de coordination y sont déjà modifiés.
-2. **Neutraliser la TV.** Dans les paramètres de coordination, vider la liste des
-   canaux TV à exclure (ou choisir une région sans TV). Les cas C01 à C06 sont
-   autour de 500 MHz, en plein canal TNT français : WWB y ajouterait des conflits
-   « TV » qui ne concernent pas la comparaison. Seul C07 remet des canaux TV.
-3. **Régler les distances d'intermodulation sur celles d'EasyHF.** Dans
-   « Coordination Parameters » (ou le profil de coordination du show) :
+- **Un verdict par fréquence**, *Compatible* / *Incompatible*, dans la colonne
+  « Analysis results » de la liste de coordination. Le **texte au survol** de
+  la ligne nomme la cause : « Channel to channel spacing violation », « Channel
+  to 2T3O intermod spacing violation », « Channel to 2T5O … », « Overlapped by
+  TV channel ». WWB **ne nomme pas les générateurs** du produit. La
+  comparaison se fait donc sur les victimes.
+- **Les distances appartiennent à un profil de compatibilité**, lui-même
+  attaché à un couple modèle + bande (*Equipment profiles*). Le panneau
+  « Compatibility » de la coordination les *affiche* ; il ne les édite pas.
+  L'espacement entre porteuses (*Channel spacing*) est une propriété du
+  matériel, non modifiable : **350 kHz** pour un ULX-D en mode Standard.
+- **Filtre d'entrée ±100 MHz, fixe** : WWB ignore les produits dont les
+  générateurs sont à plus de 100 MHz de la victime.
+- **RF zones** (Tools → Manage RF zones…) : entre zones, WWB conserve
+  l'espacement et ne calcule aucune intermodulation — notre `spacing-only`.
+- **Aucune règle réglementaire française** : 700 MHz est « compatible ».
+- L'auto-coordination (*Calculate*) est une recherche aléatoire (« Number of
+  passes 10 000, Maximum fruitless experiments 5 000 »). **On ne l'utilise
+  jamais** : elle remplacerait les fréquences que l'on veut vérifier.
 
-   | Paramètre WWB | Valeur |
-   |---|---|
-   | Channel-to-channel (espacement entre porteuses) | 300 kHz |
-   | 2T3O — 3ᵉ ordre, 2 émetteurs | 200 kHz |
-   | 3T3O — 3ᵉ ordre, 3 émetteurs | 100 kHz |
-   | 2T5O — 5ᵉ ordre, 2 émetteurs | 90 kHz |
-   | Ordres supérieurs (2T7O, 2T9O, 3T5O, 3T7O) | désactivés |
+## 2. Préparation, une seule fois
 
-   Vérifier que 3T3O et 2T5O sont bien **activés** : sur certains profils ils
-   sont à zéro ou décochés par défaut, et C04, C05, C06 seraient alors vides.
-4. **Avant de les modifier, relever les valeurs par défaut** de WWB pour chacun
-   de ses profils (« More Frequencies », « Standard », « More Robust », ou
-   équivalents). Ce relevé sert D-006 (garde 3 émetteurs), indépendamment de la
-   comparaison. Le noter dans un coin :
+1. Show vierge, sauvegardé `EasyHF-validation`.
+2. Onglet **Frequency coordination** → panneau de droite **Spectrum** : vérifier
+   « No TV channels to avoid », « No frequencies to avoid ». Sinon, roue
+   crantée *TV channels* → tout décocher → Save. (Seul C07 remet des canaux.)
+3. **Tools → Equipment profiles…** → Manufacturer *Shure*, Model *ULXD4*,
+   Band *G50* (470,125–534,000 MHz, pas 25 kHz), Transmission mode
+   *Standard*. Section *Compatibility (3)* : **relever** les trois profils
+   livrés (More Frequencies / Standard / Robust) — c'est la donnée de D-006 —
+   puis **dupliquer Robust** (icône deux carrés) et régler le double :
+   2T3O **200**, 2T5O **90**, 3T3O **100**, 2T7O et 2T9O 0. Le nommer.
+   Répéter pour **chaque bande** qui servira (H50 pour C10, et une bande
+   Axient Digital pour 606–657 MHz).
 
-   ```
-   WWB <version> — profil <nom> : ch-to-ch ___ / 2T3O ___ / 3T3O ___ / 2T5O ___
-   ```
-5. **Choisir comment saisir des fréquences nues.** Deux voies, selon la version :
-   une liste d'inclusions (« Inclusions » / « Frequency List » de la
-   coordination), ou des appareils hors ligne d'un modèle large bande dont la
-   plage couvre 470–700 MHz. Peu importe laquelle : il faut que WWB **analyse la
-   compatibilité** de ces fréquences entre elles et affiche les conflits par
-   fréquence, avec les fréquences qui les produisent.
+## 3. Saisir un cas
 
-## 1. Ordre des cas
+1. Panneau **Add frequencies** → Manufacturer Shure → Model ULXD4 → Band G50
+   → Quantity = nombre de porteuses → *Primary* → **Add**. Les lignes
+   apparaissent dans la liste, fréquence vide.
+2. **Double-cliquer la cellule « Frequency (MHz) »** de chaque ligne et taper
+   la valeur (`494.000`). WWB accepte la saisie telle quelle.
+3. Sélectionner les lignes → **cadenas fermé** de la barre d'outils : les
+   fréquences deviennent imposées.
+4. Sur la ligne d'en-tête du groupe (`ULXD - G50 - Standard … Standard 3/3`),
+   cliquer le nom du profil et choisir le profil EasyHF. Le panneau
+   *Compatibility* doit afficher 200 / 90 / 100.
+5. **Analyze** (jamais *Calculate*). Lire la colonne « Analysis results » et,
+   pour chaque ligne incompatible, **le texte au survol**.
+6. Relever : `cas — fréquence : verdict — cause au survol`.
 
-Commencer par ceux qui calibrent, finir par ceux qui coûtent de la saisie.
+Pour passer au cas suivant, éditer les cellules en place ; ajouter ou supprimer
+des lignes au besoin.
 
-| Ordre | Cas | Ce qu'il apprend |
-|---|---|---|
-| 1 | C02 | WWB voit-il le 2T3O le plus évident ? Contrôle que la saisie marche. |
-| 2 | C03 | **Calibration** : à exactement 200 kHz du produit, WWB signale-t-il ? EasyHF non (inégalité stricte). Si WWB oui, sa règle est `≤`, et il faudra l'écrire. |
-| 3 | C05 | 2T5O activé et compté à part ? |
-| 4 | C04 | 3T3O activé ? Combien de victimes sur le quadruplet (EasyHF : quatre) ? |
-| 5 | C06 | Le peigne. Long à relever, mais c'est le cas qui départage vraiment deux moteurs. |
-| 6 | C01 | Témoin négatif : rien attendu. |
-| 7 | C08 | 700 MHz. WWB peut refuser la saisie : noter « non testable », ce n'est pas une règle d'intermodulation. |
-| 8 | C07 | Plan **produit par EasyHF** autour de six canaux TV : WWB ne doit rien trouver. |
-| 9 | C10 | Plan produit par EasyHF, 24 fréquences : WWB ne doit rien trouver. |
-| 10 | C09 | Seulement si la version de WWB gère des zones ; sinon sauter et le noter. |
+## 4. Les cas, tels que relevés
 
-## 2. Pour chaque cas
+Profil ULXD4 G50 « EasyHF2 » : espacement 350, 2T3O 200, 2T5O 90, 3T3O 100.
 
-1. Saisir les fréquences du cas (tableaux en §4). Vérifier deux fois : une
-   erreur de saisie de 25 kHz invalide le relevé.
-2. Lancer l'analyse de compatibilité.
-3. Pour **chaque conflit** affiché, noter : la fréquence victime, le type
-   (2T3O, 3T3O, 2T5O, espacement), et les fréquences génératrices telles que
-   WWB les nomme.
-4. Faire une capture d'écran de la liste des conflits. Elle tranchera les doutes
-   de transcription.
-5. Écrire le relevé dans le format ci-dessous, une ligne par conflit :
-
-   ```
-   C02  WWB 6.15.2
-   2T3O  506.000  <=  500.000 + 494.000
-   2T3O  494.000  <=  500.000 + 506.000
-   ```
-
-   Un cas sans conflit se note `C01  aucun conflit`.
-
-Ne pas chercher à interpréter : relever ce que WWB affiche, y compris ce qui
-paraît redondant ou étrange. C'est la comparaison qui interprète.
-
-## 3. Ce qui se passe ensuite
-
-Le relevé (texte + captures) est transcrit dans le champ `wwbReference` de
-chaque cas, dans `packages/engine/test/fixtures/validation-cases.ts`, sous la
-forme :
-
-```ts
-wwbReference: {
-  im3: [
-    { victimLinkId: 'HF02', sourceLinkIds: ['HF01', 'HF03'] },
-    { victimLinkId: 'HF03', sourceLinkIds: ['HF01', 'HF02'] },
-  ],
-  wwbVersion: 'Wireless Workbench 6.15.2',
-  capturedAt: '2026-09-12',
-  capturedBy: 'Julien',
-},
-```
-
-Puis `pnpm test`. Le test « detects every IM3 violation Wireless Workbench
-reports » cesse d'être ignoré et échoue en nommant toute violation que WWB voit
-et qu'EasyHF manque.
-
-**Critère de la porte** : sur les dix cas, EasyHF signale au moins tous les
-conflits 2T3O et 3T3O que WWB signale. Le sur-signalement d'EasyHF est accepté.
-Les 2T5O sont comparés à titre informatif. Et sur C07 et C10, **WWB ne doit
-trouver aucun conflit** — s'il en trouve un, c'est le point à traiter en premier,
-avant tout le reste.
-
-## 4. Les fréquences à saisir
-
-Toutes en MHz, canal 200 kHz sauf mention. Ce qu'EasyHF signale est donné pour
-comparaison immédiate ; les listes complètes sont dans `packages/engine/test/golden/`.
-
-### C01 — paire propre
-
-| Liaison | MHz |
-|---|---|
-| HF01 | 500.000 |
-| HF02 | 510.000 |
-
-EasyHF : rien.
-
-### C02 — porteuse sur 2·f1 − f2
-
-| Liaison | MHz |
-|---|---|
-| HF01 | 500.000 |
-| HF02 | 506.000 |
-| HF03 | 494.000 |
-
-EasyHF : 2T3O sur HF02 (2×HF01 − HF03) et sur HF03 (2×HF01 − HF02), à 0 kHz.
-
-### C03 — porteuse à exactement 200 kHz du produit
-
-| Liaison | MHz |
-|---|---|
-| HF01 | 500.000 |
-| HF02 | 506.000 |
-| HF03 | 494.200 |
-
-EasyHF : rien (le produit 494.000 est à 200 kHz, garde 200, inégalité stricte).
-**Noter précisément** si WWB signale ou non.
-
-### C04 — quadruplet f1 + f4 = f2 + f3
-
-| Liaison | MHz |
-|---|---|
-| HF01 | 500.000 |
-| HF02 | 505.300 |
-| HF03 | 508.400 |
-| HF04 | 513.700 |
-
-EasyHF : quatre 3T3O, une par porteuse, à 0 kHz. Aucun 2T3O.
-
-### C05 — porteuse sur 3·f1 − 2·f2
-
-| Liaison | MHz |
-|---|---|
-| HF01 | 500.000 |
-| HF02 | 500.300 |
-| HF03 | 499.400 |
-
-EasyHF : un seul 2T5O sur HF03 (3×HF01 − 2×HF02), aucun 3ᵉ ordre.
-
-### C06 — peigne à 400 kHz
-
-| Liaison | MHz |
-|---|---|
-| PEIGNE1 | 500.000 |
-| PEIGNE2 | 500.400 |
-| PEIGNE3 | 500.800 |
-| PEIGNE4 | 501.200 |
-| PEIGNE5 | 501.600 |
-| PEIGNE6 | 502.000 |
-| PEIGNE7 | 502.400 |
-| PEIGNE8 | 502.800 |
-
-EasyHF : 24 × 2T3O, 88 × 3T3O, 14 × 2T5O, tous à 0 kHz. Relever au minimum
-**la liste des victimes par type** et, pour 2T3O, les paires génératrices. Pour
-3T3O, une capture suffit si WWB en affiche des dizaines.
-
-### C07 — plan produit par EasyHF autour de six canaux TV
-
-**Remettre** dans WWB les canaux TV 28 à 33 en exclusion (526–574 MHz) avant
-l'analyse.
-
-| Liaison | MHz |
-|---|---|
-| HF01 | 510.000 |
-| HF02 | 510.300 |
-| HF03 | 510.800 |
-| HF04 | 511.900 |
-| HF05 | 512.300 |
-| HF06 | 513.200 |
-
-EasyHF : rien. **WWB ne doit rien trouver non plus.**
-
-### C08 — bande 700 MHz
-
-| Liaison | MHz |
-|---|---|
-| HF01 | 700.000 |
-
-EasyHF : hors bande (règle réglementaire, pas d'intermodulation). Si WWB refuse
-la saisie, noter « non testable ».
-
-### C09 — deux zones en spacing-only
-
-Uniquement si WWB gère des zones. Scène 1 : A1, A2. Scène 2 : B1. Entre les
-deux scènes, seul l'espacement compte, pas l'intermodulation.
-
-| Liaison | Zone | MHz |
-|---|---|---|
-| A1 | scène 1 | 500.000 |
-| A2 | scène 1 | 506.000 |
-| B1 | scène 2 | 494.000 |
-
-EasyHF : rien (B1 est sur 2×A1 − A2, mais dans une autre zone).
-
-### C10 — plan produit par EasyHF, 24 liaisons
-
-Tout saisir **dans une seule zone** : les deux scènes du cas sont en
-`full-intermod`, ce que WWB fait par défaut. IEM en canal 300 kHz.
-
-| Liaison | MHz | | Liaison | MHz |
+| Cas | Fréquences (MHz) | WWB | EasyHF | Verdict |
 |---|---|---|---|---|
-| SC1-01 | 534.000 | | IEM-01 | 606.000 |
-| SC1-02 | 534.475 | | IEM-02 | 606.375 |
-| SC1-03 | 535.200 | | IEM-03 | 607.000 |
-| SC1-04 | 536.750 | | IEM-04 | 608.375 |
-| SC1-05 | 538.500 | | SC2-01 | 616.100 |
-| SC1-06 | 540.600 | | SC2-02 | 621.700 |
-| SC1-07 | 541.425 | | SC2-03 | 625.400 |
-| SC1-08 | 544.000 | | SC2-04 | 630.700 |
-| SC1-09 | 545.650 | | SC2-05 | 633.850 |
-| SC1-10 | 548.125 | | SC2-06 | 646.200 |
-| SC1-11 | 551.625 | | SC2-07 | 648.075 |
-| SC1-12 | 556.475 | | SC2-08 | 656.025 |
+| C01 | 500.000 · 510.000 | tout compatible | rien | concordant |
+| C02 | 500.000 · 506.000 · 494.000 | 506 et 494 incompatibles | HF02, HF03 (2T3O) | concordant |
+| C03 | 500.000 · 506.000 · 494.200 | tout compatible | rien | concordant — **la règle de WWB est stricte** à la garde exacte, comme la nôtre |
+| C04 | 500.000 · 505.300 · 508.400 · 513.700 | les quatre incompatibles | les quatre (3T3O) | concordant — aucun 2T3O n'approche, c'est le 3 émetteurs |
+| C05 | 500.000 · 500.800 · 498.400 | 498.400 « 2T5O intermod » | HF03 (IM5) | concordant |
+| C06 | peigne 500.000 → 505.600, pas 800 | les huit incompatibles | les huit | concordant |
+| C07 | plan EasyHF, TNT 28–33 cochés | tout compatible | rien | concordant — le plan passe |
+| C08 | 700.000 (ULXD4 M19) | compatible | hors bande | sur-signalement EasyHF assumé |
+| C09 | 500.000 · 506.000 en scene1, 494.000 en scene2 | tout compatible | rien (`spacing-only`) | concordant |
+| C10 | plan EasyHF 24 liaisons, 3 bandes | *en cours* | rien | — |
 
-EasyHF : rien, au palier 0. **WWB ne doit rien trouver non plus.**
+Sondes hors cas :
 
-## 5. Ce que la comparaison ne dira pas
+| Sonde | Résultat | Ce qu'elle établit |
+|---|---|---|
+| 500.000 · 500.300 | incompatibles, « channel spacing » | l'espacement ULX-D est 350 kHz |
+| 500.000 · 500.600 et 500.000 · 500.700 | compatibles | … et pas 700 : « ±350 » se lit 350 entre porteuses |
+| 500.000 en scene1, 500.100 en scene2 | incompatibles, « channel spacing » | entre RF zones, WWB garde l'espacement… |
+| 494.000 en scene2 face à 500.000 · 506.000 en scene1 | compatible | … et ne calcule pas l'intermodulation : `spacing-only` |
 
-- Elle ne valide pas les **valeurs** des gardes, seulement la détection à gardes
-  égales. Les valeurs par défaut de WWB relevées en §0.4 sont l'entrée de D-006.
-- Elle ne dit rien du multi-zones, hormis C09 si WWB le permet. Les cas
-  inter-zones sont couverts par les tests de détection de D-021 et par la
-  question D-022, qui reste à trancher.
-- Elle ne remplace pas un scan sur site.
+Les cas C05 et C06 ont été redessinés pendant la campagne pour que leurs
+écarts dépassent les 350 kHz d'espacement de WWB ; sans cela, un verdict
+« spacing » masquait le produit que le cas devait isoler. Les relations
+d'intermodulation sont inchangées (C06 garde ses 24 / 88 / 14 violations
+chez EasyHF). C07 et C10 sont produits par EasyHF avec un espacement de
+350 kHz pour la même raison.
+
+## 5. Pièges rencontrés
+
+- Le premier C05 (500.000 · 500.300 · 499.400) rendait trois lignes
+  incompatibles. Deux l'étaient par espacement (300 < 350), la troisième par
+  5ᵉ ordre — un seul texte au survol lu, et une conclusion fausse (« WWB exige
+  700 kHz ») écrite puis réfutée par les sondes. **Lire le survol de chaque
+  ligne incompatible**, pas d'une seule.
+- Les canaux TV cochés pour C07 restent cochés pour les cas suivants : le
+  534.000 de C10 est ressorti « Overlapped by TV channel ». **Décocher après
+  C07.**
+- Un profil de compatibilité n'existe que pour sa bande. Un plan sur trois
+  bandes demande trois profils.
+- Aucune bande ULX-D ne couvre 606–657 MHz d'un seul tenant : C10 utilise
+  Axient Digital K54 et K55.
+
+## 6. Ce que cette comparaison a établi, et ce qu'elle laisse ouvert
+
+Établi : sur les familles modélisées (2T3O, 3T3O, 2T5O, espacement), EasyHF
+signale tout ce que WWB signale, et rien de ce que WWB juge compatible, à la
+garde exacte près, où les deux sont stricts. Un plan produit par EasyHF passe
+WWB.
+
+Ouvert, et consigné dans `DECISIONS.md` : la valeur des gardes par série
+(D-006), le filtre d'entrée ±100 MHz que WWB applique et pas EasyHF (D-006),
+le défaut inter-zones — strict ou comme WWB (D-022).
