@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { coordinate } from '../src/assign.js';
 import { checkPlan } from '../src/check.js';
-import { VALIDATION_CASES, type ValidationCase } from './fixtures/validation-cases.js';
+import { VALIDATION_CASES, type ValidationCase, type WwbReference } from './fixtures/validation-cases.js';
 
 const GOLDEN_DIR = fileURLToPath(new URL('./golden', import.meta.url));
 const UPDATE = env.UPDATE_GOLDEN === '1';
@@ -48,17 +48,49 @@ describe('reference cases (docs/VALIDATION.md)', () => {
 describe('comparison with Wireless Workbench', () => {
   const withReference = VALIDATION_CASES.filter((c) => c.wwbReference);
 
-  it.skipIf(withReference.length === 0)('detects every IM3 violation Wireless Workbench reports', () => {
+  it.skipIf(withReference.length === 0)('flags every frequency Wireless Workbench finds incompatible', () => {
     for (const testCase of withReference) {
-      const result = run(testCase);
-      const found = new Set(
-        result.violations
-          .filter((v) => v.kind === 'im3-2tx' || v.kind === 'im3-3tx')
-          .map((v) => `${v.victimLinkId}<=${[...v.sourceLinkIds].sort().join('+')}`),
-      );
-      for (const expected of testCase.wwbReference?.im3 ?? []) {
-        const key = `${expected.victimLinkId}<=${[...expected.sourceLinkIds].sort().join('+')}`;
-        expect(found, `${testCase.id} : ${key} vu par WWB, manqué par EasyHF`).toContain(key);
+      const reference = testCase.wwbReference as WwbReference;
+      // Same spacings on both sides, or the comparison means nothing.
+      const result =
+        testCase.mode === 'check'
+          ? checkPlan({
+              ...testCase.input,
+              config: {
+                ...testCase.input.config,
+                guards: {
+                  im3TwoTxKHz: reference.profile.im3TwoTx,
+                  im3ThreeTxKHz: reference.profile.im3ThreeTx,
+                  im5TwoTxKHz: reference.profile.im5TwoTx,
+                },
+              },
+            })
+          : run(testCase);
+      const critical = result.violations.filter((v) => v.severity === 'critical');
+      const victims = new Set(critical.map((v) => v.victimLinkId));
+      for (const expected of reference.incompatible) {
+        expect(victims, `${testCase.id} : ${expected.victimLinkId} incompatible pour WWB, rien chez EasyHF`).toContain(
+          expected.victimLinkId,
+        );
+        if (expected.sourceLinkIds) {
+          const key = [...expected.sourceLinkIds].sort().join('+');
+          const sources = critical
+            .filter((v) => v.victimLinkId === expected.victimLinkId)
+            .map((v) => [...v.sourceLinkIds].sort().join('+'));
+          expect(sources, `${testCase.id} : ${expected.victimLinkId} <= ${key}`).toContain(key);
+        }
+      }
+    }
+  });
+
+  it.skipIf(withReference.length === 0)('records where EasyHF is stricter than Wireless Workbench', () => {
+    // Over-reporting is accepted by the gate; it is still worth seeing.
+    for (const testCase of withReference) {
+      const reference = testCase.wwbReference as WwbReference;
+      const victims = new Set(run(testCase).violations.map((v) => v.victimLinkId));
+      const stricter = reference.compatible.filter((id) => victims.has(id));
+      if (stricter.length > 0) {
+        console.info(`${testCase.id} : EasyHF signale aussi ${stricter.join(', ')}, que WWB juge compatibles`);
       }
     }
   });

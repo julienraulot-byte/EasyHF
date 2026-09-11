@@ -13,14 +13,31 @@ export { FR_BANDS, tntChannel };
  * reference is not the same as a passing comparison.
  */
 export interface WwbReference {
-  /** IM3 violations Wireless Workbench reports for the same input. */
-  im3: { victimLinkId: string; sourceLinkIds: string[] }[];
+  /**
+   * Frequencies Wireless Workbench marks « Incompatible » in its analysis
+   * results. WWB 7 gives a verdict per frequency, not the generating product,
+   * so the comparison is on victims; `sourceLinkIds` is filled only when the
+   * run exposed it.
+   */
+  incompatible: { victimLinkId: string; sourceLinkIds?: string[] }[];
+  /** Frequencies WWB marks « Compatible ». Recorded, not asserted on. */
+  compatible: string[];
+  /** Compatibility profile applied in WWB, as its spacings, in kHz. */
+  profile: { channelSpacing: number; im3TwoTx: number; im5TwoTx: number; im3ThreeTx: number };
   wwbVersion: string;
   /** ISO date of the WWB run. */
   capturedAt: string;
   /** Who ran it. */
   capturedBy: string;
 }
+
+/** ULXD4 G50, profile « EasyHF2 » — see docs/WWB-RELEVES.md. */
+const WWB_RUN = {
+  profile: { channelSpacing: 350, im3TwoTx: 200, im5TwoTx: 90, im3ThreeTx: 100 },
+  wwbVersion: 'Wireless Workbench 7.8.3.18',
+  capturedAt: '2026-09-11',
+  capturedBy: 'Julien',
+};
 
 export type ValidationCase = {
   id: string;
@@ -60,6 +77,11 @@ export const VALIDATION_CASES: ValidationCase[] = [
       links: [uhf('HF01'), uhf('HF02'), uhf('HF03')],
       plan: plan({ HF01: 500_000, HF02: 506_000, HF03: 494_000 }),
       bands: FR_BANDS,
+    },
+    wwbReference: {
+      ...WWB_RUN,
+      incompatible: [{ victimLinkId: 'HF02' }, { victimLinkId: 'HF03' }],
+      compatible: ['HF01'],
     },
   },
   {
