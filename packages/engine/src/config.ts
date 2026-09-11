@@ -6,8 +6,8 @@ import type { EngineConfig, EngineConfigInput, Guards } from './types.js';
  * IM3 (200 kHz), IM5 (90 kHz), co-channel spacing (300 kHz) and the exclusion
  * guard (250 kHz) come from the build brief, §4 Phase 0. The 3-transmitter IM3
  * guard is not in the brief: it is set here to 100 kHz so that realistic link
- * counts remain reachable, and is flagged `[À VALIDER JULIEN]` in
- * `docs/DECISIONS.md`. None of these are measured values.
+ * counts remain reachable (D-006, validated). None of these are measured
+ * values.
  */
 export const DEFAULT_GUARDS: Guards = {
   im3TwoTxKHz: 200,
@@ -71,28 +71,24 @@ export function resolveConfig(partial?: EngineConfigInput): EngineConfig {
 }
 
 /**
- * Nominal guards scaled by a ladder factor, rounded down to whole kHz.
- *
- * `floor` is monotone, so the `im3ThreeTx ≤ im3TwoTx ≤ spacing` order survives
- * scaling on its own. `2·spacing ≥ im5` does not — `floor(0.3 × 45) = 13` but
- * `floor(0.3 × 90) = 27` — so it is restored explicitly, or the re-check at the
- * end of `coordinate` would reject guards the ladder itself produced.
+ * Nominal guards scaled by a ladder factor, rounded down to whole kHz. At
+ * factor 1 this is the identity: the nominal rung enforces exactly the guards
+ * the caller gave, so `coordinate` and a direct `checkPlan` agree on them.
  */
 export function scaleGuards(guards: Guards, factor: number): Guards {
-  const spacingKHz = Math.floor(guards.spacingKHz * factor);
   return {
     im3TwoTxKHz: Math.floor(guards.im3TwoTxKHz * factor),
     im3ThreeTxKHz: Math.floor(guards.im3ThreeTxKHz * factor),
-    im5TwoTxKHz: Math.min(Math.floor(guards.im5TwoTxKHz * factor), 2 * spacingKHz),
-    spacingKHz,
+    im5TwoTxKHz: Math.floor(guards.im5TwoTxKHz * factor),
+    spacingKHz: Math.floor(guards.spacingKHz * factor),
     exclusionKHz: Math.floor(guards.exclusionKHz * factor),
   };
 }
 
 /**
  * The guards each link is actually held to: its own overrides on top of the
- * global set, validated one by one so that a hardware entry cannot break the
- * ordering the degeneracy rules rely on.
+ * global set, validated one by one so that a malformed hardware entry is
+ * reported under the link's name.
  */
 export function resolveLinkGuards(
   links: readonly { id: string; guards?: Partial<Guards> }[],

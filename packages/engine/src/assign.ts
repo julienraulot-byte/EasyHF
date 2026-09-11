@@ -189,19 +189,15 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
             if (c === a || c === b) continue;
             block.around(sum - (visible[c] as Placed).freqKHz, g3b);
           }
-          // f as its own generator, with pa and pb the other two:
+          // f as its own generator, with pa and pb the other two (D-005: the
+          // rule that measures the residual decides, whatever its guard):
           const relAB = rel(pa.linkIndex, pb.linkIndex);
-          // f + pa − pb hits f  ⇒  |pa − pb| < g3b, for every f. Covered by
-          // spacing(pa, pb) when it runs with at least this guard.
-          const spacingCovers = relAB !== REL.none && spacingWith(pa.linkIndex, pb.linkIndex) >= g3b;
-          if (!spacingCovers && Math.abs(pa.freqKHz - pb.freqKHz) < g3b) hard.fill(1);
-          // pa + pb − f hits f  ⇒  |pa + pb − 2f| < g3b. Covered by the
-          // 2-transmitter form when pa and pb see each other and either one's
-          // 2-transmitter guard is at least this guard.
-          const twoTxCovers =
-            relAB === REL.full &&
-            Math.max((guards[pa.linkIndex] as Guards).im3TwoTxKHz, (guards[pb.linkIndex] as Guards).im3TwoTxKHz) >= g3b;
-          if (!twoTxCovers) block.range(3 * (sum - g3b) + 1, 3 * (sum + g3b) - 1);
+          // f + pa − pb hits f  ⇒  |pa − pb| < g3b, for every f. Spacing
+          // (pa, pb) decides unless it is skipped between isolated zones.
+          if (relAB === REL.none && Math.abs(pa.freqKHz - pb.freqKHz) < g3b) hard.fill(1);
+          // pa + pb − f hits f  ⇒  |pa + pb − 2f| < g3b. The 2-transmitter
+          // forms decide, and they run only when pa and pb see each other.
+          if (relAB !== REL.full) block.range(3 * (sum - g3b) + 1, 3 * (sum + g3b) - 1);
         }
       }
     }
@@ -228,15 +224,13 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
         if (!threeTx) continue;
         const relFP = rel(linkIndex, p.linkIndex);
         // v as additive generator alongside f (f + v − p) or alongside p
-        // (p + v − f): residual |f − p|, covered by spacing(f, p) when it runs
-        // with at least v's guard.
-        if (!(relFP !== REL.none && spacingWith(linkIndex, p.linkIndex) >= v3b)) block.around(fp, v3b);
+        // (p + v − f): residual |f − p|, which spacing(f, p) decides unless
+        // it is skipped between isolated zones.
+        if (relFP === REL.none) block.around(fp, v3b);
         // v as subtractive generator (f + p − v hits v): residual |f + p − 2v|,
-        // the 2-transmitter form against f or against p, which runs when f and
-        // p see each other, with the larger of their 2-transmitter guards.
-        const twoTxCovers =
-          relFP === REL.full && Math.max(g3a, (guards[p.linkIndex] as Guards).im3TwoTxKHz) >= v3b;
-        if (!twoTxCovers) block.around(2 * fv - fp, v3b);
+        // which the 2-transmitter forms against f and against p decide; they
+        // run only when f and p see each other.
+        if (relFP !== REL.full) block.around(2 * fv - fp, v3b);
       }
 
       if (!threeTx || s < 2) continue;

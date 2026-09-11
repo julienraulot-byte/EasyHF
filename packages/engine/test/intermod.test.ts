@@ -23,7 +23,6 @@ function collect(freqs: number[], options: CollectOptions = {}): ImHit[] {
       enableIm3ThreeTx: true,
       enableIm5TwoTx: true,
       relation: oneZone,
-      spacingRequired: () => each.spacingKHz,
       ...rest,
     },
     (hit) => hits.push(hit),

@@ -337,7 +337,6 @@ export function checkPlan(input: CheckInput): CheckResult {
           (assigned[b] as { link: EngineLink }).link.zoneId,
           input.zonePolicies,
         ),
-      spacingRequired,
     },
     (hit) => {
       const guard = hit.requiredKHz;

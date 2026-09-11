@@ -29,6 +29,7 @@ describe('coordinate — basic guarantees', () => {
     expect(verified.ok).toBe(true);
   });
 
+
   it('keeps every carrier on its hardware tuning grid and inside its range', () => {
     const links = festival();
     const byId = new Map(links.map((l) => [l.id, l]));
@@ -222,20 +223,23 @@ describe('coordinate — input validation', () => {
     ).toThrow(/inversée/);
   });
 
-  it('keeps every guard invariant through the whole ladder', () => {
-    // floor(0.3 × 45) = 13 but floor(0.3 × 90) = 27: without care the scaled
-    // guards would fail the very check the nominal ones passed, and the final
-    // re-verification would throw on a plan the ladder itself produced.
-    const guards = { im3TwoTxKHz: 45, im3ThreeTxKHz: 45, spacingKHz: 45, im5TwoTxKHz: 90, exclusionKHz: 45 };
-    const scaled = scaleGuards(guards, 0.3);
-    expect(scaled.spacingKHz).toBe(13);
-    expect(scaled.im5TwoTxKHz).toBe(26);
-    expect(() =>
-      coordinate({
-        links: [link('A', { tuningRangeKHz: [500_000, 500_015], stepKHz: 5, channelWidthKHz: 5 }), link('B', { tuningRangeKHz: [500_000, 500_015], stepKHz: 5, channelWidthKHz: 5 })],
-        config: { guards },
-      }),
-    ).not.toThrow();
+  it('enforces exactly the caller\'s guards at the nominal rung, and floors them below it', () => {
+    // No guard is ever adjusted behind the caller's back: a plan `coordinate`
+    // accepts at level 0 is one `checkPlan` accepts with the same guards.
+    // (An IM5 guard above twice the spacing used to be clamped silently.)
+    const guards = { im3TwoTxKHz: 50, im3ThreeTxKHz: 0, spacingKHz: 100, im5TwoTxKHz: 300, exclusionKHz: 45 };
+    expect(scaleGuards(guards, 1)).toEqual(guards);
+    expect(scaleGuards(guards, 0.3)).toEqual({ im3TwoTxKHz: 15, im3ThreeTxKHz: 0, spacingKHz: 30, im5TwoTxKHz: 90, exclusionKHz: 13 });
+
+    // 3 × 500 000 − 2 × 500 300 = 499 400; C sits 250 kHz away: inside 300.
+    const locked = (id: string, freqKHz: number) =>
+      link(id, { tuningRangeKHz: [freqKHz, freqKHz], channelWidthKHz: 25, lockedFreqKHz: freqKHz });
+    const input = { links: [locked('A', 500_000), locked('B', 500_300), locked('C', 499_150)], config: { guards } };
+    const planned = coordinate(input);
+    const checked = checkPlan({ ...input, plan: planned.assignments });
+    expect(planned.robustness.guards).toEqual(guards);
+    expect(planned.violations).toEqual(checked.violations);
+    expect(checked.violations.map((v) => [v.kind, v.actualKHz])).toEqual([['im5-2tx', 250]]);
   });
 
   it('rejects a ladder that does not start at the nominal guards', () => {

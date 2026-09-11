@@ -70,7 +70,9 @@ export interface ZonePolicies {
  * below a 2-transmitter one, so it is given a tighter guard. See `DECISIONS.md`
  * D-006 for the measured effect on how many links fit in a band.
  *
- * `resolveConfig` keeps them ordered: `im3ThreeTx ≤ im3TwoTx ≤ spacing`.
+ * No ordering between them is assumed: real profiles break it (Shure HD
+ * Robust spaces carriers at 125 kHz and guards 2-transmitter products at 200).
+ * `resolveConfig` only requires non-negative whole kHz.
  */
 export interface Guards {
   /** Carrier to 3rd-order, 2-transmitter product (`2f1 − f2`). */
@@ -214,7 +216,7 @@ export interface CoordinationResult {
     level: number;
     /** Multiplier applied to the nominal guards at that level. */
     factor: number;
-    /** Guards actually enforced. */
+    /** The global guards at that level (nominal guards × factor). */
     guards: Guards;
     /** Ladder length, so the UI can render `level + 1 / of`. */
     ladderLength: number;

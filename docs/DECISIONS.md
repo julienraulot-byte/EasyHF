@@ -100,13 +100,34 @@ La règle devient :
   la distance d'une porteuse voisine que l'espacement autorise ou interdit
   déjà, et il est plus faible qu'elle : l'espacement décide. C'est la seule
   lecture sous laquelle les profils HD de Shure sont cohérents ;
-- les formes à **3 émetteurs** impliquent un troisième porteur, donc une autre
-  règle avec une autre garde. Elles sont écartées seulement si cette règle
-  tourne effectivement **et avec une garde au moins aussi large que celle de
-  la victime** — comparée explicitement, ligne par ligne, dans `intermod.ts`
-  et dans `assign.ts`.
+- les formes à **3 émetteurs** sont écartées seulement si la règle qui
+  mesure leur résidu tourne effectivement (l'espacement de la paire, sauté
+  entre zones `isolated` ; les formes à 2 émetteurs, qui exigent que les deux
+  autres générateurs se voient) — et alors **elle décide avec sa propre garde,
+  quelle qu'en soit la valeur**, exactement comme pour les formes à
+  2 émetteurs.
 
 `resolveConfig` n'exige plus que des entiers positifs.
+
+**Troisième révision, 11/09/2026, quatrième audit.** La première version de
+la règle ci-dessus écartait les formes à 3 émetteurs seulement si la règle
+couvrante tournait *avec une garde au moins aussi large que celle de la
+victime*. L'audit a montré que cette condition contredisait la lecture faite
+des profils HD de Shure trois lignes plus haut : sur le même profil HD Robust
+(espacement 125, 3T3O 150), deux porteuses à 125 kHz rendaient toute
+troisième liaison implaçable au palier nominal, parce que `C + A − B` tombe à
+125 kHz de `C`, et le moteur dégradait tout le plan pour la poser. Le profil
+n'a de sens que si un produit n'est jamais confronté à son propre générateur ;
+la comparaison de gardes est retirée. Physiquement, le signal utile est de
+loin le plus faible des signaux présents au récepteur ; un produit qui l'a
+pour générateur est d'autant plus faible.
+
+Ce que l'audit n'a pas pu trancher, et que seul WWB peut : **deux ULXD4 HD
+Robust à 150 kHz** sont-ils « 2T3O incompatible » ? **Trois HD Robust, deux à
+125 kHz et la troisième loin** : la troisième est-elle « 3T3O incompatible » ?
+`[À VALIDER JULIEN]` — si WWB signale l'un ou l'autre, la règle revient sous
+une forme conditionnelle (écartée seulement si `espacement ≥ garde`) dans les
+deux familles à la fois.
 
 ## D-006 — Garde IM3 séparée entre 2 et 3 émetteurs **[VALIDÉ 11/09/2026]**
 
@@ -124,8 +145,9 @@ Les gardes sont donc séparées :
 | Espacement co-canal | 300 kHz | brief §4 |
 | Garde vs exclusion | 250 kHz | brief §4 |
 
-`resolveConfig` refuse toute configuration qui casserait l'ordre
-`im3ThreeTx ≤ im3TwoTx ≤ espacement` — voir D-005.
+Aucun ordre n'est imposé entre ces gardes : des profils du commerce le
+contredisent (voir la révision de D-005). `resolveConfig` n'exige que des
+entiers positifs ou nuls.
 
 Justification physique : un produit à 3 émetteurs demande la coïncidence de
 trois porteuses dans la même non-linéarité et sort nettement plus bas qu'un
@@ -502,11 +524,11 @@ même facteur que le jeu global, et la re-vérification finale du plan reçoit l
 gardes exactes de chaque liaison au palier retenu.
 
 Conséquence sur D-005 : une règle « couvrante » peut désormais tourner avec une
-garde plus petite que celle de la victime ; les cas à 3 émetteurs comparent les
-gardes avant d'être écartés. Deux tests de détection le verrouillent sur le
-vérificateur seul (`check.test.ts`, « per-model guards »), et la comparaison
-exhaustive parcourt cinq jeux de gardes mélangés — du profil Standard de Shure
-(75 / 0 / 0) au nôtre — sur trois zones.
+garde plus petite que celle de la victime ; elle décide quand même (troisième
+révision de D-005). Deux tests de détection le verrouillent sur le vérificateur
+seul (`check.test.ts`, « per-model guards »), et la comparaison exhaustive
+parcourt cinq jeux de gardes mélangés — du profil Standard de Shure (75 / 0 / 0)
+au nôtre — sur trois zones.
 
 Les valeurs par modèle elles-mêmes restent à saisir : la base livre les plages
 et les pas, les gardes viendront des relevés WWB (Axient Digital, Sennheiser)

@@ -334,42 +334,59 @@ describe('checkPlan — per-model guards (D-023)', () => {
     expect(checkPlan({ links, plan, exclusions }).violations.map((v) => v.victimLinkId)).toEqual(['A']);
   });
 
-  it('reports a 3-transmitter hit that the 2-transmitter form no longer covers', () => {
-    // A + B − 2C = 100 kHz. With uniform guards the 2-transmitter form
-    // (2C − A against B, guard 200) reports it. Here A and B only carry a
-    // 75 kHz 2-transmitter guard: 100 kHz clears it, and only C's own
-    // 3-transmitter guard of 150 can see the product.
-    const links = [
-      link('A', { guards: { im3TwoTxKHz: 75, im3ThreeTxKHz: 75 } }),
-      link('B', { guards: { im3TwoTxKHz: 75, im3ThreeTxKHz: 75 } }),
-      link('C', { guards: { im3ThreeTxKHz: 150 } }),
-    ];
+  it('lets the 2-transmitter forms decide a subtractive self-hit, with their own guards (D-005)', () => {
+    // A + B − 2C = 100 kHz: the product A + B − C lands 100 kHz from its own
+    // generator C. The same quantity is 2C − A against B and 2C − B against
+    // A, so those forms decide with the guard of the carrier they hit — C's
+    // own 3-transmitter guard of 150 never enters. A 75 kHz guard on A and B
+    // clears 100 kHz; a 150 kHz one does not, and the hit is then reported
+    // under the 2-transmitter name, against A and B, not against C.
     const plan = [
       { linkId: 'A', freqKHz: 500_000 },
       { linkId: 'B', freqKHz: 505_000 },
       { linkId: 'C', freqKHz: 502_450 },
     ];
-    const result = checkPlan({ links, plan });
-    expect(result.violations.map((v) => [v.kind, v.victimLinkId, v.actualKHz])).toEqual([['im3-3tx', 'C', 100]]);
+    const withGuard = (im3TwoTxKHz: number) => [
+      link('A', { guards: { im3TwoTxKHz, im3ThreeTxKHz: 75 } }),
+      link('B', { guards: { im3TwoTxKHz, im3ThreeTxKHz: 75 } }),
+      link('C', { guards: { im3ThreeTxKHz: 150 } }),
+    ];
+    expect(checkPlan({ links: withGuard(75), plan }).violations).toEqual([]);
+    const caught = checkPlan({ links: withGuard(150), plan });
+    expect(caught.violations.map((v) => [v.kind, v.victimLinkId, v.actualKHz]).sort()).toEqual([
+      ['im3-2tx', 'A', 100],
+      ['im3-2tx', 'B', 100],
+    ]);
   });
 
-  it('reports two near-co-channel carriers beating in a receiver whose guard exceeds their spacing', () => {
+  it('lets the spacing of two carriers decide an additive self-hit, unless that spacing is skipped (D-005)', () => {
     // B and C are 100 kHz apart, which their own tiny spacing allows. A's
-    // 3-transmitter guard is 150: A + B − C lands 100 kHz from A.
+    // 3-transmitter guard is 150 and A + B − C lands 100 kHz from A — but the
+    // residual is the spacing of B and C, and that rule has spoken. Only when
+    // B and C are isolated from each other, so that nothing measures their
+    // spacing, does the product count against A.
     const tiny = { im3TwoTxKHz: 50, im3ThreeTxKHz: 50, im5TwoTxKHz: 40, spacingKHz: 60 };
-    const links = [
-      link('A', { guards: { im3ThreeTxKHz: 150 } }),
-      link('B', { guards: tiny, channelWidthKHz: 25 }),
-      link('C', { guards: tiny, channelWidthKHz: 25 }),
+    const links = (zoneB: string, zoneC: string) => [
+      link('A', { zoneId: 'a', guards: { im3ThreeTxKHz: 150 } }),
+      link('B', { zoneId: zoneB, guards: tiny, channelWidthKHz: 25 }),
+      link('C', { zoneId: zoneC, guards: tiny, channelWidthKHz: 25 }),
     ];
     const plan = [
       { linkId: 'A', freqKHz: 500_000 },
       { linkId: 'B', freqKHz: 510_000 },
       { linkId: 'C', freqKHz: 510_100 },
     ];
-    const result = checkPlan({ links, plan });
-    expect(result.violations.map((v) => v.kind)).toEqual(['im3-3tx', 'im3-3tx']);
-    expect(result.violations.every((v) => v.victimLinkId === 'A')).toBe(true);
+    expect(checkPlan({ links: links('a', 'a'), plan }).violations).toEqual([]);
+
+    // B's zone and C's zone are `isolated`; A's zone sees both in full. The
+    // relation "most constraining wins" (D-010) makes A–B and A–C `full`.
+    const isolated = checkPlan({
+      links: links('b', 'c'),
+      plan,
+      zonePolicies: { a: 'full-intermod', b: 'isolated', c: 'isolated' },
+    });
+    expect(isolated.violations.map((v) => v.kind)).toEqual(['im3-3tx', 'im3-3tx']);
+    expect(isolated.violations.every((v) => v.victimLinkId === 'A')).toBe(true);
   });
 
   it('names the link when its override is malformed', () => {

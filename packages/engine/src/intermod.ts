@@ -49,8 +49,6 @@ export interface ImOptions {
    * and `full` for a carrier with itself.
    */
   relation: (a: number, b: number) => Relation;
-  /** Minimum carrier spacing the checker enforces between two carriers. */
-  spacingRequired: (a: number, b: number) => number;
 }
 
 /*
@@ -190,20 +188,17 @@ export function forEachImHit(
             window3b,
             (victim) => {
               if (!sees(victim, i) || !sees(victim, j) || !sees(victim, k)) return true;
-              const own = guardOf(victim, 'im3-3tx');
-              // Additive generator as victim: residual |other additive − k|,
-              // covered by their spacing when it runs and is at least as wide.
-              if (victim === i) return relation(j, k) !== 'none' && options.spacingRequired(j, k) >= own;
-              if (victim === j) return relation(i, k) !== 'none' && options.spacingRequired(i, k) >= own;
-              // Subtractive generator as victim: the 2-transmitter form, which
-              // runs against i and against j only when they see each other,
-              // each with its own 2-transmitter guard.
-              if (victim === k) {
-                return (
-                  relation(i, j) === 'full' &&
-                  Math.max(guardOf(i, 'im3-2tx'), guardOf(j, 'im3-2tx')) >= own
-                );
-              }
+              // A generator as its own victim (D-005): the residual is a quantity
+              // another rule measures, and that rule decides — with its own
+              // guard, whatever its value — whenever it runs at all.
+              // Additive generator: residual |other additive − k|, the spacing
+              // of that pair, skipped only between `isolated` zones.
+              if (victim === i) return relation(j, k) !== 'none';
+              if (victim === j) return relation(i, k) !== 'none';
+              // Subtractive generator: residual |i + j − 2k|, the 2-transmitter
+              // forms 2k − i against j and 2k − j against i, which run only
+              // when i and j see each other.
+              if (victim === k) return relation(i, j) === 'full';
               return false;
             },
             (victim, distance, required) =>
