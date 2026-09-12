@@ -1,7 +1,14 @@
-import { coordinate } from '@easyhf/engine';
+import { coordinate, type EngineBand } from '@easyhf/engine';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { findHardware, HARDWARE, hardwareProfile, hardwareProfileById, searchHardware } from '../src/index.js';
 import { findings } from '../src/validate.js';
+
+/** The French band plan, from the one file the product ships. */
+const FR_BANDS = JSON.parse(
+  readFileSync(fileURLToPath(new URL('../../../data/bands/fr.json', import.meta.url)), 'utf8'),
+).bands as EngineBand[];
 
 describe('data files', () => {
   it('pass the validator', () => {
@@ -38,7 +45,9 @@ describe('data files', () => {
 
   it('cite an official source on every entry, and none is verified yet', () => {
     for (const entry of HARDWARE) {
-      expect(entry.source, entry.id).toMatch(/^https:\/\/(www\.)?(shure|sennheiser|wisycom|audio-technica|mipro|sounddevices)\.|^https:\/\/pro\.sony\//);
+      expect(entry.source, entry.id).toMatch(
+        /^https:\/\/(www\.|pubs\.|docs\.cloud\.)?(shure|sennheiser|wisycom|audio-technica|mipro|sounddevices)\.|^https:\/\/pro\.sony\//,
+      );
       expect(entry.verified, `${entry.id} : verified doit rester false tant que Julien n'a pas contrôlé`).toBe(false);
     }
   });
@@ -80,9 +89,12 @@ describe('lookup', () => {
   });
 
   it('turns a WMAS entry into a block whose centre keeps it inside the RF range', () => {
-    const profile = hardwareProfileById('sennheiser-spectera-uhf-6mhz')!;
-    expect(profile).toMatchObject({ kind: 'wmas', channelWidthKHz: 6_000, tuningRangeKHz: [473_000, 691_000] });
-    expect(hardwareProfileById('sennheiser-spectera-uhf-8mhz')?.tuningRangeKHz).toEqual([474_000, 690_000]);
+    // ZONE 01 lower UHF segment is 470–608 MHz: a 6 MHz block centres between
+    // 473 and 605 MHz, an 8 MHz one between 474 and 604.
+    const profile = hardwareProfileById('sennheiser-spectera-uhf-basse-6mhz')!;
+    expect(profile).toMatchObject({ kind: 'wmas', channelWidthKHz: 6_000, tuningRangeKHz: [473_000, 605_000] });
+    expect(hardwareProfileById('sennheiser-spectera-uhf-basse-8mhz')?.tuningRangeKHz).toEqual([474_000, 604_000]);
+    expect(hardwareProfileById('sennheiser-spectera-uhf-haute-8mhz')?.tuningRangeKHz).toEqual([634_000, 694_000]);
   });
 
   it('searches by any words of brand, series, model or band', () => {
@@ -107,6 +119,32 @@ describe('with the engine', () => {
       expect(freqKHz).toBeGreaterThanOrEqual(link.tuningRangeKHz[0]);
       expect(freqKHz).toBeLessThanOrEqual(link.tuningRangeKHz[1]);
       expect((freqKHz - link.tuningRangeKHz[0]) % link.stepKHz).toBe(0);
+    }
+  });
+
+  it('places a real Spectera block among narrowband kit, inside the French band plan', () => {
+    const kit = [
+      'sennheiser-spectera-uhf-basse-8mhz',
+      'shure-ulxd-g51',
+      'shure-ulxd-g51',
+      'shure-adpsm-g56',
+      'sennheiser-ewdx-q1-9',
+    ];
+    const links = kit.map((id, i) => {
+      const profile = hardwareProfileById(id)!;
+      return { id: `L${i + 1}`, zoneId: 'scene', ...profile };
+    });
+    const result = coordinate({ links, bands: FR_BANDS });
+    expect(result.ok).toBe(true);
+
+    // The whole 8 MHz block sits inside the 470–694 MHz French band, and every
+    // narrowband carrier stays clear of its edges.
+    const block = result.assignments.find((a) => a.linkId === 'L1')!.freqKHz;
+    expect(block - 4_000).toBeGreaterThanOrEqual(470_000);
+    expect(block + 4_000).toBeLessThanOrEqual(694_000);
+    for (const { linkId, freqKHz } of result.assignments) {
+      if (linkId === 'L1') continue;
+      expect(Math.abs(freqKHz - block), `${linkId} à ${freqKHz} kHz`).toBeGreaterThan(4_000);
     }
   });
 });
