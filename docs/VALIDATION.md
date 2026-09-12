@@ -149,10 +149,14 @@ Kill question de la phase 1 :
 | Chiffres Spectera | plages ZONE 01 et règle de garde sourcées chez Sennheiser (D-026) ; pas de placement du centre non publié |
 | Base légale du WMAS en France | vérifiée : ARCEP 2015-0830, 50 mW p.a.r., aucune limite de largeur (D-027) |
 | Le moteur respecte plages et pas réels | testé sur un parc mixte Shure / Sennheiser |
-| **Validation des chiffres par Julien** | **à faire** — contre Wireless Workbench (D-024) |
+| **Validation des chiffres par Julien** | **à faire** — une commande : `pnpm --filter @easyhf/hardware-db import:wwb` compare les 67 entrées à la base d'équipements de WWB (D-029) |
+| Plages corrigées sur la base WWB | 23 entrées, arrondies au MHz au lieu de la vraie borne accordable |
 
-Mode opératoire de validation : dans WWB, *Tools → Equipment profiles…*, pour
-chaque série de la base, lire le cadre *Tuning* (From / To / Step Size) de
-chaque bande et le comparer à l'entrée. Toute correction est envoyée telle
+Mode opératoire de validation, depuis le 12/09/2026 : lancer
+`pnpm --filter @easyhf/hardware-db import:wwb` sur la machine où WWB est
+installé (D-029). L'outil lit la base d'équipements de WWB et sort les écarts,
+entrée par entrée. À défaut, la méthode manuelle reste valable : dans WWB,
+*Tools → Equipment profiles…*, pour chaque série de la base, lire le cadre
+*Tuning* (From / To / Step Size) de chaque bande et le comparer à l'entrée. Toute correction est envoyée telle
 quelle ; l'entrée passe alors à `verified: true` avec `verifiedAt`. Les gardes
 par modèle sont lues dans les profils *Standard* / *Robust* de la même fenêtre.

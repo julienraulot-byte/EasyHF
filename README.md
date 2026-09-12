@@ -14,7 +14,7 @@ journal des décisions.
 | Phase | Contenu | État |
 |---|---|---|
 | 0 | Moteur d'intermodulation `@easyhf/engine` | **validée** — 10 / 10 cas concordants avec Wireless Workbench 7.8 (`phase-0-done`) |
-| 1 | Base matériel `@easyhf/hardware-db` | **en cours** — 67 entrées sourcées sur 22 séries, gardes par modèle et blocs WMAS (Spectera) dans le moteur (D-026) ; validation des chiffres par Julien contre WWB |
+| 1 | Base matériel `@easyhf/hardware-db` | **en cours** — 67 entrées sourcées sur 22 séries, gardes par modèle et blocs WMAS (Spectera) dans le moteur (D-026) ; `import:wwb` compare la base à celle de Wireless Workbench (D-029), validation finale par Julien |
 | 2 | ETL ANFR + service TNT | non démarrée |
 | 3 | Formats d'échange `@easyhf/formats` | non démarrée |
 | 4 | PWA `apps/web` | non démarrée |

@@ -715,3 +715,73 @@ trois étaient fondés. Ajouts de la même passe :
 
 Toutes restent `verified: false` : ces chiffres viennent de la documentation
 constructeur, pas d'un relevé de Julien dans WWB (D-024).
+
+## D-029 — La base d'équipements de Wireless Workbench est lisible, et EasyHF la lit chez l'utilisateur
+
+*Phase 1, 12/09/2026.* **Wireless Workbench 7 embarque toute sa base
+d'équipements dans un fichier SQLite non chiffré, à l'intérieur de
+l'application :**
+
+```
+/Applications/Wireless Workbench.app/Contents/Resources/PrePackagedSeries2.3ds
+```
+
+Elle contient 1 130 variantes de bande sur 101 séries et 15 constructeurs
+(Shure, Sennheiser, AKG, Audio-Technica, Lectrosonics, Sony, Sound Devices,
+Wisycom, Electro-Voice, Telex…), avec pour chacune la **plage réellement
+accordable**, le **pas d'accord**, les **sous-plages** quand la bande a des
+trous, et les **profils de compatibilité** : espacement porteuse à porteuse et
+gardes d'intermodulation aux 3e, 5e, 7e et 9e ordres, pour les trois niveaux du
+curseur de WWB. Les noms internes se lisent `median` = *Standard*,
+`robust` = *Robust*, `quantity` = *More Frequencies*.
+
+**Contrôle décisif.** Les valeurs de la base pour l'ULXD4 G50 sont exactement
+celles que Julien avait relevées à l'écran en phase 0 : Standard 350 / 75 / 0 /
+0, Robust 350 / 150, HD Standard 125 / 150, HD Robust 125 / 200 / 0 / 150,
+filtre d'entrée ±100 MHz. Les relevés manuels étaient donc justes, et notre
+lecture du schéma aussi — chacun valide l'autre.
+
+**Ce que EasyHF en fait, et ne fait pas.** Ce fichier appartient à Shure et
+n'est concédé qu'à qui a installé WWB. **Rien de son contenu n'est versionné
+ici.** À la place, le paquet livre un outil qui le lit là où il se trouve, sur
+la machine de l'utilisateur :
+
+```
+pnpm --filter @easyhf/hardware-db import:wwb [chemin du .3ds]
+```
+
+Il sort un rapport — pas un correctif automatique : plages qui diffèrent, pas
+d'accord qui diffèrent, bandes à trous, ordres que le moteur ne modélise pas,
+entrées absentes de WWB. Une entrée ne passe à `verified: true` que sur
+décision humaine (D-024), mais la question de fin de phase 1 se règle
+désormais par une commande au lieu de 67 relevés à l'écran. L'outil demande
+Node 22.5 ou plus (module `node:sqlite`) ; la bibliothèque, elle, reste sur
+Node 20.
+
+**Ce que le rapport a trouvé sur nos 67 entrées.** 23 plages étaient fausses,
+d'une façon systématique : nous arrondissions au MHz (470,000) là où le
+matériel commence 125 kHz plus haut (470,125). C'est exactement le défaut que
+D-017 veut interdire — le moteur pouvait proposer une fréquence que l'appareil
+ne peut pas afficher. Toutes corrigées, toujours `verified: false`.
+
+Restent trois familles, que le modèle de données ne sait pas décrire :
+
+| Constat | Entrées | Ce qui manque |
+|---|---|---|
+| Pas d'accord 0 dans WWB : l'appareil n'a que des canaux préréglés | les 3 BLX | une liste de fréquences par entrée |
+| Bande à trous | AD K54 (3 sous-plages), QLX-D S50 (2) | plusieurs plages par entrée |
+| Gardes aux 7e et 9e ordres | les 3 BLX, 100 à 175 kHz | ces ordres dans le moteur |
+
+Les trois ne touchent que du matériel analogique ou nord-américain, et les
+deux premières sont le même manque : une entrée incapable de dire ce que la
+machine accorde vraiment. `[À VALIDER JULIEN]` — les traiter en phase 1, ou
+les laisser en dette avec la note qui les signale. Recommandation : les
+sous-plages en phase 1 (c'est une correction, le moteur propose aujourd'hui des
+fréquences inaccordables), les 7e et 9e ordres jamais (aucun matériel numérique
+ne les utilise).
+
+**Effet de bord intéressant.** WWB porte une colonne `is_imd_source` par série
+et par profil : certains appareils ne comptent pas comme source
+d'intermodulation. C'est exactement l'axe que le moteur vient d'acquérir pour
+les blocs WMAS (D-026). Le jour où les gardes par modèle seront importées, la
+colonne se branchera dessus sans rien changer.
