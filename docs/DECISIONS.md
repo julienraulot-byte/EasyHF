@@ -622,3 +622,96 @@ bloc et la liaison libre l'est une fois sur deux — générateur activé ou non
 Les 137 tests à bande étroite sont inchangés, fichiers témoins compris : la
 généralisation est une extension stricte (toutes les demi-largeurs à 0
 redonnent l'arithmétique d'origine).
+
+**Sources retrouvées le 12/09/2026**, qui confirment les trois choix de
+modélisation :
+
+- *Garde de bord.* Livre blanc Sennheiser sur la coordination de fréquences :
+  « While it is recommended that the same minimum guard distance as with
+  narrowband systems is kept, the WMAS system proved to be extraordinarily
+  robust […] ». C'est exactement la règle codée : au bord du bloc, la garde
+  d'espacement pleine, comme entre deux porteuses étroites.
+  https://www.sennheiser.com/globalassets/digizuite/44596-en-technical_paper_on_frequency_coordination-1.pdf
+- *Pas d'intermodulation interne.* Même document : « None of the devices speak
+  at the same time, so each device enjoys the full RF channel bandwidth on its
+  own » (OFDM / TDD / TDMA, une seule porteuse RF). Le bloc n'a donc pas de
+  produits internes à calculer.
+- *Le bloc génère peu vers l'extérieur.* Le système entier rayonne la
+  puissance d'un seul émetteur étroit (typiquement 50 mW p.a.r.) étalée sur 6
+  ou 8 MHz : « A 200 kHz narrowband receiver will receive only a small fraction
+  (1/30 or 1/40) », soit moins de 1,25 mW dans sa bande. Le masque WMAS de
+  l'ETSI EN 300 422-1 V2.2.1 (figure 3) descend à −40 dB au bord du bloc et
+  −60 dB à ±B. D'où `wmasAsImGenerator` à faux par défaut.
+
+Ce qui reste ouvert, faute de publication : **le pas de placement du centre du
+bloc** (absent des fiches produit, du manuel WebUI et de la documentation
+LinkDesk — 25 kHz retenu comme hypothèse), et **si la valeur saisie dans
+LinkDesk est le centre ou le bord bas** du bloc (le livre blanc dit « a 6 MHz
+or 8 MHz block with a centre frequency », un article d'aide dit « start
+frequency »). `[À VALIDER JULIEN]` : une capture de LinkDesk ou de la WebUI
+Spectera tranche les deux d'un coup.
+
+## D-027 — Le WMAS est légal en France aujourd'hui, sans limite de largeur
+
+*Phase 1, 12/09/2026.* Vérifié avant d'ouvrir le moteur aux blocs, parce qu'un
+outil de coordination française ne doit pas proposer un plan illégal.
+
+| Texte | Ce qu'il dit |
+|---|---|
+| **ARCEP, décision n° 2015-0830** du 2 juillet 2015, art. 2 | La bande 470–694 MHz « n'est pas soumise à autorisation individuelle » ; les conditions techniques « consistent en une limitation à 50 mW (17 dBm) de la puissance apparente rayonnée », sauf retours son et liaisons d'ordre (1 W). **Aucune condition de canalisation, de largeur de bande ni de modulation.** Pas de redevance. |
+| **CEPT ERC/REC 70-03, annexe 10** | Colonne « modulation / largeur de bande occupée maximale » : *Not specified* pour toutes les sous-bandes micros. Les limites de largeur ont été retirées en 2018. |
+| **ETSI EN 300 422-1 V2.2.1** (2021-11) | Norme harmonisée couvrant le WMAS ; largeur de canal déclarée « up to 20 MHz (for WMAS) », masque d'émission dédié (figure 3). |
+| **Décision (UE) 2025/105** du 22 janvier 2025 | Remplace 2014/641/UE pour le PMSE audio ; ne fixe aucun paramètre de largeur. |
+
+Conclusion : **un bloc Spectera de 8 MHz à 50 mW p.a.r. est licite en France
+dans 470–694 MHz, sans autorisation individuelle ni redevance.** C'est cohérent
+avec le déploiement documenté des Francofolies de La Rochelle 2025 (2 stations
+de base, 4 blocs de 8 MHz, 42 émetteurs).
+
+Deux réserves, sans effet sur le moteur v1 : la hausse à 100 mW approuvée en
+CEPT (juin 2024) n'est pas transposée en France, donc EasyHF s'en tient à
+50 mW ; et la page de synthèse de l'ANFR affiche des chiffres incohérents avec
+la décision ARCEP — c'est la décision ARCEP qui fait foi.
+
+Le moteur ne modélise pas les puissances en v1 ; cette décision documente
+pourquoi le WMAS y a sa place, et fournit les références à citer si un
+utilisateur conteste un plan.
+
+## D-028 — Quatre entrées corrigées sur documentation constructeur
+
+*Phase 1, 12/09/2026.* Les fiches et guides PDF des constructeurs ont pu être
+lus cette fois (les pages HTML restent inaccessibles). Corrections, toutes
+tracées dans les notes des entrées :
+
+| Entrée | Avant | Après | Source |
+|---|---|---|---|
+| Sennheiser EW 100 G4 GB | 606–678 MHz | **606–648 MHz** | fiche de fréquences Sennheiser bande GB ; 606–678 est la GBw des 300/500 G4 |
+| Shure QLX-D L51 | 632–696 MHz | **L52, 632–694 MHz** | section « Frequencies for European Countries » du guide QLX-D ; L51 632–696 est la bande ULX-D |
+| Shure SLX-D H55 | 514–558 MHz | **H56, 518–562 MHz** | fiche technique SLX-D ; H55 est la variante nord-américaine |
+| Shure ADPSM K54 | 606–663 MHz | **K55, 606–694 MHz** | guide ADPSM v2.2 ; K54 est la variante nord-américaine, avec des trous de bande |
+
+Les trois premières étaient les doutes relevés par le quatrième audit : les
+trois étaient fondés. Ajouts de la même passe :
+
+- **Noms d'appareils ADPSM** : ADTQ / ADTD (émetteurs), ADXR (récepteur
+  ceinture). Pas d'accord 25 kHz confirmé. Le guide ne publie pas de largeur de
+  canal en kHz, seulement une efficacité spectrale par mode (FM 9, bande
+  étroite 17, Multi-Channel Wideband 28 canaux par 6 MHz) ; les 200 kHz de
+  l'entrée valent pour le mode bande étroite. Le mode WMAS d'ADPSM aura son
+  entrée quand sa largeur sera sourcée.
+- **Sound Devices Astral** : plage 169–1525 MHz (A20-Nexus, A20-TX, A20-RX ;
+  l'A20-Mini reste 470–1525), et surtout des **gardes par modèle sourcées** —
+  le guide dit « the A20 digital RF transmission is inherently immune to
+  intermodulation […] Systems can be used together when separated by at least
+  400 kHz ». D'où gardes d'intermodulation à 0 et espacement à 400 kHz (D-023).
+  C'est la première entrée de la base dont les gardes viennent d'un texte
+  constructeur plutôt que du jeu global.
+- **Spectera** : les deux entrées « 470–694 » sont remplacées par six, une par
+  segment réellement accordable de la licence **ZONE 01** (UE + AELE,
+  Royaume-Uni, Turquie) et par largeur : UHF 470–608, UHF 630–698 et
+  1350–1400 MHz, en 6 et en 8 MHz. Le segment 608–630 MHz n'existe pas chez
+  Spectera, et la borne haute française (694 MHz) est appliquée par le plan de
+  bandes, pas par l'entrée.
+
+Toutes restent `verified: false` : ces chiffres viennent de la documentation
+constructeur, pas d'un relevé de Julien dans WWB (D-024).

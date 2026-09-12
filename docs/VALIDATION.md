@@ -143,9 +143,11 @@ Kill question de la phase 1 :
 | Élément | État |
 |---|---|
 | Schéma JSON et validateur en CI | fait |
-| Entrées sourcées | 63 entrées, 22 séries, toutes `verified: false` |
+| Entrées sourcées | 67 entrées, 22 séries, toutes `verified: false` |
 | Gardes par modèle dans le moteur (D-023) | fait, comparaison exhaustive à gardes mélangées |
-| Blocs WMAS dans le moteur (D-026) | fait, comparaison exhaustive bloc verrouillé / bloc libre / blocs générateurs ; chiffres Spectera à sourcer |
+| Blocs WMAS dans le moteur (D-026) | fait, comparaison exhaustive bloc verrouillé / bloc libre / blocs générateurs |
+| Chiffres Spectera | plages ZONE 01 et règle de garde sourcées chez Sennheiser (D-026) ; pas de placement du centre non publié |
+| Base légale du WMAS en France | vérifiée : ARCEP 2015-0830, 50 mW p.a.r., aucune limite de largeur (D-027) |
 | Le moteur respecte plages et pas réels | testé sur un parc mixte Shure / Sennheiser |
 | **Validation des chiffres par Julien** | **à faire** — contre Wireless Workbench (D-024) |
 
