@@ -7,8 +7,8 @@
   },
   {
     "id": "shure-ulxd-g51", "brand": "Shure", "series": "ULX-D", "model": "ULXD4", "bandVariant": "G51", "type": "receiver",
-    "tuningRangeKHz": [470000, 534000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Variante européenne courante en France.",
+    "tuningRangeKHz": [470125, 534000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Variante européenne courante en France. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/ulx-d_digital_wireless", "verified": false
   },
   {
@@ -23,13 +23,14 @@
   },
   {
     "id": "shure-ulxd-l51", "brand": "Shure", "series": "ULX-D", "model": "ULXD4", "bandVariant": "L51", "type": "receiver",
-    "tuningRangeKHz": [632000, 696000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "694–696 MHz hors bande PMSE en France : le moteur l'exclut par le plan de bandes.",
+    "tuningRangeKHz": [632125, 695875], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "694–696 MHz hors bande PMSE en France : le moteur l'exclut par le plan de bandes. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/ulx-d_digital_wireless", "verified": false
   },
   {
     "id": "shure-qlxd-g51", "brand": "Shure", "series": "QLX-D", "model": "QLXD4", "bandVariant": "G51", "type": "receiver",
-    "tuningRangeKHz": [470000, 534000], "stepKHz": 25, "channelWidthKHz": 200,
+    "tuningRangeKHz": [470125, 534000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/qlx-d_digital_wireless", "verified": false
   },
   {
@@ -50,110 +51,110 @@
   },
   {
     "id": "shure-qlxd-s50", "brand": "Shure", "series": "QLX-D", "model": "QLXD4", "bandVariant": "S50", "type": "receiver",
-    "tuningRangeKHz": [823000, 832000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "La variante S50 couvre aussi 863–865 MHz, hors plan de bandes v1 (D-019) ; seule la partie 823–832 est saisie.",
+    "tuningRangeKHz": [823125, 831875], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "La bande S50 de WWB couvre deux sous-plages accordables, 823,125–831,875 et 863,125–864,875 MHz ; seule la première est retenue, la seconde étant hors du plan de bandes français v1 (D-019). Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/qlx-d_digital_wireless", "verified": false
   },
   {
     "id": "shure-slxd-g59", "brand": "Shure", "series": "SLX-D", "model": "SLXD4", "bandVariant": "G59", "type": "receiver",
-    "tuningRangeKHz": [470000, 514000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Code de bande et bornes à confirmer dans WWB (Equipment profiles → SLXD4).",
+    "tuningRangeKHz": [470125, 513875], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Code de bande et bornes à confirmer dans WWB (Equipment profiles → SLXD4). Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/slx-d_digital_wireless", "verified": false
   },
   {
     "id": "shure-slxd-h56", "brand": "Shure", "series": "SLX-D", "model": "SLXD4", "bandVariant": "H56", "type": "receiver",
-    "tuningRangeKHz": [518000, 562000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Variante européenne. H55 514–558 MHz est la variante nord-américaine ; corrigé le 12/09/2026 d'après la fiche technique SLX-D.",
+    "tuningRangeKHz": [518125, 561875], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Variante européenne. H55 514–558 MHz est la variante nord-américaine ; corrigé le 12/09/2026 d'après la fiche technique SLX-D. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://pubs.shure.com/guide/SLXD/en-US.pdf", "verified": false
   },
   {
     "id": "shure-slxd-k59", "brand": "Shure", "series": "SLX-D", "model": "SLXD4", "bandVariant": "K59", "type": "receiver",
-    "tuningRangeKHz": [606000, 650000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Code de bande et bornes à confirmer dans WWB.",
+    "tuningRangeKHz": [606500, 649875], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Code de bande et bornes à confirmer dans WWB. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/slx-d_digital_wireless", "verified": false
   },
   {
     "id": "shure-ad-g56", "brand": "Shure", "series": "Axient Digital", "model": "AD4D / AD4Q", "bandVariant": "G56", "type": "receiver",
-    "tuningRangeKHz": [470000, 636000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Bornes à confirmer dans WWB (Equipment profiles → AD4D). Largeur de canal du mode Standard ; le mode HD est plus étroit.",
+    "tuningRangeKHz": [470150, 636000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Bornes à confirmer dans WWB (Equipment profiles → AD4D). Largeur de canal du mode Standard ; le mode HD est plus étroit. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/axient_digital", "verified": false
   },
   {
     "id": "shure-ad-k54", "brand": "Shure", "series": "Axient Digital", "model": "AD4D / AD4Q", "bandVariant": "K54", "type": "receiver",
-    "tuningRangeKHz": [606000, 663000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Utilisée dans le relevé WWB C10 (606–608 MHz). Bornes à confirmer dans WWB. Variante nord-américaine (trous 608–614 et 616–653 MHz non modélisés) ; l'équivalent européen est K55.",
+    "tuningRangeKHz": [606000, 662875], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Variante nord-américaine. WWB donne trois sous-plages accordables — 606,000–607,875, 614,125–615,875 et 653,125–662,875 MHz — que notre modèle à plage unique ne sait pas décrire : le moteur peut proposer une fréquence située dans un trou. L'équivalent européen est K55, qui n'a pas ce défaut. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/axient_digital", "verified": false
   },
   {
     "id": "shure-ad-k55", "brand": "Shure", "series": "Axient Digital", "model": "AD4D / AD4Q", "bandVariant": "K55", "type": "receiver",
-    "tuningRangeKHz": [606000, 694000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Utilisée dans le relevé WWB C10 (616–657 MHz). Borne haute à confirmer dans WWB.",
+    "tuningRangeKHz": [606125, 693875], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Utilisée dans le relevé WWB C10 (616–657 MHz). Borne haute à confirmer dans WWB. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/axient_digital", "verified": false
   },
   {
     "id": "shure-psm1000-g10e", "brand": "Shure", "series": "PSM 1000", "model": "P10R", "bandVariant": "G10E", "type": "iem",
-    "tuningRangeKHz": [470000, 542000], "stepKHz": 25, "channelWidthKHz": 300,
-    "notes": "Largeur de canal d'un IEM stéréo MPX, à confirmer. Bornes à confirmer dans WWB (P10R).",
+    "tuningRangeKHz": [470125, 541875], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "Largeur de canal d'un IEM stéréo MPX, à confirmer. Bornes à confirmer dans WWB (P10R). Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/psm1000", "verified": false
   },
   {
     "id": "shure-psm1000-j8e", "brand": "Shure", "series": "PSM 1000", "model": "P10R", "bandVariant": "J8E", "type": "iem",
-    "tuningRangeKHz": [554000, 626000], "stepKHz": 25, "channelWidthKHz": 300,
-    "notes": "Bornes à confirmer dans WWB (P10R).",
+    "tuningRangeKHz": [554125, 625875], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "Bornes à confirmer dans WWB (P10R). Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/psm1000", "verified": false
   },
   {
     "id": "shure-psm1000-k10e", "brand": "Shure", "series": "PSM 1000", "model": "P10R", "bandVariant": "K10E", "type": "iem",
-    "tuningRangeKHz": [596000, 668000], "stepKHz": 25, "channelWidthKHz": 300,
-    "notes": "Bornes à confirmer dans WWB (P10R).",
+    "tuningRangeKHz": [596125, 667775], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "Bornes à confirmer dans WWB (P10R). Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/psm1000", "verified": false
   },
   {
     "id": "shure-psm900-g6e", "brand": "Shure", "series": "PSM 900", "model": "P9RA", "bandVariant": "G6E", "type": "iem",
-    "tuningRangeKHz": [470000, 506000], "stepKHz": 25, "channelWidthKHz": 300,
-    "notes": "Bornes à confirmer dans WWB (P9RA).",
+    "tuningRangeKHz": [470125, 505875], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "Bornes à confirmer dans WWB (P9RA). Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/psm900", "verified": false
   },
   {
     "id": "shure-psm900-g7e", "brand": "Shure", "series": "PSM 900", "model": "P9RA", "bandVariant": "G7E", "type": "iem",
-    "tuningRangeKHz": [506000, 542000], "stepKHz": 25, "channelWidthKHz": 300,
-    "notes": "Bornes à confirmer dans WWB (P9RA).",
+    "tuningRangeKHz": [506125, 541875], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "Bornes à confirmer dans WWB (P9RA). Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/psm900", "verified": false
   },
   {
     "id": "shure-psm900-k1e", "brand": "Shure", "series": "PSM 900", "model": "P9RA", "bandVariant": "K1E", "type": "iem",
-    "tuningRangeKHz": [596000, 632000], "stepKHz": 25, "channelWidthKHz": 300,
-    "notes": "Bornes à confirmer dans WWB (P9RA).",
+    "tuningRangeKHz": [596125, 631875], "stepKHz": 25, "channelWidthKHz": 300,
+    "notes": "Bornes à confirmer dans WWB (P9RA). Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/psm900", "verified": false
   },
   {
     "id": "shure-blx-h8e", "brand": "Shure", "series": "BLX", "model": "BLX4", "bandVariant": "H8E", "type": "receiver",
-    "tuningRangeKHz": [518000, 542000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Analogique, entrée de gamme, fréquent sur les petits événements. Bornes à confirmer dans WWB (BLX4). Un BLX4 ne s'accorde pas librement au pas de 25 kHz : il n'offre que des groupes et canaux préréglés, que le schéma ne sait pas décrire. Une fréquence proposée par le moteur peut donc ne pas être affichable (D-017) ; à traiter avant tout passage à verified: true.",
+    "tuningRangeKHz": [518100, 541875], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Analogique, entrée de gamme, fréquent sur les petits événements. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026. WWB donne un pas d'accord de 0 kHz pour cette bande, ce qui confirme que le BLX4 ne s'accorde pas librement : il n'offre que des groupes et canaux préréglés, que le schéma ne sait pas décrire. Les 25 kHz de l'entrée sont donc faux et le moteur peut proposer une fréquence que l'appareil n'affiche pas (D-017). À traiter avant tout passage à verified: true.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/blx_wireless", "verified": false
   },
   {
     "id": "shure-blx-k3e", "brand": "Shure", "series": "BLX", "model": "BLX4", "bandVariant": "K3E", "type": "receiver",
-    "tuningRangeKHz": [606000, 630000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Bornes à confirmer dans WWB (BLX4). Même remarque que H8E sur les canaux préréglés.",
+    "tuningRangeKHz": [606125, 629875], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026. WWB donne un pas d'accord de 0 kHz pour cette bande, ce qui confirme que le BLX4 ne s'accorde pas librement : il n'offre que des groupes et canaux préréglés, que le schéma ne sait pas décrire. Les 25 kHz de l'entrée sont donc faux et le moteur peut proposer une fréquence que l'appareil n'affiche pas (D-017). À traiter avant tout passage à verified: true.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/blx_wireless", "verified": false
   },
   {
     "id": "shure-blx-s8", "brand": "Shure", "series": "BLX", "model": "BLX4", "bandVariant": "S8", "type": "receiver",
-    "tuningRangeKHz": [823000, 832000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Bornes à confirmer dans WWB (BLX4). Même remarque que H8E sur les canaux préréglés.",
+    "tuningRangeKHz": [823125, 831825], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026. WWB donne un pas d'accord de 0 kHz pour cette bande, ce qui confirme que le BLX4 ne s'accorde pas librement : il n'offre que des groupes et canaux préréglés, que le schéma ne sait pas décrire. Les 25 kHz de l'entrée sont donc faux et le moteur peut proposer une fréquence que l'appareil n'affiche pas (D-017). À traiter avant tout passage à verified: true.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/blx_wireless", "verified": false
   },
   {
     "id": "shure-adpsm-g56", "brand": "Shure", "series": "Axient Digital PSM", "model": "ADTQ / ADTD (émetteur), ADXR (récepteur ceinture)", "bandVariant": "G56", "type": "iem",
-    "tuningRangeKHz": [470000, 636000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "IEM numérique Axient Digital. Plage, pas de 25 kHz et noms d'appareils relevés dans le guide ADPSM v2.2 (12/09/2026). Le guide ne publie pas de largeur de canal en kHz, seulement une efficacité spectrale par mode : FM analogique 9 canaux / 6 MHz, bande étroite 17 / 6 MHz, Multi-Channel Wideband (WMAS) 28 / 6 MHz. Les 200 kHz retenus ici valent pour le mode bande étroite ; le mode WMAS demande une entrée distincte quand sa largeur sera sourcée.",
+    "tuningRangeKHz": [470150, 636000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "IEM numérique Axient Digital. Plage, pas de 25 kHz et noms d'appareils relevés dans le guide ADPSM v2.2 (12/09/2026). Le guide ne publie pas de largeur de canal en kHz, seulement une efficacité spectrale par mode : FM analogique 9 canaux / 6 MHz, bande étroite 17 / 6 MHz, Multi-Channel Wideband (WMAS) 28 / 6 MHz. Les 200 kHz retenus ici valent pour le mode bande étroite ; le mode WMAS demande une entrée distincte quand sa largeur sera sourcée. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://pubs.shure.com/view/guide/ADPSM/en-US.pdf", "verified": false
   },
   {
     "id": "shure-adpsm-k55", "brand": "Shure", "series": "Axient Digital PSM", "model": "ADTQ / ADTD (émetteur), ADXR (récepteur ceinture)", "bandVariant": "K55", "type": "iem",
-    "tuningRangeKHz": [606000, 694000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Variante européenne (guide ADPSM v2.2, 12/09/2026). K54 606–663 MHz est la variante nord-américaine, avec des trous de bande.",
+    "tuningRangeKHz": [606125, 693875], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Variante européenne (guide ADPSM v2.2, 12/09/2026). K54 606–663 MHz est la variante nord-américaine, avec des trous de bande. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://pubs.shure.com/view/guide/ADPSM/en-US.pdf", "verified": false
   }
 ]

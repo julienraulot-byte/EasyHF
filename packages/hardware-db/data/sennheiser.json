@@ -39,8 +39,8 @@
   },
   {
     "id": "sennheiser-ew300g4-aw", "brand": "Sennheiser", "series": "EW 300 G4", "model": "EM 300-500 G4", "bandVariant": "AW+", "type": "receiver",
-    "tuningRangeKHz": [470000, 558000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Variante large 88 MHz propre aux 300/500 G4. Bornes à confirmer.",
+    "tuningRangeKHz": [470100, 558000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Variante large 88 MHz propre aux 300/500 G4. Bornes à confirmer. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-300-g4", "verified": false
   },
   {
@@ -51,8 +51,8 @@
   },
   {
     "id": "sennheiser-ew500g4-aw", "brand": "Sennheiser", "series": "EW 500 G4", "model": "EM 300-500 G4", "bandVariant": "AW+", "type": "receiver",
-    "tuningRangeKHz": [470000, 558000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Même récepteur que la 300 G4. Bornes à confirmer.",
+    "tuningRangeKHz": [470100, 558000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Même récepteur que la 300 G4. Bornes à confirmer. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
     "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-500-g4", "verified": false
   },
   {
