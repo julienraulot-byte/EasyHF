@@ -9,16 +9,52 @@ question binaire, et la suivante ne démarre pas sans validation explicite. Voir
 `docs/VALIDATION.md` pour la porte en cours et `docs/DECISIONS.md` pour le
 journal des décisions.
 
-## État
+## Feuille de route
 
 | Phase | Contenu | État |
 |---|---|---|
-| 0 | Moteur d'intermodulation `@easyhf/engine` | **validée** — 10 / 10 cas concordants avec Wireless Workbench 7.8 (`phase-0-done`) |
-| 1 | Base matériel `@easyhf/hardware-db` | **en cours** — 67 entrées sourcées sur 22 séries, gardes par modèle et blocs WMAS (Spectera) dans le moteur (D-026) ; `import:wwb` compare la base à celle de Wireless Workbench (D-029), validation finale par Julien |
-| 2 | ETL ANFR + service TNT | non démarrée |
-| 3 | Formats d'échange `@easyhf/formats` | non démarrée |
-| 4 | PWA `apps/web` | non démarrée |
-| 5 | Durcissement + beta | non démarrée |
+| 0 | Moteur d'intermodulation `@easyhf/engine` | **validée** le 11/09/2026 — 10 / 10 cas concordants avec Wireless Workbench 7.8, quatre audits adverses (`phase-0-done`) |
+| 1 | Base matériel `@easyhf/hardware-db` | **en cours** — voir ci-dessous |
+| 2 | ETL ANFR + service TNT | non démarrée — émetteurs TNT géolocalisés, exclusions par lieu |
+| 3 | Formats d'échange `@easyhf/formats` | non démarrée — import et export WWB, WSM, CSV, PDF |
+| 4 | PWA `apps/web` | non démarrée — interface hors ligne, design au skill Impeccable |
+| 5 | Durcissement + beta | non démarrée — performance, accessibilité, première mise en main |
+
+### Phase 1 — ce qui est fait
+
+- **67 entrées** sur 22 séries et 7 constructeurs, chacune avec sa source.
+- **Gardes par modèle** dans le moteur (D-023), comparées exhaustivement sur
+  des jeux de gardes mélangés. Les premières gardes venues d'un texte
+  constructeur sont celles de Sound Devices Astral (D-028).
+- **Blocs WMAS** (D-026) : Spectera entre comme une porteuse large, victime sur
+  toute sa largeur, générateur sur demande. Vérifié candidat par candidat,
+  bloc verrouillé, bloc libre et blocs générateurs.
+- **Base légale du WMAS en France** vérifiée avant de coder (D-027) : licite
+  aujourd'hui, 50 mW p.a.r., sans limite de largeur ni redevance.
+- **`import:wwb`** (D-029) : la base d'équipements de Wireless Workbench est un
+  fichier SQLite lisible ; l'outil la lit sur la machine de l'utilisateur et
+  sort les écarts avec nos entrées. 23 plages fausses ont déjà été corrigées.
+
+### Phase 1 — ce qui reste
+
+1. **Lancer `import:wwb` sur la machine de Julien** et valider entrée par
+   entrée. C'est la question de fin de phase.
+2. **Deux chiffres Spectera** que Sennheiser ne publie pas : le pas de
+   placement du centre du bloc, et si LinkDesk attend le centre ou le bord bas.
+   Une capture d'écran tranche les deux.
+3. **Deux relevés WWB** qui trancheraient la doctrine D-005 sur les produits
+   qui touchent leur propre générateur. Sans eux, la règle actuelle tient.
+4. **Décision sur trois manques du modèle de données** (D-029) : appareils à
+   canaux préréglés, bandes à trous, gardes aux 7e et 9e ordres.
+
+### Ce qui a bougé
+
+Le WMAS était un non-objectif v1, renvoyé en v3 par le brief. Julien l'a
+ramené en phase 1 le 11/09/2026 : c'est aujourd'hui la technologie des deux
+références du retour d'oreille. D-025 puis D-026 en gardent la trace.
+
+Restent hors périmètre v1 : paiement, application native, supervision temps
+réel, multi-pays, fonctions d'IA.
 
 ## Structure
 
@@ -42,6 +78,7 @@ pnpm test                              # toute la suite, sauf le budget de perfo
 pnpm test:perf                         # 40 liaisons < 3 s, seul, sur machine calme
 pnpm coverage                          # couverture (seuil engine : 90 %)
 pnpm validate:hardware                 # schéma et cohérence de la base matériel
+pnpm --filter @easyhf/hardware-db import:wwb   # écarts avec la base de Wireless Workbench (Node 22.5+)
 pnpm typecheck                         # sources et tests
 pnpm --filter @easyhf/engine bench     # mesures de capacité (quelques minutes)
 UPDATE_GOLDEN=1 pnpm test              # régénère les fichiers témoins de validation

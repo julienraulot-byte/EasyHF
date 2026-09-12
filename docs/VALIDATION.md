@@ -135,10 +135,13 @@ sous-détection découvert, avant même sa correction.
 
 Kill question de la phase 1 :
 
-> Les 20 modèles sont-ils sourcés, validés par Julien, et le moteur produit-il
+> Les modèles sont-ils sourcés, validés par Julien, et le moteur produit-il
 > des plans corrects en respectant plages et pas réels ?
 
-État au 11 septembre 2026 :
+Le brief demandait 20 modèles ; la base en compte 67, la différence venant des
+variantes de bande, qui sont ce que le moteur manipule réellement.
+
+État au 12 septembre 2026 :
 
 | Élément | État |
 |---|---|
