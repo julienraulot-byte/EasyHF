@@ -22,8 +22,8 @@
   },
   {
     "id": "sennheiser-ew100g4-gb", "brand": "Sennheiser", "series": "EW 100 G4", "model": "EM 100 G4", "bandVariant": "GB", "type": "receiver",
-    "tuningRangeKHz": [606000, 678000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Doute fort sur la borne haute : la bande GB de la génération G3 s'arrêtait à 648 MHz, et les bandes de l'ew 100 G4 font 42 à 46 MHz ; 606–678 est la largeur de la GBW des 300/500 G4. À trancher dans WWB ou sur la fiche Sennheiser.",
+    "tuningRangeKHz": [606000, 648000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Borne haute corrigée le 12/09/2026 : la fiche de fréquences Sennheiser de la bande GB donne 606–648 MHz. 606–678 MHz est la bande GBw des ew 300/500 G4.",
     "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/ew-100-g4", "verified": false
   },
   {
@@ -137,15 +137,39 @@
     "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/2000-series", "verified": false
   },
   {
-    "id": "sennheiser-spectera-uhf-6mhz", "brand": "Sennheiser", "series": "Spectera", "model": "Base Station + SEK (bodypack bidirectionnel)", "bandVariant": "UHF, canal 6 MHz", "type": "wmas",
-    "tuningRangeKHz": [470000, 694000], "stepKHz": 25, "channelWidthKHz": 6000,
-    "notes": "WMAS : un canal large bande de 6 MHz (8 MHz en option) porte micros et retours, bidirectionnel, géré par la station de base. Modélisé comme un bloc (D-026) : espacement et exclusions comptés depuis le bord du bloc, produits d'intermodulation des liaisons étroites comptés dès qu'ils tombent dans le bloc ou à moins de la garde de son bord ; le bloc ne génère pas de produits par défaut. Plage, pas de placement du centre, largeurs exactes, garde de bord recommandée par Sennheiser et capacité par canal à confirmer sur la documentation Sennheiser.",
-    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/spectera", "verified": false
+    "id": "sennheiser-spectera-uhf-basse-6mhz", "brand": "Sennheiser", "series": "Spectera", "model": "SPECTERA BS (station de base) + SEK / SKM / DAD", "bandVariant": "ZONE 01, UHF 470–608 MHz", "type": "wmas",
+    "tuningRangeKHz": [470000, 608000], "stepKHz": 25, "channelWidthKHz": 6000,
+    "notes": "WMAS : un canal large bande de 6 MHz porte micros et retours, bidirectionnel (OFDM / TDD / TDMA), géré par la station de base — jusqu'à 128 liaisons audio par canal RF selon le mode. Plage de la licence ZONE 01 (UE + AELE, Royaume-Uni, Turquie), relevée dans la fiche produit Base Station V2.0 le 12/09/2026 ; en France le plan de bandes ramène la borne haute à 694 MHz. Le pas de placement du centre du bloc n'est publié nulle part : les 25 kHz retenus ici sont une hypothèse, à confirmer dans LinkDesk ou la WebUI. Sennheiser recommande de garder « la même distance de garde minimale qu'avec les systèmes à bande étroite » aux bords du bloc, sans donner de valeur en kHz (livre blanc sur la coordination de fréquences).",
+    "source": "https://www.sennheiser.com/globalassets/digizuite/49306-en-spectera_basestation_product_specification_v1.8_en.pdf", "verified": false
   },
   {
-    "id": "sennheiser-spectera-uhf-8mhz", "brand": "Sennheiser", "series": "Spectera", "model": "Base Station + SEK (bodypack bidirectionnel)", "bandVariant": "UHF, canal 8 MHz", "type": "wmas",
-    "tuningRangeKHz": [470000, 694000], "stepKHz": 25, "channelWidthKHz": 8000,
-    "notes": "Même remarque que la variante 6 MHz.",
-    "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/spectera", "verified": false
+    "id": "sennheiser-spectera-uhf-haute-6mhz", "brand": "Sennheiser", "series": "Spectera", "model": "SPECTERA BS (station de base) + SEK / SKM / DAD", "bandVariant": "ZONE 01, UHF 630–698 MHz", "type": "wmas",
+    "tuningRangeKHz": [630000, 698000], "stepKHz": 25, "channelWidthKHz": 6000,
+    "notes": "WMAS : un canal large bande de 6 MHz porte micros et retours, bidirectionnel (OFDM / TDD / TDMA), géré par la station de base — jusqu'à 128 liaisons audio par canal RF selon le mode. Plage de la licence ZONE 01 (UE + AELE, Royaume-Uni, Turquie), relevée dans la fiche produit Base Station V2.0 le 12/09/2026 ; en France le plan de bandes ramène la borne haute à 694 MHz. Le pas de placement du centre du bloc n'est publié nulle part : les 25 kHz retenus ici sont une hypothèse, à confirmer dans LinkDesk ou la WebUI. Sennheiser recommande de garder « la même distance de garde minimale qu'avec les systèmes à bande étroite » aux bords du bloc, sans donner de valeur en kHz (livre blanc sur la coordination de fréquences).",
+    "source": "https://www.sennheiser.com/globalassets/digizuite/49306-en-spectera_basestation_product_specification_v1.8_en.pdf", "verified": false
+  },
+  {
+    "id": "sennheiser-spectera-1g4-6mhz", "brand": "Sennheiser", "series": "Spectera", "model": "SPECTERA BS (station de base) + SEK / SKM / DAD", "bandVariant": "ZONE 01, 1350–1400 MHz", "type": "wmas",
+    "tuningRangeKHz": [1350000, 1400000], "stepKHz": 25, "channelWidthKHz": 6000,
+    "notes": "WMAS : un canal large bande de 6 MHz porte micros et retours, bidirectionnel (OFDM / TDD / TDMA), géré par la station de base — jusqu'à 128 liaisons audio par canal RF selon le mode. Plage de la licence ZONE 01 (UE + AELE, Royaume-Uni, Turquie), relevée dans la fiche produit Base Station V2.0 le 12/09/2026 ; en France le plan de bandes ramène la borne haute à 694 MHz. Le pas de placement du centre du bloc n'est publié nulle part : les 25 kHz retenus ici sont une hypothèse, à confirmer dans LinkDesk ou la WebUI. Sennheiser recommande de garder « la même distance de garde minimale qu'avec les systèmes à bande étroite » aux bords du bloc, sans donner de valeur en kHz (livre blanc sur la coordination de fréquences).",
+    "source": "https://www.sennheiser.com/globalassets/digizuite/49306-en-spectera_basestation_product_specification_v1.8_en.pdf", "verified": false
+  },
+  {
+    "id": "sennheiser-spectera-uhf-basse-8mhz", "brand": "Sennheiser", "series": "Spectera", "model": "SPECTERA BS (station de base) + SEK / SKM / DAD", "bandVariant": "ZONE 01, UHF 470–608 MHz", "type": "wmas",
+    "tuningRangeKHz": [470000, 608000], "stepKHz": 25, "channelWidthKHz": 8000,
+    "notes": "WMAS : un canal large bande de 8 MHz porte micros et retours, bidirectionnel (OFDM / TDD / TDMA), géré par la station de base — jusqu'à 128 liaisons audio par canal RF selon le mode. Plage de la licence ZONE 01 (UE + AELE, Royaume-Uni, Turquie), relevée dans la fiche produit Base Station V2.0 le 12/09/2026 ; en France le plan de bandes ramène la borne haute à 694 MHz. Le pas de placement du centre du bloc n'est publié nulle part : les 25 kHz retenus ici sont une hypothèse, à confirmer dans LinkDesk ou la WebUI. Sennheiser recommande de garder « la même distance de garde minimale qu'avec les systèmes à bande étroite » aux bords du bloc, sans donner de valeur en kHz (livre blanc sur la coordination de fréquences).",
+    "source": "https://www.sennheiser.com/globalassets/digizuite/49306-en-spectera_basestation_product_specification_v1.8_en.pdf", "verified": false
+  },
+  {
+    "id": "sennheiser-spectera-uhf-haute-8mhz", "brand": "Sennheiser", "series": "Spectera", "model": "SPECTERA BS (station de base) + SEK / SKM / DAD", "bandVariant": "ZONE 01, UHF 630–698 MHz", "type": "wmas",
+    "tuningRangeKHz": [630000, 698000], "stepKHz": 25, "channelWidthKHz": 8000,
+    "notes": "WMAS : un canal large bande de 8 MHz porte micros et retours, bidirectionnel (OFDM / TDD / TDMA), géré par la station de base — jusqu'à 128 liaisons audio par canal RF selon le mode. Plage de la licence ZONE 01 (UE + AELE, Royaume-Uni, Turquie), relevée dans la fiche produit Base Station V2.0 le 12/09/2026 ; en France le plan de bandes ramène la borne haute à 694 MHz. Le pas de placement du centre du bloc n'est publié nulle part : les 25 kHz retenus ici sont une hypothèse, à confirmer dans LinkDesk ou la WebUI. Sennheiser recommande de garder « la même distance de garde minimale qu'avec les systèmes à bande étroite » aux bords du bloc, sans donner de valeur en kHz (livre blanc sur la coordination de fréquences).",
+    "source": "https://www.sennheiser.com/globalassets/digizuite/49306-en-spectera_basestation_product_specification_v1.8_en.pdf", "verified": false
+  },
+  {
+    "id": "sennheiser-spectera-1g4-8mhz", "brand": "Sennheiser", "series": "Spectera", "model": "SPECTERA BS (station de base) + SEK / SKM / DAD", "bandVariant": "ZONE 01, 1350–1400 MHz", "type": "wmas",
+    "tuningRangeKHz": [1350000, 1400000], "stepKHz": 25, "channelWidthKHz": 8000,
+    "notes": "WMAS : un canal large bande de 8 MHz porte micros et retours, bidirectionnel (OFDM / TDD / TDMA), géré par la station de base — jusqu'à 128 liaisons audio par canal RF selon le mode. Plage de la licence ZONE 01 (UE + AELE, Royaume-Uni, Turquie), relevée dans la fiche produit Base Station V2.0 le 12/09/2026 ; en France le plan de bandes ramène la borne haute à 694 MHz. Le pas de placement du centre du bloc n'est publié nulle part : les 25 kHz retenus ici sont une hypothèse, à confirmer dans LinkDesk ou la WebUI. Sennheiser recommande de garder « la même distance de garde minimale qu'avec les systèmes à bande étroite » aux bords du bloc, sans donner de valeur en kHz (livre blanc sur la coordination de fréquences).",
+    "source": "https://www.sennheiser.com/globalassets/digizuite/49306-en-spectera_basestation_product_specification_v1.8_en.pdf", "verified": false
   }
 ]

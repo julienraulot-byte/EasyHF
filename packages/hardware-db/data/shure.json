@@ -43,10 +43,10 @@
     "source": "https://www.shure.com/en-GB/products/wireless-systems/qlx-d_digital_wireless", "verified": false
   },
   {
-    "id": "shure-qlxd-l51", "brand": "Shure", "series": "QLX-D", "model": "QLXD4", "bandVariant": "L51", "type": "receiver",
-    "tuningRangeKHz": [632000, 696000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "694–696 MHz hors bande PMSE en France. Doute sur le code de bande : QLX-D est vendu en L52 (632–694 MHz) ; L51 632–696 est la variante ULX-D. À trancher dans WWB.",
-    "source": "https://www.shure.com/en-GB/products/wireless-systems/qlx-d_digital_wireless", "verified": false
+    "id": "shure-qlxd-l52", "brand": "Shure", "series": "QLX-D", "model": "QLXD4", "bandVariant": "L52", "type": "receiver",
+    "tuningRangeKHz": [632000, 694000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Code de bande corrigé le 12/09/2026 : la section « Frequencies for European Countries » du guide QLX-D liste L52 632–694 MHz ; L51 632–696 MHz est la variante ULX-D. Relevé dans le guide PDF.",
+    "source": "https://pubs.shure.com/guide/QLXD/en-US.pdf", "verified": false
   },
   {
     "id": "shure-qlxd-s50", "brand": "Shure", "series": "QLX-D", "model": "QLXD4", "bandVariant": "S50", "type": "receiver",
@@ -61,10 +61,10 @@
     "source": "https://www.shure.com/en-GB/products/wireless-systems/slx-d_digital_wireless", "verified": false
   },
   {
-    "id": "shure-slxd-h55", "brand": "Shure", "series": "SLX-D", "model": "SLXD4", "bandVariant": "H55", "type": "receiver",
-    "tuningRangeKHz": [514000, 558000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Code de bande et bornes à confirmer dans WWB.",
-    "source": "https://www.shure.com/en-GB/products/wireless-systems/slx-d_digital_wireless", "verified": false
+    "id": "shure-slxd-h56", "brand": "Shure", "series": "SLX-D", "model": "SLXD4", "bandVariant": "H56", "type": "receiver",
+    "tuningRangeKHz": [518000, 562000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Variante européenne. H55 514–558 MHz est la variante nord-américaine ; corrigé le 12/09/2026 d'après la fiche technique SLX-D.",
+    "source": "https://pubs.shure.com/guide/SLXD/en-US.pdf", "verified": false
   },
   {
     "id": "shure-slxd-k59", "brand": "Shure", "series": "SLX-D", "model": "SLXD4", "bandVariant": "K59", "type": "receiver",
@@ -81,7 +81,7 @@
   {
     "id": "shure-ad-k54", "brand": "Shure", "series": "Axient Digital", "model": "AD4D / AD4Q", "bandVariant": "K54", "type": "receiver",
     "tuningRangeKHz": [606000, 663000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Utilisée dans le relevé WWB C10 (606–608 MHz). Bornes à confirmer dans WWB.",
+    "notes": "Utilisée dans le relevé WWB C10 (606–608 MHz). Bornes à confirmer dans WWB. Variante nord-américaine (trous 608–614 et 616–653 MHz non modélisés) ; l'équivalent européen est K55.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/axient_digital", "verified": false
   },
   {
@@ -145,15 +145,15 @@
     "source": "https://www.shure.com/en-GB/products/wireless-systems/blx_wireless", "verified": false
   },
   {
-    "id": "shure-adpsm-g56", "brand": "Shure", "series": "Axient Digital PSM", "model": "ADTQ (émetteur) / récepteur ceinture AD PSM", "bandVariant": "G56", "type": "iem",
+    "id": "shure-adpsm-g56", "brand": "Shure", "series": "Axient Digital PSM", "model": "ADTQ / ADTD (émetteur), ADXR (récepteur ceinture)", "bandVariant": "G56", "type": "iem",
     "tuningRangeKHz": [470000, 636000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "IEM numérique Axient Digital. Nom exact du récepteur ceinture, bandes vendues en France et largeur de canal à confirmer dans WWB (Equipment profiles).",
-    "source": "https://www.shure.com/en-GB/products/wireless-systems/axient_digital", "verified": false
+    "notes": "IEM numérique Axient Digital. Plage, pas de 25 kHz et noms d'appareils relevés dans le guide ADPSM v2.2 (12/09/2026). Le guide ne publie pas de largeur de canal en kHz, seulement une efficacité spectrale par mode : FM analogique 9 canaux / 6 MHz, bande étroite 17 / 6 MHz, Multi-Channel Wideband (WMAS) 28 / 6 MHz. Les 200 kHz retenus ici valent pour le mode bande étroite ; le mode WMAS demande une entrée distincte quand sa largeur sera sourcée.",
+    "source": "https://pubs.shure.com/view/guide/ADPSM/en-US.pdf", "verified": false
   },
   {
-    "id": "shure-adpsm-k54", "brand": "Shure", "series": "Axient Digital PSM", "model": "ADTQ (émetteur) / récepteur ceinture AD PSM", "bandVariant": "K54", "type": "iem",
-    "tuningRangeKHz": [606000, 663000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "À confirmer dans WWB.",
-    "source": "https://www.shure.com/en-GB/products/wireless-systems/axient_digital", "verified": false
+    "id": "shure-adpsm-k55", "brand": "Shure", "series": "Axient Digital PSM", "model": "ADTQ / ADTD (émetteur), ADXR (récepteur ceinture)", "bandVariant": "K55", "type": "iem",
+    "tuningRangeKHz": [606000, 694000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Variante européenne (guide ADPSM v2.2, 12/09/2026). K54 606–663 MHz est la variante nord-américaine, avec des trous de bande.",
+    "source": "https://pubs.shure.com/view/guide/ADPSM/en-US.pdf", "verified": false
   }
 ]
