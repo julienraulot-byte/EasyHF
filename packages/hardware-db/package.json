@@ -12,7 +12,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
-    "validate": "tsx src/validate.ts"
+    "validate": "tsx src/validate.ts",
+    "import:wwb": "tsx src/import-wwb.ts"
   },
   "dependencies": {
     "@easyhf/engine": "workspace:*",
