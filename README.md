@@ -13,7 +13,7 @@ journal des décisions.
 
 | Phase | Contenu | État |
 |---|---|---|
-| 0 | Moteur d'intermodulation `@easyhf/engine` | **validée** le 11/09/2026 — 10 / 10 cas concordants avec Wireless Workbench 7.8, quatre audits adverses (`phase-0-done`) |
+| 0 | Moteur d'intermodulation `@easyhf/engine` | **validée et marquée** — 10 / 10 cas concordants avec Wireless Workbench 7.8, quatre audits adverses ; tag `phase-0-done` sur le commit `d895a03` |
 | 1 | Base matériel `@easyhf/hardware-db` | **en cours** — voir ci-dessous |
 | 2 | ETL ANFR + service TNT | non démarrée — émetteurs TNT géolocalisés, exclusions par lieu |
 | 3 | Formats d'échange `@easyhf/formats` | non démarrée — import et export WWB, WSM, CSV, PDF |
@@ -37,8 +37,10 @@ journal des décisions.
 
 ### Phase 1 — ce qui reste
 
-1. **Lancer `import:wwb` sur la machine de Julien** et valider entrée par
-   entrée. C'est la question de fin de phase.
+1. **Lancer `import:wwb` là où Wireless Workbench est installé** et valider
+   entrée par entrée. C'est la question de fin de phase. La commande vit dans
+   le dépôt : il faut donc un clone sur cette machine, ce qui n'est pas encore
+   le cas.
 2. **Deux chiffres Spectera** que Sennheiser ne publie pas : le pas de
    placement du centre du bloc, et si LinkDesk attend le centre ou le bord bas.
    Une capture d'écran tranche les deux.
@@ -55,6 +57,15 @@ références du retour d'oreille. D-025 puis D-026 en gardent la trace.
 
 Restent hors périmètre v1 : paiement, application native, supervision temps
 réel, multi-pays, fonctions d'IA.
+
+### Pas encore tranché
+
+Le **modèle économique** n'est écrit nulle part. Le brief produit le renvoie à
+plus tard — le paiement est un non-objectif v1 — et le seul engagement pris
+ici est la promesse de couverture : « hors ligne, à un prix d'indépendant ».
+Rien n'est décidé sur la forme de la licence, le montant, ni le découpage
+gratuit / payant. À trancher avant la phase 4, puisque l'interface expose le
+choix, et à consigner alors dans `docs/DECISIONS.md`.
 
 ## Structure
 
