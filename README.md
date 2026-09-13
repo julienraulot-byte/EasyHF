@@ -55,14 +55,19 @@ Le WMAS était un non-objectif v1, renvoyé en v3 par le brief. Julien l'a
 ramené en phase 1 le 11/09/2026 : c'est aujourd'hui la technologie des deux
 références du retour d'oreille. D-025 puis D-026 en gardent la trace.
 
-Restent hors périmètre v1 : paiement, application native, supervision temps
-réel, multi-pays, fonctions d'IA.
+Trois autres non-objectifs v1 du brief sont tombés depuis, chacun sur décision
+explicite : le **paiement** (D-030, achat unique à 35), l'**application native**
+(D-030, série Invecter en Kotlin Multiplatform) et le **multi-pays** (D-031).
+
+Restent hors périmètre v1 : la supervision temps réel, qui est le terrain des
+constructeurs et demande leurs protocoles, et les fonctions d'IA.
 
 ### Pas encore tranché
 
-Le modèle est arrêté (D-030) : application native de la série Invecter, iOS et
-Android, hors ligne, en achat unique. Restent ouverts, tous les trois validés
-par Julien avant la phase 4 :
+Le modèle est arrêté : application native de la série Invecter, iOS et Android,
+hors ligne, en achat unique à 35 (D-030), moteur porté en Kotlin Multiplatform
+avec les fichiers témoins comme suite de conformité (D-032). Restent ouverts,
+à valider par Julien avant la phase 4 :
 
 - **quel pays après la France.** Le multi-pays est acté (D-031) et le code s'y
   prête déjà ; reste à choisir l'ordre, et à rouvrir les deux décisions que ça
