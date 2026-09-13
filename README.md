@@ -65,10 +65,9 @@ Android, hors ligne, en achat unique. Restent ouverts, tous les trois validés
 par Julien avant la phase 4 :
 
 - **le prix**, à caler sur la grille Invecter ;
-- **le multi-pays**, non-objectif v1 du brief alors que la série Invecter est
-  mondiale. Le code est déjà neutre : le moteur ne connaît pas la France et le
-  plan de bandes est un fichier de données. Le coût réel par pays est
-  l'automatisation des exclusions télé ;
+- **quel pays après la France.** Le multi-pays est acté (D-031) et le code s'y
+  prête déjà ; reste à choisir l'ordre, et à rouvrir les deux décisions que ça
+  invalide, la bande 863–865 MHz et la restriction du QLX-D S50 ;
 - **l'ordre des phases**, la recommandation étant de mettre une tranche
   verticale mince entre les mains de vrais coordinateurs avant de construire
   les phases 2 et 3.

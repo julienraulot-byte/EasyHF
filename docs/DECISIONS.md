@@ -864,3 +864,47 @@ plateformes et présence sur les stores, au lieu d'une PWA.
   Le risque le plus lourd du produit n'est pas technique : c'est de savoir si un
   plan de 24 liaisons est utilisable sur un téléphone. C'est un écart assumé
   avec la méthode phase-gate.
+
+## D-031 — EasyHF est multi-pays **[VALIDÉ 13/09/2026]**
+
+*Phase 1, décidé par Julien.* Le multi-pays était un non-objectif v1 du brief.
+La série Invecter étant mondiale (D-030), il devient une prémisse. Même
+amendement conscient que pour le WMAS.
+
+**Le code est déjà prêt, c'était mesuré avant de décider :** le moteur ne
+contient aucune connaissance de la France — seules traces, une valeur
+d'énumération `tnt-anfr` servant d'étiquette et un commentaire signalant que
+les messages sont en français. Le plan de bandes est un fichier de données
+portant déjà un champ `country`, et aucune bibliothèque ne le lit : le moteur
+reçoit les bandes en paramètre. `hardware-db` est neutre. Un pays de plus est
+donc un fichier JSON, pas un changement d'architecture.
+
+**Ce qui coûte réellement par pays, c'est l'exclusion des émetteurs de
+télévision.** Chaque pays a sa source : ANFR en France, Ofcom au Royaume-Uni,
+BNetzA en Allemagne, FCC aux États-Unis. Quatre chaînes de traitement
+différentes. D'où la règle : **la saisie manuelle des exclusions et l'import de
+scans marchent partout dès le premier jour**, et l'automatisation par pays suit
+la demande réelle des utilisateurs Invecter.
+
+L'Europe est presque gratuite : la recommandation CEPT 70-03 couvre tout le
+continent et la norme ETSI EN 300 422 est harmonisée. L'Allemagne autorise
+470–608 et 614–698 MHz à 50 mW, le Royaume-Uni 470–606 et 614–703. Les bornes
+diffèrent, la structure est identique. Les entrées Spectera encodent déjà la
+licence ZONE 01, qui couvre l'Union, l'AELE, le Royaume-Uni et la Turquie. Les
+États-Unis sont un vrai chantier séparé : bandes FCC différentes, WMAS plafonné
+à 6 MHz, régimes licencié et non licencié.
+
+**Deux décisions à rouvrir, conséquence directe :**
+
+- **D-019** écartait la bande 863–865 MHz de la v1 parce qu'elle n'est pas
+  ouverte au PMSE audio en France. Elle l'est ailleurs, notamment en Allemagne.
+  La décision reste juste pour `fr.json` et fausse pour les autres plans.
+- **Le QLX-D S50** a été restreint à sa sous-plage française 823,125–831,875 MHz
+  alors que le matériel accorde aussi 863,125–864,875. C'était confondre deux
+  rôles : **une entrée matériel décrit le matériel, c'est le plan de bandes qui
+  filtre.** La correction demande les sous-plages (une des trois questions
+  ouvertes de D-029), puisqu'une seule plage ne sait pas décrire ce trou.
+
+`[À VALIDER JULIEN]` : quel pays après la France. Recommandation, par coût
+croissant et par proximité avec les utilisateurs Invecter — Belgique, Suisse et
+Allemagne, puis Royaume-Uni.
