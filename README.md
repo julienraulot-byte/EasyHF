@@ -17,7 +17,7 @@ journal des décisions.
 | 1 | Base matériel `@easyhf/hardware-db` | **en cours** — voir ci-dessous |
 | 2 | ETL ANFR + service TNT | non démarrée — émetteurs TNT géolocalisés, exclusions par lieu |
 | 3 | Formats d'échange `@easyhf/formats` | non démarrée — import et export WWB, WSM, CSV, PDF |
-| 4 | PWA `apps/web` | non démarrée — interface hors ligne, design au skill Impeccable |
+| 4 | Application native, série Invecter | non démarrée — iOS et Android, hors ligne, achat unique (D-030), design au skill Impeccable |
 | 5 | Durcissement + beta | non démarrée — performance, accessibilité, première mise en main |
 
 ### Phase 1 — ce qui est fait
@@ -60,12 +60,18 @@ réel, multi-pays, fonctions d'IA.
 
 ### Pas encore tranché
 
-Le **modèle économique** n'est écrit nulle part. Le brief produit le renvoie à
-plus tard — le paiement est un non-objectif v1 — et le seul engagement pris
-ici est la promesse de couverture : « hors ligne, à un prix d'indépendant ».
-Rien n'est décidé sur la forme de la licence, le montant, ni le découpage
-gratuit / payant. À trancher avant la phase 4, puisque l'interface expose le
-choix, et à consigner alors dans `docs/DECISIONS.md`.
+Le modèle est arrêté (D-030) : application native de la série Invecter, iOS et
+Android, hors ligne, en achat unique. Restent ouverts, tous les trois validés
+par Julien avant la phase 4 :
+
+- **le prix**, à caler sur la grille Invecter ;
+- **le multi-pays**, non-objectif v1 du brief alors que la série Invecter est
+  mondiale. Le code est déjà neutre : le moteur ne connaît pas la France et le
+  plan de bandes est un fichier de données. Le coût réel par pays est
+  l'automatisation des exclusions télé ;
+- **l'ordre des phases**, la recommandation étant de mettre une tranche
+  verticale mince entre les mains de vrais coordinateurs avant de construire
+  les phases 2 et 3.
 
 ## Structure
 

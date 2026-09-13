@@ -785,3 +785,82 @@ et par profil : certains appareils ne comptent pas comme source
 d'intermodulation. C'est exactement l'axe que le moteur vient d'acquérir pour
 les blocs WMAS (D-026). Le jour où les gardes par modèle seront importées, la
 colonne se branchera dessus sans rien changer.
+
+## D-030 — EasyHF est une application native de la série Invecter, en achat unique **[VALIDÉ 13/09/2026]**
+
+*Phase 1, décidé par Julien.* La phase 4 du brief prévoyait une PWA autonome
+et le brief produit renvoyait le paiement hors de la v1. Les deux changent.
+
+**La décision.** EasyHF sort comme **cinquième application native de la série
+Invecter** (iOS et Android, hors ligne), vendue en **achat unique, sans
+abonnement**, comme les quatre autres.
+
+**Pourquoi le natif dans Invecter plutôt qu'une application web.** Ce n'est pas
+que le mobile permettrait de facturer — une application web se vend très bien,
+SoundBase et IntermodExplorer le font. C'est que **la distribution et le
+paiement sont déjà résolus** : le store encaisse, référence, et quatre
+applications existantes peuvent renvoyer vers la cinquième. Sur le web il
+faudrait construire comptes, facturation et acquisition, soit des mois de
+travail qui ne sont pas le produit. Pour un développeur seul, c'est décisif.
+
+S'y ajoutent deux raisons de fond :
+
+- **L'acheteur est rigoureusement le même.** Invecter s'adresse aux
+  professionnels de l'événementiel — son, lumière, vidéo, réseau, régie,
+  broadcast. C'est exactement l'utilisateur d'EasyHF, pas un public voisin.
+- **Gear est un fossé, pas une synergie vague.** Gear tient déjà un inventaire
+  hors ligne avec étiquettes QR, kits et préparation de mission. Une
+  coordination est un inventaire de liaisons rattachées à des références
+  matériel. Scanner l'étiquette d'un émetteur pour construire le plan est un
+  geste qu'aucun constructeur ne peut offrir, puisqu'aucun ne connaît le parc
+  des autres.
+
+**Pourquoi l'achat unique et pas un abonnement.** Toute la série est en achat
+unique ; casser ce choix pour la cinquième application contredirait la
+promesse faite aux clients. Et ces clients travaillent par projet : un
+abonnement mensuel se résilie entre deux tournées. L'entretien des données —
+base matériel, réglementation, exclusions télé — sera financé par des
+**versions majeures payantes**, annoncées comme telles dès le départ. Si le
+service d'exclusions télé devient un jour un vrai service en ligne, par lieu et
+par date, c'est ce morceau-là qui pourra s'abonner, pas l'application.
+
+**Positionnement, face au concurrent réel.** Shure a sorti en juillet 2025
+*Wireless Workbench Mobile* (ex-ShurePlus Channels), gratuit, qui coordonne des
+fréquences sur iOS. EasyHF n'est donc **pas** la première application HF sur
+téléphone. Ses quatre limites définissent notre place :
+
+| Wireless Workbench Mobile | EasyHF |
+|---|---|
+| matériel Shure uniquement | toutes marques |
+| exige d'être connecté aux récepteurs en Wi-Fi ou Ethernet | prépare le plan avant d'arriver, hors ligne |
+| ne supporte pas l'Axient Digital PSM | WMAS modélisé (D-026) |
+| aucune donnée ni réglementation françaises | plan de bandes et exclusions par pays |
+
+**Ce que ça change dans le code : rien pour l'instant.** Le moteur n'a aucune
+dépendance, ni DOM, ni horloge, ni aléa — il tourne dans une coquille native
+comme dans un service worker. `shared` et `hardware-db` sont également neutres.
+La décision ne porte que sur l'enveloppe de la phase 4 : coquille native à deux
+plateformes et présence sur les stores, au lieu d'une PWA.
+
+**Restent à trancher**, et volontairement laissés ouverts ici :
+
+- `[À VALIDER JULIEN]` **le prix**, que je ne connais pas faute de connaître la
+  grille Invecter. Recommandation : le haut de la grille, cette application
+  évitant qu'un plateau tombe en panne.
+- `[À VALIDER JULIEN]` **le multi-pays.** La série Invecter est mondiale, EasyHF
+  est construite pour la France. Le code est déjà neutre — le moteur ne connaît
+  pas la France, le plan de bandes est un fichier de données portant un champ
+  `country`, et aucune bibliothèque ne le lit. Ajouter l'Allemagne ou le
+  Royaume-Uni est un fichier JSON de plus. Le vrai coût par pays est
+  l'automatisation des exclusions télé. Le multi-pays est un non-objectif v1 du
+  brief : en faire une prémisse v1 demande le même amendement conscient que
+  celui fait pour le WMAS. Deux décisions seraient alors à rouvrir, D-019 (la
+  bande 863-865 MHz, écartée en France mais utilisée en Allemagne) et la
+  restriction du QLX-D S50 à sa sous-plage française.
+- `[À VALIDER JULIEN]` **l'ordre des phases.** Recommandation : après la phase 1,
+  une tranche verticale mince — coordination, exclusions saisies à la main,
+  export PDF — dans la coquille Invecter, mise entre les mains de trois
+  coordinateurs réels, *avant* l'automatisation ANFR et les formats d'échange.
+  Le risque le plus lourd du produit n'est pas technique : c'est de savoir si un
+  plan de 24 liaisons est utilisable sur un téléphone. C'est un écart assumé
+  avec la méthode phase-gate.
