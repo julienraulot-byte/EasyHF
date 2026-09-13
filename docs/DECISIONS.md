@@ -908,3 +908,51 @@ licence ZONE 01, qui couvre l'Union, l'AELE, le Royaume-Uni et la Turquie. Les
 `[À VALIDER JULIEN]` : quel pays après la France. Recommandation, par coût
 croissant et par proximité avec les utilisateurs Invecter — Belgique, Suisse et
 Allemagne, puis Royaume-Uni.
+
+## D-032 — Le moteur est porté en Kotlin Multiplatform, le TypeScript sert d'oracle **[VALIDÉ 13/09/2026]**
+
+*Phase 1, décidé par Julien.* Toute la série Invecter est en Kotlin
+Multiplatform, distribuée sur iOS et Android depuis une source unique. Le
+moteur d'EasyHF y va.
+
+**Pourquoi ne pas embarquer le JavaScript.** C'était l'option tentante : le
+moteur est sans dépendance, sans DOM, sans Node, il tourne tel quel dans
+n'importe quel moteur JS. Mais **sur iOS une application tierce n'a pas droit à
+la compilation à la volée** ; JavaScriptCore y tourne en interprété. Une
+coordination de 40 liaisons représente des millions d'opérations sur des
+masques d'octets, et le budget est de 3 secondes. Passer par une WKWebView
+rendrait la compilation possible au prix d'embarquer une vue web dans une
+application native. C'est une raison technique, pas une préférence.
+
+**L'ampleur réelle.** 1 748 lignes au total, dont 261 de déclarations de types
+et une forte proportion de commentaires ; moins de 1 500 lignes d'algorithme,
+zéro dépendance d'exécution, arithmétique entière pure. Le choix de phase 0 de
+ne jamais laisser un flottant décider paie ici : il n'y a pas de différence de
+comportement en virgule flottante à redouter entre les deux langages.
+
+**Ce qui rend ce portage inhabituellement sûr.** Le moteur garantit une sortie
+identique octet pour octet à entrée identique, et c'est testé. Trois actifs se
+transposent donc directement :
+
+| Actif | Rôle dans le portage |
+|---|---|
+| `test/golden/*.json` | suite de conformité : le moteur Kotlin doit reproduire le même JSON, exactement |
+| `cross-validation.test.ts` | chaque fréquence candidate offerte à la recherche doit recevoir le verdict du vérificateur |
+| `properties.test.ts` | tests par propriétés, transposables avec kotest |
+
+**Un seul moteur à l'arrivée.** Maintenir deux implémentations des mêmes règles
+est un piège pour un développeur seul : elles divergent sans que personne ne le
+voie. Le TypeScript sert d'oracle pendant le portage, puis le Kotlin devient le
+moteur unique d'exécution.
+
+**Mais la chaîne d'outils reste en TypeScript**, et la séparation est nette :
+`hardware-db`, le validateur et l'importateur Wireless Workbench (D-029)
+tournent sur la machine du développeur, pas sur le téléphone, et continuent de
+produire du JSON. TypeScript pour l'outillage, Kotlin pour l'exécution, JSON
+comme contrat.
+
+**Conséquence sur l'ordre des travaux.** Les fichiers témoins doivent être gelés
+avant que le portage commence, et **les trois questions ouvertes de D-029 —
+sous-plages, appareils à canaux préréglés, ordres 7 et 9 — se tranchent avant,
+pas après.** Toute règle modifiée ensuite devra l'être deux fois tant que le
+TypeScript n'est pas retiré.
