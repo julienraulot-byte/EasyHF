@@ -842,11 +842,30 @@ comme dans un service worker. `shared` et `hardware-db` sont également neutres.
 La décision ne porte que sur l'enveloppe de la phase 4 : coquille native à deux
 plateformes et présence sur les stores, au lieu d'une PWA.
 
+**Le prix : 35 [VALIDÉ 13/09/2026].** La grille Invecter est Gear à 15 et Tools
+à 25 ; HF se place à 35, quarante pour cent au-dessus de l'application la plus
+chère. Assez pour marquer le vaisseau amiral sans casser la cohérence de la
+suite, et justifiable au contenu : Tools est une collection de calculateurs
+simples, HF porte un moteur validé contre Wireless Workbench, 67 entrées
+matériel, la modélisation WMAS et des données réglementaires par pays.
+
+Pas plus haut, pour deux raisons. Wireless Workbench Mobile est gratuit en
+face, et le modèle repose sur des **versions majeures payantes** : partir à 45
+ne laisserait nulle part où monter. 35 en version 1, 45 en version 2 une fois
+les pays et les chaînes de données en place, est un chemin propre. Augmenter
+est toujours plus facile que baisser.
+
+Deux mécaniques accompagnent le chiffre, non tranchées : un prix de lancement à
+29 sur les premiers mois, qui reste au-dessus de Tools et ne brouille donc pas
+la hiérarchie ; et un lot des cinq applications aux alentours de 70 % de la
+somme, la cinquième application étant l'occasion de le faire reconsidérer aux
+clients qui en possèdent déjà deux ou trois. Le couple HF + Gear a en outre un
+sens fonctionnel, par le scan des étiquettes QR.
+
+Chiffre à revoir une fois le build terminé, à la demande de Julien.
+
 **Restent à trancher**, et volontairement laissés ouverts ici :
 
-- `[À VALIDER JULIEN]` **le prix**, que je ne connais pas faute de connaître la
-  grille Invecter. Recommandation : le haut de la grille, cette application
-  évitant qu'un plateau tombe en panne.
 - `[À VALIDER JULIEN]` **le multi-pays.** La série Invecter est mondiale, EasyHF
   est construite pour la France. Le code est déjà neutre — le moteur ne connaît
   pas la France, le plan de bandes est un fichier de données portant un champ
