@@ -229,9 +229,16 @@ export function forEachImHit(
               if (victim === i) return relation(j, k) !== 'none';
               if (victim === j) return relation(i, k) !== 'none';
               // Subtractive generator: residual |i + j − 2k|, the 2-transmitter
-              // forms 2k − i against j and 2k − j against i, which run only
-              // when i and j see each other.
-              if (victim === k) return relation(i, j) === 'full';
+              // forms 2k − i against j and 2k − j against i. They run only when
+              // i and j see each other, and a guard of 0 switches a rule off —
+              // so one of the two has to carry a guard, or nothing measures the
+              // residual and the product is reported here (D-005, 4th revision).
+              if (victim === k) {
+                return (
+                  relation(i, j) === 'full' &&
+                  (guardOf(i, 'im3-2tx') > 0 || guardOf(j, 'im3-2tx') > 0)
+                );
+              }
               return false;
             },
             (victim, distance, required) =>

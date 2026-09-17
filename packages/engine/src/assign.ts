@@ -66,6 +66,11 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
   for (const link of links) {
     if (seenIds.has(link.id)) throw new Error(`Liaison en double dans links : ${link.id}`);
     seenIds.add(link.id);
+    // A carrier of no width has no half-width to widen an exclusion by, and the
+    // mask would then block an interval the checker measures as clear.
+    if (!Number.isInteger(link.channelWidthKHz) || link.channelWidthKHz < 1) {
+      throw new Error(`Liaison « ${link.id} » : largeur de canal invalide (${link.channelWidthKHz} kHz, entier ≥ 1 attendu)`);
+    }
   }
 
   const grids: CandidateGrid[] = links.map((link) =>
@@ -222,8 +227,13 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
           // (pa, pb) decides unless it is skipped between isolated zones.
           if (relAB === REL.none && Math.abs(pa.freqKHz - pb.freqKHz) < G) hard.fill(1);
           // pa + pb − f hits f  ⇒  |pa + pb − 2f| < g3b. The 2-transmitter
-          // forms decide, and they run only when pa and pb see each other.
-          if (relAB !== REL.full) block.range(3 * (sum - G) + 1, 3 * (sum + G) - 1);
+          // forms decide; they run only when pa and pb see each other, and only
+          // if one of them carries a guard (D-005, 4th revision).
+          const twoTxRuns =
+            relAB === REL.full &&
+            ((guards[pa.linkIndex] as Guards).im3TwoTxKHz > 0 ||
+              (guards[pb.linkIndex] as Guards).im3TwoTxKHz > 0);
+          if (!twoTxRuns) block.range(3 * (sum - G) + 1, 3 * (sum + G) - 1);
         }
       }
     }
@@ -262,8 +272,10 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
           if (relFP === REL.none) block.around(fp, v3b + hf + 2 * hv + hp);
           // v as subtractive generator (f + p − v hits v): residual |f + p − 2v|,
           // which the 2-transmitter forms against f and against p decide; they
-          // run only when f and p see each other.
-          if (relFP !== REL.full) block.around(2 * fv - fp, v3b + hf + hp + 2 * hv);
+          // run only when f and p see each other, and only if one of the two
+          // carries a guard (D-005, 4th revision).
+          const twoTxRuns = relFP === REL.full && (g3a > 0 || (guards[p.linkIndex] as Guards).im3TwoTxKHz > 0);
+          if (!twoTxRuns) block.around(2 * fv - fp, v3b + hf + hp + 2 * hv);
         }
 
         if (!threeTx || s < 2 || v3b <= 0) continue;

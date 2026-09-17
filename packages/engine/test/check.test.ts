@@ -359,6 +359,39 @@ describe('checkPlan — per-model guards (D-023)', () => {
     ]);
   });
 
+  it('reports a subtractive self-hit when neither covering form carries a guard (D-005, 4th revision)', () => {
+    // Two receivers whose manufacturer declares them immune to intermodulation
+    // (Sound Devices Astral: all IM guards at 0, spacing 400) flank a third
+    // carrier. A1 + A2 − U lands exactly on U, whose own 3-transmitter guard is
+    // 150 kHz. The rule that is supposed to cover the residual is the
+    // 2-transmitter form, measured against A1 and A2 — and their guard is 0, so
+    // it measures nothing. Skipping here would lose the hit entirely.
+    const immune = { im3TwoTxKHz: 0, im3ThreeTxKHz: 0, im5TwoTxKHz: 0, spacingKHz: 400 };
+    const links = [
+      link('A1', { guards: immune }),
+      link('A2', { guards: immune }),
+      link('U', { guards: { im3TwoTxKHz: 200, im3ThreeTxKHz: 150, im5TwoTxKHz: 0, spacingKHz: 125 } }),
+    ];
+    const plan = [
+      { linkId: 'A1', freqKHz: 499_500 },
+      { linkId: 'A2', freqKHz: 500_500 },
+      { linkId: 'U', freqKHz: 500_000 },
+    ];
+    const result = checkPlan({ links, plan });
+    expect(result.violations.map((v) => [v.kind, v.victimLinkId, v.actualKHz, v.requiredKHz])).toEqual([
+      ['im3-3tx', 'U', 0, 150],
+    ]);
+
+    // One covering guard is enough: give A2 a 2-transmitter guard and the form
+    // 2U − A1 measured against A2 takes over, so the 3-transmitter name is
+    // dropped and the hit surfaces under the 2-transmitter one instead.
+    const covered = checkPlan({
+      links: [links[0]!, link('A2', { guards: { ...immune, im3TwoTxKHz: 200 } }), links[2]!],
+      plan,
+    });
+    expect(covered.violations.map((v) => v.kind)).toEqual(['im3-2tx']);
+  });
+
   it('lets the spacing of two carriers decide an additive self-hit, unless that spacing is skipped (D-005)', () => {
     // B and C are 100 kHz apart, which their own tiny spacing allows. A's
     // 3-transmitter guard is 150 and A + B − C lands 100 kHz from A — but the

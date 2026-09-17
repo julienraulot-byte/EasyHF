@@ -975,3 +975,42 @@ avant que le portage commence, et **les trois questions ouvertes de D-029 —
 sous-plages, appareils à canaux préréglés, ordres 7 et 9 — se tranchent avant,
 pas après.** Toute règle modifiée ensuite devra l'être deux fois tant que le
 TypeScript n'est pas retiré.
+
+## D-033 — Quatrième révision de D-005 : une règle couvrante à garde nulle ne couvre rien
+
+*Phase 1, 17/09/2026, cinquième audit.* La troisième révision (D-005, commit
+`a28fbba`) écartait un produit touchant son propre générateur **dès que la règle
+couvrante tourne**, décidé par la seule relation de zones. L'audit a montré que
+c'était trop large.
+
+**Le cas, reproduit et vérifié.** Deux Sound Devices Astral à 499,500 et
+500,500 MHz encadrent un ULXD4 en profil HD Robust à 500,000. Les espacements
+(500, 500 et 1 000 kHz) sont tous légaux. Le produit `A1 + A2 − U` tombe à
+**500,000 MHz, soit exactement sur U**, dont la garde à 3 émetteurs est de
+150 kHz. Avant correction : `ok: true`, aucune violation, et
+`margins.im3ThreeTxKHz` à `null` — pas même un signal faible.
+
+**Pourquoi.** La règle censée couvrir le résidu est la forme à 2 émetteurs,
+mesurée contre A1 et A2. Or les entrées Astral portent des gardes
+d'intermodulation à **zéro** (D-028, phrase du guide Sound Devices), et le
+moteur pose lui-même qu'« une garde de 0 éteint la règle ». La règle couvrante
+ne tournait donc pas, et le produit n'était mesuré par personne.
+
+**La règle devient :** une forme à 2 émetteurs ne couvre le résidu que si **au
+moins l'une des deux gardes concernées est non nulle**. Une seule suffit : les
+deux formes mesurent la même quantité `|fi + fj − 2fk|`, et il suffit qu'un
+récepteur la regarde. Corrigé dans le vérificateur (`intermod.ts`) et dans les
+deux miroirs du constructeur de masques (`assign.ts`), avec un test de
+détection dans `check.test.ts`.
+
+Le cas additif est inchangé : l'espacement décide quelle que soit sa valeur,
+c'est ce qui avait débloqué le profil HD Robust à la troisième révision, et un
+espacement requis est toujours au moins égal à une demi-largeur de canal, donc
+jamais nul.
+
+**Leçon de méthode.** Les trois premières révisions raisonnaient sur des gardes
+toutes non nulles. La première entrée dont les gardes viennent d'un texte
+constructeur (Astral, D-028) en a introduit des nulles, et la doctrine s'est
+révélée fausse au contact d'une donnée réelle. La comparaison exhaustive entre
+les deux moitiés du moteur ne pouvait pas le voir : les deux moitiés étaient
+d'accord, et fausses ensemble. C'est le second cas de ce type après D-020.
