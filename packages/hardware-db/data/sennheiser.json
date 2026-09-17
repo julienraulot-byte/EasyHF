@@ -105,7 +105,8 @@
   },
   {
     "id": "sennheiser-6000-a1-a4", "brand": "Sennheiser", "series": "Digital 6000", "model": "EM 6000", "bandVariant": "A1-A4", "type": "receiver",
-    "tuningRangeKHz": [470000, 558000], "stepKHz": 25, "channelWidthKHz": 200,
+    "tuningRangeKHz": [470200, 558000], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 17/09/2026 (série EM 6000).",
     "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/digital-6000", "verified": false
   },
   {
@@ -115,8 +116,8 @@
   },
   {
     "id": "sennheiser-6000-b1-b4", "brand": "Sennheiser", "series": "Digital 6000", "model": "EM 6000", "bandVariant": "B1-B4", "type": "receiver",
-    "tuningRangeKHz": [630000, 718000], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Au-delà de 694 MHz, hors bande PMSE en France.",
+    "tuningRangeKHz": [630850, 713800], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 17/09/2026 (série EM 6000) ; nos bornes arrondies 630–718 MHz étaient fausses aux deux extrémités.",
     "source": "https://www.sennheiser.com/en-de/catalog/products/wireless-systems/digital-6000", "verified": false
   },
   {

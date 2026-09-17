@@ -106,7 +106,7 @@
   {
     "id": "shure-psm1000-k10e", "brand": "Shure", "series": "PSM 1000", "model": "P10R", "bandVariant": "K10E", "type": "iem",
     "tuningRangeKHz": [596125, 667775], "stepKHz": 25, "channelWidthKHz": 300,
-    "notes": "Bornes à confirmer dans WWB (P10R). Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
+    "notes": "Bornes à confirmer dans WWB (P10R). Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026. Désaccord de sources sur la borne haute : WWB donne 667,775 MHz, la table de fréquences PSM1000 de Shure liste 667,875 comme fréquence K10E et la fiche annonce 596–668 MHz. La valeur de WWB est retenue, plus prudente ; à confirmer sur un P10R.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/psm1000", "verified": false
   },
   {
@@ -153,8 +153,8 @@
   },
   {
     "id": "shure-adpsm-k55", "brand": "Shure", "series": "Axient Digital PSM", "model": "ADTQ / ADTD (émetteur), ADXR (récepteur ceinture)", "bandVariant": "K55", "type": "iem",
-    "tuningRangeKHz": [606125, 693875], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Variante européenne (guide ADPSM v2.2, 12/09/2026). K54 606–663 MHz est la variante nord-américaine, avec des trous de bande. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
+    "tuningRangeKHz": [606000, 693875], "stepKHz": 25, "channelWidthKHz": 200,
+    "notes": "Variante européenne. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 17/09/2026, dans la série ADPSM elle-même : la borne basse est 606,000 et non 606,125, qui est celle de la bande K55 des micros Axient Digital.",
     "source": "https://pubs.shure.com/view/guide/ADPSM/en-US.pdf", "verified": false
   }
 ]
