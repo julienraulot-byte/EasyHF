@@ -955,14 +955,23 @@ transposent donc directement :
 
 | Actif | Rôle dans le portage |
 |---|---|
-| `test/golden/*.json` | suite de conformité : le moteur Kotlin doit reproduire le même JSON, exactement |
+| `test/golden/*.json` | point de départ seulement : dix fichiers, un seul cas de charge, et ils figent des messages **en français** que le Kotlin devrait reproduire au caractère près |
 | `cross-validation.test.ts` | chaque fréquence candidate offerte à la recherche doit recevoir le verdict du vérificateur |
 | `properties.test.ts` | tests par propriétés, transposables avec kotest |
 
-**Un seul moteur à l'arrivée.** Maintenir deux implémentations des mêmes règles
-est un piège pour un développeur seul : elles divergent sans que personne ne le
-voie. Le TypeScript sert d'oracle pendant le portage, puis le Kotlin devient le
-moteur unique d'exécution.
+**Un seul moteur à l'arrivée — mais une dépendance à couper d'abord.**
+Maintenir deux implémentations des mêmes règles est un piège pour un
+développeur seul : elles divergent sans que personne ne le voie. Le TypeScript
+sert d'oracle pendant le portage, puis le Kotlin devient le moteur unique
+d'exécution.
+
+*Correction du 17/09/2026, cinquième audit :* la première rédaction affirmait
+cela sans vérifier. `hardware-db` **dépend du moteur** — `validate.ts` importe
+`resolveConfig` à l'exécution, et un test y coordonne un bloc Spectera. Le
+TypeScript ne peut donc pas être retiré tant que cette dépendance existe.
+`[À VALIDER JULIEN]` : soit le validateur cesse de coordonner et ne vérifie plus
+que des schémas, soit deux moteurs vivent pour toujours — exactement le piège
+que cette décision prétend éviter. À trancher **avant** le portage.
 
 **Mais la chaîne d'outils reste en TypeScript**, et la séparation est nette :
 `hardware-db`, le validateur et l'importateur Wireless Workbench (D-029)
@@ -975,6 +984,35 @@ avant que le portage commence, et **les trois questions ouvertes de D-029 —
 sous-plages, appareils à canaux préréglés, ordres 7 et 9 — se tranchent avant,
 pas après.** Toute règle modifiée ensuite devra l'être deux fois tant que le
 TypeScript n'est pas retiré.
+
+**Quatre pièges de portage relevés par le cinquième audit, à traiter avant
+d'écrire la première ligne de Kotlin :**
+
+1. **Division entière.** `candidates.ts` calcule ses bornes avec `Math.ceil` et
+   `Math.floor` sur des opérandes qui deviennent négatifs dès qu'un produit
+   tombe sous la borne basse de la grille, ce qui est fréquent. Vérifié :
+   `Math.floor(-0,5)` vaut −1 en JavaScript, alors que la division entière
+   Kotlin tronque vers zéro. Le masque bloquerait un candidat que le TypeScript
+   laisse libre. Chaque `floor`/`ceil` est à relire à la main.
+2. **Largeur des entiers.** JavaScript calcule en flottant double, exact à
+   53 bits ; `Int` fait 32 bits en Kotlin. Porter en `Long`, ou démontrer les
+   bornes pour un bloc WMAS de 8 MHz à 1,4 GHz avec générateur activé.
+3. **Ordre d'itération.** `Map` et `Set` itèrent en ordre d'insertion en
+   JavaScript ; `HashMap` non en Kotlin. `LinkedHashMap` partout, sous peine de
+   perdre le déterminisme, qui est la garantie centrale du moteur.
+4. **Messages figés.** Le moteur génère des chaînes françaises que les témoins
+   comparent. Le portage doit d'abord faire émettre au moteur des **codes
+   structurés**, le formatage revenant à l'interface — ce qui sert aussi le
+   multi-pays (D-031), et doit donc être fait une fois, avant le port.
+
+**Et une suite de conformité à construire :** dix fichiers témoins ne prouvent
+pas un moteur numérique. Geler avant le portage un corpus généré de plusieurs
+milliers de scènes — graine fixe, blocs WMAS, zones, exclusions, grilles à 5 et
+125 kHz, plages en 1,4 GHz — sérialisé en JSON structuré sans chaînes, et
+l'exécuter côté Kotlin en intégration continue. Une journée de travail en
+TypeScript. Ajouter un banc sur téléphone réel avant d'engager le port : le
+budget de 3 secondes n'a jamais été mesuré ailleurs que sur une machine de
+build.
 
 ## D-033 — Quatrième révision de D-005 : une règle couvrante à garde nulle ne couvre rien
 
