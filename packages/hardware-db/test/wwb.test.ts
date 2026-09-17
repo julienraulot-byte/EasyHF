@@ -37,7 +37,7 @@ const band = (over: Partial<WwbBand> = {}): WwbBand => ({
 describe('toKHz', () => {
   it('normalises the units WWB actually uses', () => {
     expect(toKHz(470.125)).toBe(470_125); // MHz, most series
-    expect(toKHz(470_200_000)).toBe(470_200); // Hz, the EW-D rows
+    expect(toKHz(470_200_000)).toBe(470_200); // kHz, the Lectrosonics and EW-D rows
     expect(toKHz(1_785_200)).toBe(1_785_200); // already kHz
   });
 });
@@ -45,12 +45,37 @@ describe('toKHz', () => {
 describe('findBands', () => {
   it('prefers the band of the same series, ignoring punctuation and case', () => {
     const bands = [band({ series: 'QLXD' }), band({ series: 'ULXD', toKHz: 533_975 })];
-    expect(findBands(entry(), bands).map((b) => b.toKHz)).toEqual([533_975]);
+    const match = findBands(entry(), bands);
+    expect(match.how).toBe('series');
+    expect(match.bands.map((b) => b.toKHz)).toEqual([533_975]);
   });
 
-  it('falls back to every series sharing the band code', () => {
+  it('says the band is missing rather than borrowing another series that has it', () => {
+    // WWB knows ULX-D, just not this code: silently comparing against QLX-D's
+    // G51 would report "conforme" and hide the real discrepancy.
+    const bands = [band({ series: 'QLXD' }), band({ series: 'ULXD', band: 'H51' })];
+    expect(findBands(entry(), bands)).toEqual({ bands: [], how: 'band-missing' });
+  });
+
+  it('falls back across series only when WWB does not know the series at all', () => {
     const bands = [band({ series: 'QLXD' }), band({ series: 'SLXD' })];
-    expect(findBands(entry(), bands)).toHaveLength(2);
+    const match = findBands(entry({ series: 'Unknown Series' }), bands);
+    expect(match.how).toBe('other-series');
+    expect(match.bands).toHaveLength(2);
+  });
+
+  it('maps our series names onto the abbreviations WWB uses', () => {
+    const adpsm = entry({ series: 'Axient Digital PSM', bandVariant: 'K55' });
+    const bands = [band({ series: 'AD', band: 'K55' }), band({ series: 'ADPSM', band: 'K55', fromKHz: 606_000 })];
+    const match = findBands(adpsm, bands);
+    expect(match.how).toBe('series');
+    expect(match.bands.map((b) => b.fromKHz)).toEqual([606_000]);
+  });
+
+  it('ignores punctuation in band codes, which WWB drops', () => {
+    const d6000 = entry({ brand: 'Sennheiser', series: 'Digital 6000', bandVariant: 'A1-A4' });
+    const bands = [band({ manufacturer: 'Sennheiser', series: 'EM 6000', band: 'A1A4', fromKHz: 470_200 })];
+    expect(findBands(d6000, bands).how).toBe('series');
   });
 });
 

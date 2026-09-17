@@ -70,9 +70,17 @@ describe('validator', () => {
     expect(findings([{ ...wide, type: 'wmas' as const }])).toEqual([]);
   });
 
-  it('rejects a WMAS entry whose range cannot hold its block', () => {
+  it('rejects a WMAS range too narrow to give its block centre a position', () => {
+    // The profile builder insets each end by half a block rounded up to the
+    // grid, so a range under twice that inset yields an inverted centre range.
     const narrow = { ...base, id: 'test-narrow-wmas', type: 'wmas' as const, channelWidthKHz: 6_000, tuningRangeKHz: [470_000, 475_000] as [number, number] };
-    expect(findings([narrow])).toEqual(['test-narrow-wmas : plage 470000–475000 kHz plus étroite que le bloc de 6000 kHz']);
+    expect(findings([narrow])).toEqual([
+      "test-narrow-wmas : plage 470000–475000 kHz trop étroite pour un bloc de 6000 kHz (le centre n'a aucune position valable)",
+    ]);
+    // Exactly one block wide is accepted and leaves the centre one position.
+    const exact = { ...narrow, id: 'test-exact-wmas', tuningRangeKHz: [470_000, 476_000] as [number, number] };
+    expect(findings([exact])).toEqual([]);
+    expect(hardwareProfile(exact).tuningRangeKHz).toEqual([473_000, 473_000]);
   });
 
   it('rejects a duplicate id', () => {

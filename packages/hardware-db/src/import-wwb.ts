@@ -123,8 +123,10 @@ function report(findings: readonly Finding[]): string {
     ['range-differs', 'Plages qui diffèrent'],
     ['step-differs', "Pas d'accord qui diffèrent"],
     ['sub-ranges', 'Bandes à trous'],
+    ['band-not-in-series', 'Bande absente de sa série dans WWB'],
+    ['match-other-series', 'Comparés à une autre série, faute de mieux'],
     ['unmodelled-order', 'Ordres que le moteur ne modélise pas'],
-    ['not-in-wwb', 'Absents de WWB'],
+    ['not-in-wwb', 'Séries absentes de WWB'],
   ] as const) {
     const group = byKind(kind);
     if (group.length === 0) continue;

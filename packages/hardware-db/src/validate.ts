@@ -44,8 +44,15 @@ export function findings(entries: readonly HardwareEntry[]): string[] {
       out.push(`${label} : largeur de canal ${entry.channelWidthKHz} kHz invraisemblable pour le type ${entry.type}`);
     }
     if (entry.stepKHz > 1_000) out.push(`${label} : pas d'accord ${entry.stepKHz} kHz invraisemblable`);
-    if (entry.type === 'wmas' && to - from < entry.channelWidthKHz) {
-      out.push(`${label} : plage ${from}–${to} kHz plus étroite que le bloc de ${entry.channelWidthKHz} kHz`);
+    if (entry.type === 'wmas' && entry.stepKHz > 0) {
+      // `hardwareProfile` insets each end by half a block, rounded up to the
+      // grid; too narrow a range and the centre range comes out inverted.
+      const inset = Math.ceil(Math.ceil(entry.channelWidthKHz / 2) / entry.stepKHz) * entry.stepKHz;
+      if (to - inset < from + inset) {
+        out.push(
+          `${label} : plage ${from}–${to} kHz trop étroite pour un bloc de ${entry.channelWidthKHz} kHz (le centre n'a aucune position valable)`,
+        );
+      }
     }
     if (entry.stepKHz > 0 && (to - from) % entry.stepKHz !== 0) {
       out.push(`${label} : la borne haute ${to} kHz n'est pas sur la grille de ${entry.stepKHz} kHz depuis ${from}`);

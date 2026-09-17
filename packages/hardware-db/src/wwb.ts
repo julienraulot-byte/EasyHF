@@ -47,6 +47,8 @@ export type FindingKind =
   | 'step-differs'
   | 'sub-ranges'
   | 'not-in-wwb'
+  | 'band-not-in-series'
+  | 'match-other-series'
   | 'unmodelled-order'
   | 'match';
 
@@ -66,21 +68,58 @@ export function toKHz(value: number): number {
 
 const mhz = (khz: number): string => (khz / 1000).toFixed(3);
 
+/** Our series names against WWB's, which abbreviates and drops punctuation. */
+const SERIES_ALIASES: Record<string, string> = {
+  axientdigital: 'ad',
+  axientdigitalpsm: 'adpsm',
+  ewd: 'ewdem',
+  digital6000: 'em6000',
+  '2000iem': 'sr2050',
+};
+
+/** Punctuation and case carry no meaning in either database. */
+function key(value: string): string {
+  return value.replace(/[^a-z0-9]/gi, '').toLowerCase();
+}
+
+function seriesKey(series: string): string {
+  const k = key(series);
+  return SERIES_ALIASES[k] ?? k;
+}
+
+export interface BandMatch {
+  /** Bands to compare against, best first. */
+  bands: WwbBand[];
+  /**
+   * How the match was made. `series` is the band code inside the entry's own
+   * series. `other-series` means only another series carries that code, so the
+   * comparison is indicative. `band-missing` means WWB knows the series but not
+   * the code. `unknown` means WWB does not carry the series at all.
+   */
+  how: 'series' | 'other-series' | 'band-missing' | 'unknown';
+}
+
 /**
  * Matches an entry to the WWB bands of the same manufacturer and band code.
- * A band code is unique within a manufacturer but shared across series (a
- * Shure G51 is the same spectrum on ULX-D and QLX-D), so the series name
- * narrows it when it can.
+ *
+ * A band code is unique within a manufacturer but shared across series (a Shure
+ * G51 is the same spectrum on ULX-D and QLX-D), so the series narrows it when
+ * it can. Falling back across series is only honest when WWB does not know the
+ * series at all: otherwise a code missing from the entry's own series is a
+ * finding, not something to paper over with a same-numbered band elsewhere.
  */
-export function findBands(entry: HardwareEntry, bands: readonly WwbBand[]): WwbBand[] {
-  const sameCode = bands.filter(
-    (b) =>
-      b.manufacturer.toLowerCase() === entry.brand.toLowerCase() &&
-      b.band.toUpperCase() === entry.bandVariant.toUpperCase(),
-  );
-  const key = entry.series.replace(/[^a-z0-9]/gi, '').toLowerCase();
-  const sameSeries = sameCode.filter((b) => b.series.replace(/[^a-z0-9]/gi, '').toLowerCase() === key);
-  return sameSeries.length > 0 ? sameSeries : sameCode;
+export function findBands(entry: HardwareEntry, bands: readonly WwbBand[]): BandMatch {
+  const brand = entry.brand.toLowerCase();
+  const code = key(entry.bandVariant);
+  const wanted = seriesKey(entry.series);
+  const sameBrand = bands.filter((b) => b.manufacturer.toLowerCase() === brand);
+  const sameCode = sameBrand.filter((b) => key(b.band) === code);
+  const inSeries = sameCode.filter((b) => seriesKey(b.series) === wanted);
+  if (inSeries.length > 0) return { bands: inSeries, how: 'series' };
+  const seriesKnown = sameBrand.some((b) => seriesKey(b.series) === wanted);
+  if (seriesKnown) return { bands: [], how: 'band-missing' };
+  if (sameCode.length > 0) return { bands: sameCode, how: 'other-series' };
+  return { bands: [], how: 'unknown' };
 }
 
 /** What WWB says about each entry, one finding per difference. */
@@ -88,14 +127,29 @@ export function compareToWwb(entries: readonly HardwareEntry[], bands: readonly 
   const findings: Finding[] = [];
   for (const entry of entries) {
     if (entry.type === 'wmas') continue; // WWB has no WMAS block model.
-    const candidates = findBands(entry, bands);
-    if (candidates.length === 0) {
+    const { bands: candidates, how } = findBands(entry, bands);
+    if (how === 'unknown') {
       findings.push({
         kind: 'not-in-wwb',
         entryId: entry.id,
-        message: `${entry.brand} ${entry.series} ${entry.bandVariant} est absent de la base WWB : à vérifier sur la documentation du constructeur.`,
+        message: `${entry.brand} ${entry.series} est absent de la base WWB : à vérifier sur la documentation du constructeur.`,
       });
       continue;
+    }
+    if (how === 'band-missing') {
+      findings.push({
+        kind: 'band-not-in-series',
+        entryId: entry.id,
+        message: `WWB connaît la série ${entry.brand} ${entry.series} mais pas la bande ${entry.bandVariant} : code de bande ou série à vérifier.`,
+      });
+      continue;
+    }
+    if (how === 'other-series') {
+      findings.push({
+        kind: 'match-other-series',
+        entryId: entry.id,
+        message: `comparé à la série ${(candidates[0] as WwbBand).series} de WWB, faute d'y trouver ${entry.series} : comparaison indicative.`,
+      });
     }
     const [from, to] = entry.tuningRangeKHz;
     const exact = candidates.find((b) => b.fromKHz === from && b.toKHz === to);
@@ -135,7 +189,7 @@ export function compareToWwb(entries: readonly HardwareEntry[], bands: readonly 
         });
       }
     }
-    if (exact && band.stepKHz === entry.stepKHz && band.subRangesKHz.length <= 1) {
+    if (exact && band.stepKHz === entry.stepKHz && band.subRangesKHz.length <= 1 && how === 'series') {
       findings.push({ kind: 'match', entryId: entry.id, message: `conforme à WWB (série ${band.series}).` });
     }
   }
