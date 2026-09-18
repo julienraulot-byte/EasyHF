@@ -57,6 +57,9 @@ const GUARD_SETS: (Partial<Guards> | undefined)[] = [
   { im3TwoTxKHz: 150, im3ThreeTxKHz: 0, im5TwoTxKHz: 0, spacingKHz: 350 },
   { im3TwoTxKHz: 200, im3ThreeTxKHz: 150, im5TwoTxKHz: 0, spacingKHz: 125 },
   { im3TwoTxKHz: 50, im3ThreeTxKHz: 50, im5TwoTxKHz: 40, spacingKHz: 60, exclusionKHz: 100 },
+  // A receiver its maker calls immune to intermodulation, as the Astral
+  // entries were until D-033 showed a zero guard means no rule runs at all.
+  { im3TwoTxKHz: 0, im3ThreeTxKHz: 0, im5TwoTxKHz: 0, spacingKHz: 400 },
 ];
 
 /**
@@ -248,6 +251,21 @@ describe('assignment and checking agree, candidate by candidate', () => {
     }
   });
 
+  it('when the covering 2-transmitter forms carry no guard at all (D-033)', () => {
+    // Two carriers whose maker declares them immune flank the free link, so
+    // LA + LB − FREE lands on FREE and the forms meant to cover it measure
+    // nothing. The search must refuse exactly what the checker refuses.
+    const immune = GUARD_SETS[5] as Partial<Guards>;
+    const locked = [
+      { ...pinned('LA', 'a', 499_500), guards: immune },
+      { ...pinned('LB', 'a', 500_500), guards: immune },
+    ];
+    for (const freeGuards of [GUARD_SETS[3], GUARD_SETS[0], immune]) {
+      const counts = crossValidate(locked, grid(498_000, 200, 25), POLICIES_MIXED, 'a', {}, freeGuards ? { freeGuards } : {});
+      bothOutcomes(counts, `gardes couvrantes nulles, libre ${JSON.stringify(freeGuards)}`);
+    }
+  });
+
   it('with a wideband block among the locked carriers, whether or not it generates', () => {
     const locked = [pinned('L1', 'a', 500_000), pinned('L2', 'b', 503_400), pinned('L3', 'a', 507_125), block('S', 'a', 520_000)];
     for (const wmasAsImGenerator of [false, true]) {
@@ -278,6 +296,46 @@ describe('assignment and checking agree, candidate by candidate', () => {
     const locked = [block('S1', 'a', 500_000), block('S2', 'b', 512_000), pinned('L1', 'a', 520_000)];
     const counts = crossValidate(locked, grid(470_000, 720, 125), POLICIES_MIXED, 'a', { wmasAsImGenerator: true });
     bothOutcomes(counts, 'deux blocs générateurs');
+  });
+
+  it('with holes on a real grid, the free link keeping its whole range', () => {
+    // The clipped-to-one-point form below proves the two halves agree candidate
+    // by candidate, but it never exercises a mask over several grid points nor
+    // several sub-ranges. Here the free link keeps a 2 MHz range with three
+    // windows, and the search is asked for a plan rather than a verdict.
+    const holes: readonly (readonly [number, number])[] = [
+      [520_000, 520_400],
+      [521_000, 521_400],
+      [522_000, 522_000],
+    ];
+    const links: EngineLink[] = [
+      pinned('L1', 'a', 520_200),
+      pinned('L2', 'a', 521_100),
+      { id: 'FREE', zoneId: 'a', tuningRangeKHz: [520_000, 522_000], stepKHz: 25, channelWidthKHz: 200, tunableRangesKHz: holes },
+    ];
+    const result = coordinate({ links, config: { robustnessLadder: [1], maxBacktrackSteps: 0 } });
+    const free = result.assignments.find((a) => a.linkId === 'FREE');
+    if (free) {
+      expect(holes.some(([a, b]) => free.freqKHz >= a && free.freqKHz <= b), `${free.freqKHz} hors fenêtres`).toBe(true);
+      expect(checkPlan({ links, plan: result.assignments }).ok).toBe(true);
+    }
+    // And every frequency of the whole range agrees between the two halves.
+    let refusedInHole = 0;
+    let outsideWindows = 0;
+    for (let f = 520_000; f <= 522_000; f += 25) {
+      const one = [...links.slice(0, 2), { ...links[2] as EngineLink, tuningRangeKHz: [f, f] as [number, number] }];
+      const search = coordinate({ links: one, config: { robustnessLadder: [1], maxBacktrackSteps: 0 } });
+      const verdict = checkPlan({ links: one, plan: [...one.slice(0, 2).map((l) => ({ linkId: l.id, freqKHz: l.lockedFreqKHz as number })), { linkId: 'FREE', freqKHz: f }] });
+      const checkerOk = !verdict.violations.some((v) => v.severity === 'critical' && (v.victimLinkId === 'FREE' || v.sourceLinkIds.includes('FREE')));
+      expect(search.unassignedLinkIds.length === 0, `${f} kHz`).toBe(checkerOk);
+      if (!holes.some(([a, b]) => f >= a && f <= b)) {
+        outsideWindows += 1;
+        if (!checkerOk) refusedInHole += 1;
+      }
+    }
+    // Exactly: every point outside a window is refused, by both halves.
+    expect(outsideWindows, 'la grille ne comporte aucun trou').toBeGreaterThan(20);
+    expect(refusedInHole).toBe(outsideWindows);
   });
 
   it('with a band full of holes, where the search must refuse what the checker refuses', () => {

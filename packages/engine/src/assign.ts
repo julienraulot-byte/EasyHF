@@ -5,6 +5,7 @@ import {
   fitsAllowedSpan,
   fitsTunableRanges,
   generatesIm,
+  validateLinks,
   halfWidthKHz,
   imHalfWidthKHz,
   requiredExclusionKHz,
@@ -63,16 +64,7 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
   const spans = allowedSpans(bands, config.allowTemporaryBands);
   const exclusions = validExclusions(input.exclusions);
 
-  const seenIds = new Set<string>();
-  for (const link of links) {
-    if (seenIds.has(link.id)) throw new Error(`Liaison en double dans links : ${link.id}`);
-    seenIds.add(link.id);
-    // A carrier of no width has no half-width to widen an exclusion by, and the
-    // mask would then block an interval the checker measures as clear.
-    if (!Number.isInteger(link.channelWidthKHz) || link.channelWidthKHz < 1) {
-      throw new Error(`Liaison « ${link.id} » : largeur de canal invalide (${link.channelWidthKHz} kHz, entier ≥ 1 attendu)`);
-    }
-  }
+  validateLinks(links);
 
   const grids: CandidateGrid[] = links.map((link) =>
     buildGrid(link.tuningRangeKHz[0], link.tuningRangeKHz[1], link.stepKHz),

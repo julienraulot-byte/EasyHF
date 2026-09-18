@@ -102,6 +102,27 @@ export function requiredExclusionKHz(link: EngineLink, exclusionKHz: number): nu
   return link.kind === 'wmas' ? half + exclusionKHz : Math.max(exclusionKHz, half);
 }
 
+/**
+ * Rejects a link the two halves of the engine would read differently.
+ *
+ * Both `checkPlan` and `coordinate` call this, and that is the point: a width
+ * of zero gives a carrier no half-width to widen an exclusion by, so the mask
+ * blocked an interval the checker measured as clear. One entry point refusing
+ * the input while the other accepted it was a disagreement of its own.
+ */
+export function validateLinks(links: readonly EngineLink[]): void {
+  const seen = new Set<string>();
+  for (const link of links) {
+    if (seen.has(link.id)) throw new Error(`Liaison en double dans links : ${link.id}`);
+    seen.add(link.id);
+    if (!Number.isInteger(link.channelWidthKHz) || link.channelWidthKHz < 1) {
+      throw new Error(
+        `Liaison « ${link.id} » : largeur de canal invalide (${link.channelWidthKHz} kHz, entier ≥ 1 attendu)`,
+      );
+    }
+  }
+}
+
 /** Rejects an exclusion the two halves of the engine would read differently. */
 export function validExclusions(
   exclusions: readonly EngineExclusion[] | undefined,
@@ -161,7 +182,22 @@ export function fitsAllowedSpan(
  * take part; everything else is already separated by the fields above.
  */
 function detailKey(detail: Violation['detail']): string {
-  return detail.code === 'exclusion.too-close' ? `${detail.code}|${detail.label}` : detail.code;
+  // Two exclusions can overlap the same carrier at the same edge and differ
+  // only by their bounds, so the bounds take part too — the label alone left
+  // two violations comparing equal, and a total order is what makes the report
+  // independent of the order the caller listed things in (D-018).
+  return detail.code === 'exclusion.too-close'
+    ? `${detail.code}|${detail.label}|${detail.fromKHz}|${detail.toKHz}`
+    : detail.code;
+}
+
+/** Element-wise, so that ids containing the join character cannot collide. */
+function compareIdLists(a: readonly string[], b: readonly string[]): number {
+  for (let i = 0; i < Math.min(a.length, b.length); i += 1) {
+    const order = compareIds(a[i] as string, b[i] as string);
+    if (order !== 0) return order;
+  }
+  return a.length - b.length;
 }
 
 function sortViolations(violations: Violation[]): Violation[] {
@@ -170,7 +206,7 @@ function sortViolations(violations: Violation[]): Violation[] {
       KIND_RANK[a.kind] - KIND_RANK[b.kind] ||
       compareIds(a.victimLinkId, b.victimLinkId) ||
       a.offenderFreqKHz - b.offenderFreqKHz ||
-      compareIds(a.sourceLinkIds.join('|'), b.sourceLinkIds.join('|')) ||
+      compareIdLists(a.sourceLinkIds, b.sourceLinkIds) ||
       compareIds(detailKey(a.detail), detailKey(b.detail)),
   );
 }
@@ -187,6 +223,7 @@ function tighten(current: number | null, candidate: number): number | null {
  * where the two trade off, this function over-reports.
  */
 export function checkPlan(input: CheckInput): CheckResult {
+  validateLinks(input.links);
   const config: EngineConfig = resolveConfig(input.config);
   const bands = input.bands ?? [];
   // Normalised so that the same set of exclusions, however it was ordered by

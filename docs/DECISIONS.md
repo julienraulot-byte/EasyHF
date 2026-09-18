@@ -989,12 +989,37 @@ sert d'oracle pendant le portage, puis le Kotlin devient le moteur unique
 d'exécution.
 
 *Correction du 17/09/2026, cinquième audit :* la première rédaction affirmait
-cela sans vérifier. `hardware-db` **dépend du moteur** — `validate.ts` importe
-`resolveConfig` à l'exécution, et un test y coordonne un bloc Spectera. Le
-TypeScript ne peut donc pas être retiré tant que cette dépendance existe.
-`[À VALIDER JULIEN]` : soit le validateur cesse de coordonner et ne vérifie plus
-que des schémas, soit deux moteurs vivent pour toujours — exactement le piège
-que cette décision prétend éviter. À trancher **avant** le portage.
+cela sans vérifier. `hardware-db` dépendait du moteur.
+
+*Tranché le 18/09/2026, sixième audit — et la recommandation que j'avais faite
+était mauvaise.* Je proposais de couper la dépendance en réécrivant la
+validation des gardes dans `hardware-db`. Le contre-avis demandé par Julien a
+montré trois choses, toutes vérifiées ensuite :
+
+1. **L'appel `resolveConfig` était mort.** Le schéma Ajv impose déjà entiers,
+   positivité et absence de clé inconnue, et `findings` s'arrête avant sur un
+   échec de schéma. Une garde négative ou flottante est rattrapée par Ajv, avec
+   le message d'Ajv. L'appel moteur n'a jamais pu produire un constat.
+2. **La réécriture aurait été une troisième énonciation de la même règle**, donc
+   exactement la duplication qu'elle prétendait éviter — le schéma étant la
+   première, le moteur la seconde.
+3. **« Un seul moteur à l'arrivée » visait la mauvaise cible.** Cette décision
+   pose elle-même que la chaîne d'outils reste en TypeScript et que seule
+   l'exécution part en Kotlin. `hardware-db` est de l'outillage : il ne sera
+   jamais porté. Et le corpus de conformité exigé plus bas a besoin d'un
+   générateur, qui est le moteur TypeScript — l'oracle survit de toute façon.
+
+**Ce qui est fait :** l'appel mort est supprimé ; `@easyhf/engine` et
+`@easyhf/shared` passent en dépendances de développement, puisque seuls des
+types subsistent et qu'ils s'effacent à la compilation ; les deux tests qui font
+passer de vraies entrées dans le vrai moteur sont **gardés**, ce sont eux qui
+ont trouvé D-020 et D-033 ; et un test d'architecture verrouille la règle —
+`src` n'emprunte au moteur que des types, les tests empruntent ce qu'ils
+veulent.
+
+**Amendement :** le moteur TypeScript n'est pas retiré après le portage, il est
+**gelé comme oracle** du corpus de conformité et outillage de la base matériel.
+Le « un seul moteur » vaut pour l'exécution, pas pour le dépôt.
 
 **Mais la chaîne d'outils reste en TypeScript**, et la séparation est nette :
 `hardware-db`, le validateur et l'importateur Wireless Workbench (D-029)
