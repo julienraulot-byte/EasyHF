@@ -122,12 +122,18 @@ la comparaison de gardes est retirée. Physiquement, le signal utile est de
 loin le plus faible des signaux présents au récepteur ; un produit qui l'a
 pour générateur est d'autant plus faible.
 
-Ce que l'audit n'a pas pu trancher, et que seul WWB peut : **deux ULXD4 HD
-Robust à 150 kHz** sont-ils « 2T3O incompatible » ? **Trois HD Robust, deux à
-125 kHz et la troisième loin** : la troisième est-elle « 3T3O incompatible » ?
-`[À VALIDER JULIEN]` — si WWB signale l'un ou l'autre, la règle revient sous
-une forme conditionnelle (écartée seulement si `espacement ≥ garde`) dans les
-deux familles à la fois.
+**Relevé dans WWB le 18/09/2026 — la règle est confirmée [VALIDÉ].** Les deux
+cas qui l'auraient fait tomber ont été montés à l'écran :
+
+| Cas monté dans WWB | Ce que dirait la règle inverse | Verdict de WWB |
+|---|---|---|
+| deux ULXD4 HD Robust à 500,000 et 500,150 MHz | `2×500,000 − 500,150` tombe à 150 kHz de son propre générateur, garde 2T3O 200 → incompatible | **compatible** |
+| trois ULXD4 HD Robust à 500,000, 500,125 et 530,000 MHz | `530,000 + 500,000 − 500,125` tombe à 125 kHz de 530,000, garde 3T3O 150 → incompatible | **compatible** |
+
+Wireless Workbench ne confronte donc ni les formes à 2 émetteurs ni la forme
+additive à 3 émetteurs à leurs propres générateurs, exactement comme le moteur
+depuis la troisième révision. La forme conditionnelle envisagée (« écartée
+seulement si espacement ≥ garde ») aurait été plus sévère que la référence.
 
 ## D-006 — Garde IM3 séparée entre 2 et 3 émetteurs **[VALIDÉ 11/09/2026]**
 
@@ -750,6 +756,13 @@ la machine de l'utilisateur :
 pnpm --filter @easyhf/hardware-db import:wwb [chemin du .3ds]
 ```
 
+*Relevé du 18/09/2026 :* la voie officielle a été essayée et **elle est
+fermée**. Le bouton *Export* du panneau *Equipment profiles* existe mais reste
+grisé sur les profils livrés par Shure ; il ne s'active que sur un profil
+personnalisé créé par l'utilisateur. Lire la base est donc le seul chemin
+lisible par une machine vers les plages et les gardes, ce qui rend la règle de
+prudence ci-dessous plus importante, pas moins.
+
 Il sort un rapport — pas un correctif automatique : plages qui diffèrent, pas
 d'accord qui diffèrent, bandes à trous, ordres que le moteur ne modélise pas,
 entrées absentes de WWB. Une entrée ne passe à `verified: true` que sur
@@ -834,7 +847,17 @@ téléphone. Ses quatre limites définissent notre place :
 | matériel Shure uniquement | toutes marques |
 | exige d'être connecté aux récepteurs en Wi-Fi ou Ethernet | prépare le plan avant d'arriver, hors ligne |
 | ne supporte pas l'Axient Digital PSM | WMAS modélisé (D-026) |
-| aucune donnée ni réglementation françaises | plan de bandes et exclusions par pays |
+| pas de recherche TNT par lieu hors États-Unis | exclusions TNT françaises par lieu (phase 2) |
+
+*Correction du 18/09/2026, relevé de Julien dans WWB.* La quatrième ligne
+disait « aucune donnée ni réglementation françaises ». **C'est faux** : le
+menu des canaux TV de Wireless Workbench liste les pays nommément, France
+comprise, et le logiciel embarque un plan de canaux européen (21 à 71, tous
+les 8 MHz depuis 470 MHz). Ce que WWB n'a pas, c'est la recherche **par lieu** :
+sa base de canaux par code postal ne couvre que les États-Unis. La
+différenciation d'EasyHF n'est donc pas « connaître la France », c'est **savoir
+quels canaux sont effectivement diffusés à l'endroit du spectacle**, ce qui est
+la phase 2 et n'est pas construit. La fenêtre est plus étroite qu'annoncé.
 
 **Ce que ça change dans le code : rien pour l'instant.** Le moteur n'a aucune
 dépendance, ni DOM, ni horloge, ni aléa — il tourne dans une coquille native

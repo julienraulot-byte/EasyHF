@@ -106,7 +106,7 @@
   {
     "id": "shure-psm1000-k10e", "brand": "Shure", "series": "PSM 1000", "model": "P10R", "bandVariant": "K10E", "type": "iem",
     "tuningRangeKHz": [596125, 667775], "stepKHz": 25, "channelWidthKHz": 300,
-    "notes": "Bornes à confirmer dans WWB (P10R). Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026. Désaccord de sources sur la borne haute : WWB donne 667,775 MHz, la table de fréquences PSM1000 de Shure liste 667,875 comme fréquence K10E et la fiche annonce 596–668 MHz. La valeur de WWB est retenue, plus prudente ; à confirmer sur un P10R.",
+    "notes": "Bornes à confirmer dans WWB (P10R). Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026. Désaccord de sources sur la borne haute : WWB donne 667,775 MHz, la table de fréquences PSM1000 de Shure liste 667,875 comme fréquence K10E et la fiche annonce 596–668 MHz. Tranché le 18/09/2026 : Julien a lu 667,775 MHz dans le cadre Tuning de WWB, à l'écran. La table de fréquences est en tort.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/psm1000", "verified": false
   },
   {
