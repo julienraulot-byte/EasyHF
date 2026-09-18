@@ -25,7 +25,7 @@ export function findHardware(id: string): HardwareEntry | undefined {
 
 /** What the engine needs from an entry — the shape `@easyhf/shared` bridges on. */
 export function hardwareProfile(entry: HardwareEntry): HardwareProfile {
-  const guards = entry.guards ? { guards: entry.guards } : {};
+  const guards = entry.guards ? { guards: entry.guards, provenance: entry.provenance } : { provenance: entry.provenance };
   if (entry.type !== 'wmas') {
     return { tuningRangeKHz: entry.tuningRangeKHz, stepKHz: entry.stepKHz, channelWidthKHz: entry.channelWidthKHz, ...guards };
   }

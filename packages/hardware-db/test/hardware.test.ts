@@ -43,12 +43,14 @@ describe('data files', () => {
     }
   });
 
-  it('cite an official source on every entry, and none is verified yet', () => {
+  it('cite an official source on every entry, and none is checked by hand yet', () => {
     for (const entry of HARDWARE) {
       expect(entry.source, entry.id).toMatch(
         /^https:\/\/(www\.|pubs\.|docs\.cloud\.)?(shure|sennheiser|wisycom|audio-technica|mipro|sounddevices)\.|^https:\/\/pro\.sony\//,
       );
-      expect(entry.verified, `${entry.id} : verified doit rester false tant que Julien n'a pas contrôlé`).toBe(false);
+      expect(entry.provenance, `${entry.id} : provenance doit rester « manufacturer » tant que Julien n'a pas contrôlé`).toBe(
+        'manufacturer',
+      );
     }
   });
 
@@ -83,6 +85,25 @@ describe('validator', () => {
     expect(hardwareProfile(exact).tuningRangeKHz).toEqual([473_000, 473_000]);
   });
 
+  it('refuses to ship an entry a user typed in (D-034)', () => {
+    // Whatever anyone enters on their own device stays there. The validator is
+    // what stops an unchecked figure travelling to another user's show.
+    const typed = { ...base, id: 'test-user-entry', provenance: 'user' as const, source: 'Manuel du fabricant, page 12' };
+    expect(findings([typed])).toEqual([
+      'test-user-entry : provenance « user » — une fiche saisie par un utilisateur ne se livre pas dans la base',
+    ]);
+  });
+
+  it('holds a shipped entry to an https source and a date when it is checked', () => {
+    expect(findings([{ ...base, id: 'test-no-url', source: 'un manuel papier' }])).toEqual([
+      'test-no-url : une fiche livrée doit citer une source en https, reçu « un manuel papier »',
+    ]);
+    expect(findings([{ ...base, id: 'test-no-date', provenance: 'verified' as const }])).toEqual([
+      'test-no-date : provenance « verified » sans verifiedAt',
+    ]);
+    expect(findings([{ ...base, id: 'test-ok', provenance: 'verified' as const, verifiedAt: '2026-09-18' }])).toEqual([]);
+  });
+
   it('rejects a duplicate id', () => {
     expect(findings([base, base])).toEqual(['shure-ulxd-g51 : identifiant en double']);
   });
@@ -92,7 +113,12 @@ describe('lookup', () => {
   it('finds an entry by id and builds an engine profile from it', () => {
     const entry = findHardware('shure-ulxd-g50');
     expect(entry?.tuningRangeKHz).toEqual([470_125, 534_000]);
-    expect(hardwareProfile(entry!)).toEqual({ tuningRangeKHz: [470_125, 534_000], stepKHz: 25, channelWidthKHz: 200 });
+    expect(hardwareProfile(entry!)).toEqual({
+      tuningRangeKHz: [470_125, 534_000],
+      stepKHz: 25,
+      channelWidthKHz: 200,
+      provenance: 'manufacturer',
+    });
     expect(hardwareProfileById('nope')).toBeUndefined();
   });
 

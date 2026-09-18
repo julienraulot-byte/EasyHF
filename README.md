@@ -74,6 +74,7 @@ avec les fichiers témoins comme suite de conformité (D-032). Restent ouverts,
   (d'où nos gardes à zéro, D-028), la base de Wireless Workbench lui donne
   50 kHz en Standard, 100 en Robust, et le compte comme source
   d'intermodulation. C'est ce zéro qui a ouvert le trou de D-033 ;
+- **le partage des fiches utilisateur**, laissé manuel en v1 (D-034) ;
 - **quel pays après la France.** Le multi-pays est acté (D-031) et le code s'y
   prête déjà ; reste à choisir l'ordre, et à rouvrir les deux décisions que ça
   invalide, la bande 863–865 MHz et la restriction du QLX-D S50 ;

@@ -18,7 +18,7 @@ const entry = (over: Partial<HardwareEntry> = {}): HardwareEntry => ({
   stepKHz: 25,
   channelWidthKHz: 200,
   source: 'https://www.shure.com/x',
-  verified: false,
+  provenance: 'manufacturer',
   ...over,
 });
 

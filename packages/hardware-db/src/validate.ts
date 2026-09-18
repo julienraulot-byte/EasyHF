@@ -57,8 +57,20 @@ export function findings(entries: readonly HardwareEntry[]): string[] {
     if (entry.stepKHz > 0 && (to - from) % entry.stepKHz !== 0) {
       out.push(`${label} : la borne haute ${to} kHz n'est pas sur la grille de ${entry.stepKHz} kHz depuis ${from}`);
     }
-    if (entry.verified && !entry.verifiedAt) out.push(`${label} : verified: true sans verifiedAt`);
-    if (!entry.verified && entry.verifiedAt) out.push(`${label} : verifiedAt sans verified: true`);
+    // Provenance (D-034). `user` never ships: whatever anyone types on their
+    // own device stays there, so nothing untrusted can travel to another user.
+    if (entry.provenance === 'user') {
+      out.push(`${label} : provenance « user » — une fiche saisie par un utilisateur ne se livre pas dans la base`);
+    }
+    if (entry.provenance === 'verified' && !entry.verifiedAt) {
+      out.push(`${label} : provenance « verified » sans verifiedAt`);
+    }
+    if (entry.provenance !== 'verified' && entry.verifiedAt) {
+      out.push(`${label} : verifiedAt sans provenance « verified »`);
+    }
+    if (entry.provenance !== 'user' && !/^https:\/\//.test(entry.source)) {
+      out.push(`${label} : une fiche livrée doit citer une source en https, reçu « ${entry.source} »`);
+    }
     if (entry.guards) {
       try {
         resolveConfig({ guards: entry.guards });

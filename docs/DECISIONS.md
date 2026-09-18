@@ -1075,3 +1075,60 @@ constructeur (Astral, D-028) en a introduit des nulles, et la doctrine s'est
 révélée fausse au contact d'une donnée réelle. La comparaison exhaustive entre
 les deux moitiés du moteur ne pouvait pas le voir : les deux moitiés étaient
 d'accord, et fausses ensemble. C'est le second cas de ce type après D-020.
+
+## D-034 — Un utilisateur peut ajouter son matériel, et sa fiche ne quitte jamais son appareil **[VALIDÉ 18/09/2026]**
+
+*Phase 1, décidé par Julien.* La base ne couvrira jamais tout le matériel du
+monde, et elle n'a pas à le faire : sur les 1 126 variantes de bande de
+Wireless Workbench, 662 touchent la plage européenne, dont l'immense majorité
+sont des codes nord-américains qu'un utilisateur français ne verra jamais. La
+réponse n'est pas le volume, c'est de laisser l'utilisateur saisir ce qu'il a.
+
+Le précédent existe : Wireless Workbench livre sa base d'équipements et garde
+les profils personnalisés dans un **fichier séparé** (`CustomSeries4_1.cds`).
+SoundBase accepte aussi les profils personnalisés. C'est attendu dans cette
+catégorie.
+
+**Ce que ça résout, et c'est triple :** le volume ; la légalité, puisqu'une
+fiche saisie par un utilisateur d'après son propre manuel est sa donnée et non
+un extrait de la base de Shure ; et le cas concret du technicien sur site avec
+un appareil que nous n'avons pas, qui doit coordonner maintenant et non à la
+prochaine mise à jour.
+
+**« Organique » recouvre deux choses, et seule la première est retenue en v1 :**
+
+- **Local.** Les fiches restent sur l'appareil. Aucune infrastructure, aucune
+  modération, aucun risque. Retenu.
+- **Partagé.** Les fiches remontent et repartent dans la version suivante.
+  Écarté pour l'instant : si un utilisateur recopie les profils de Wireless
+  Workbench et les envoie, EasyHF passe de « a lu » à « a republié », ce qui
+  est pire. La remontée restera **manuelle et relue** : un export que
+  l'utilisateur envoie, que Julien contrôle et publie. Jamais automatique,
+  jamais de serveur, donc pas de compte ni de RGPD, et le modèle hors ligne en
+  achat unique est préservé (D-030).
+
+**Ce qu'un utilisateur saisit, et ce qu'il ne saisit pas.** Plage, pas et
+largeur : oui, c'est sur la boîte et dans le manuel, il les connaît mieux que
+nous. **Les gardes : non.** Personne ne connaît le point d'interception de son
+récepteur, et cette règle a une propriété heureuse : elle tient hors de toute
+contribution le champ qui est juridiquement sensible (D-029). Une fiche
+utilisateur prend les gardes globales.
+
+**La confiance est ce qui décide de la forme.** Le booléen `verified` devient
+un champ **`provenance`** à trois valeurs :
+
+| Valeur | Ce que ça dit | Ce que le validateur exige |
+|---|---|---|
+| `verified` | chaque chiffre contrôlé à la main | une date `verifiedAt`, une source en https |
+| `manufacturer` | lu sur la documentation constructeur | une source en https |
+| `user` | saisi sur l'appareil de l'utilisateur | **refusé dans la base livrée** |
+
+Cette dernière ligne est la garantie qui compte : le validateur, en intégration
+continue, empêche qu'une fiche saisie par quelqu'un voyage jusqu'au plateau de
+quelqu'un d'autre. Et `HardwareProfile` porte la provenance jusqu'au pont vers
+le moteur, pour que la phase 4 puisse marquer à l'écran et **sur le PDF** tout
+plan qui s'appuie sur des chiffres non contrôlés. C'est aussi la réponse au
+point de responsabilité soulevé par l'audit stratégique.
+
+Les 67 entrées passent en `manufacturer` : aucune n'a encore été contrôlée
+chiffre par chiffre (D-024).

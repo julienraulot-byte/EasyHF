@@ -3,64 +3,64 @@
     "id": "wisycom-mcr54-uhf", "brand": "Wisycom", "series": "MCR54", "model": "MCR54", "bandVariant": "470–1260", "type": "receiver",
     "tuningRangeKHz": [470000, 1260000], "stepKHz": 25, "channelWidthKHz": 200,
     "notes": "Récepteur ultra-large bande. Bornes exactes et pas d'accord à confirmer sur la fiche Wisycom ; la portion 1240–1260 MHz relève d'une bande temporaire (fr.json).",
-    "source": "https://www.wisycom.com/products/mcr54", "verified": false
+    "source": "https://www.wisycom.com/products/mcr54", "provenance": "manufacturer"
   },
   {
     "id": "wisycom-mtp60-uhf", "brand": "Wisycom", "series": "MTP60", "model": "MTP60", "bandVariant": "470–1260", "type": "bodypack",
     "tuningRangeKHz": [470000, 1260000], "stepKHz": 25, "channelWidthKHz": 200,
     "notes": "Émetteur ceinture ultra-large bande. Bornes exactes et pas à confirmer.",
-    "source": "https://www.wisycom.com/products/mtp60", "verified": false
+    "source": "https://www.wisycom.com/products/mtp60", "provenance": "manufacturer"
   },
   {
     "id": "sony-dwx-ce", "brand": "Sony", "series": "DWX", "model": "DWR-S03D", "bandVariant": "CE", "type": "receiver",
     "tuningRangeKHz": [470025, 614000], "stepKHz": 25, "channelWidthKHz": 200,
     "notes": "Plage à confirmer sur la fiche Sony Professional ; la génération et la variante régionale changent les bornes.",
-    "source": "https://pro.sony/en_GB/products/wireless-systems/dwr-s03d", "verified": false
+    "source": "https://pro.sony/en_GB/products/wireless-systems/dwr-s03d", "provenance": "manufacturer"
   },
   {
     "id": "audiotechnica-3000-de2", "brand": "Audio-Technica", "series": "3000 (4e génération)", "model": "ATW-R3210", "bandVariant": "DE2", "type": "receiver",
     "tuningRangeKHz": [470125, 529975], "stepKHz": 25, "channelWidthKHz": 200,
     "notes": "Bornes à confirmer.",
-    "source": "https://www.audio-technica.com/en-eu/atw-3211", "verified": false
+    "source": "https://www.audio-technica.com/en-eu/atw-3211", "provenance": "manufacturer"
   },
   {
     "id": "audiotechnica-3000-ee1", "brand": "Audio-Technica", "series": "3000 (4e génération)", "model": "ATW-R3210", "bandVariant": "EE1", "type": "receiver",
     "tuningRangeKHz": [530000, 589975], "stepKHz": 25, "channelWidthKHz": 200,
     "notes": "Bornes à confirmer.",
-    "source": "https://www.audio-technica.com/en-eu/atw-3211", "verified": false
+    "source": "https://www.audio-technica.com/en-eu/atw-3211", "provenance": "manufacturer"
   },
   {
     "id": "mipro-act828-5e", "brand": "MiPro", "series": "ACT-8", "model": "ACT-828", "bandVariant": "5E", "type": "receiver",
     "tuningRangeKHz": [480000, 544000], "stepKHz": 25, "channelWidthKHz": 200,
     "notes": "Code de bande et bornes à confirmer sur la fiche MiPro ; entrée la moins sûre de la base.",
-    "source": "https://www.mipro.com.tw/en/product/ACT-828", "verified": false
+    "source": "https://www.mipro.com.tw/en/product/ACT-828", "provenance": "manufacturer"
   },
   {
     "id": "sounddevices-astral-a20-nexus", "brand": "Sound Devices", "series": "Astral", "model": "A20-Nexus / A20-Nexus Go", "bandVariant": "SpectraBand", "type": "receiver",
     "tuningRangeKHz": [169000, 1525000], "stepKHz": 25, "channelWidthKHz": 200,
     "guards": {"im3TwoTxKHz": 100, "im3ThreeTxKHz": 0, "im5TwoTxKHz": 0, "spacingKHz": 400},
     "notes": "Plage et pas de 25 kHz relevés dans le guide utilisateur Sound Devices le 12/09/2026. En France, seules les portions 470–694 et 1240–1260 MHz de la plage sont utilisables ; le plan de bandes exclut le reste. Gardes revues le 18/09/2026. Deux sources : le guide Sound Devices écrit que « the A20 digital RF transmission is inherently immune to intermodulation […] Systems can be used together when separated by at least 400 kHz », mais cette phrase parle des A20 entre eux et ne dit rien d'un récepteur A20 face aux émetteurs d'une autre marque ; la base d'équipements de Wireless Workbench donne à la série A20 un espacement de 400 kHz en Robust avec une garde de 100 kHz au 3e ordre à 2 émetteurs, et la compte comme source d'intermodulation. Les deux sources s'accordent sur les 400 kHz. Là où elles divergent, la lecture prudente est retenue : une garde trop haute coûte un peu de capacité, une garde trop basse coûte un spectacle. Les gardes à zéro de la première rédaction dépassaient la portée de la phrase source et avaient ouvert le trou de D-033. À trancher par la mesure ou par une réponse de Sound Devices.",
-    "source": "https://www.sounddevices.com/product/a20-nexus/", "verified": false
+    "source": "https://www.sounddevices.com/product/a20-nexus/", "provenance": "manufacturer"
   },
   {
     "id": "sounddevices-astral-a20-mini", "brand": "Sound Devices", "series": "Astral", "model": "A20-Mini", "bandVariant": "SpectraBand", "type": "bodypack",
     "tuningRangeKHz": [470000, 1525000], "stepKHz": 25, "channelWidthKHz": 200,
     "guards": {"im3TwoTxKHz": 100, "im3ThreeTxKHz": 0, "im5TwoTxKHz": 0, "spacingKHz": 400},
     "notes": "Plage et pas de 25 kHz relevés dans le guide utilisateur Sound Devices le 12/09/2026. En France, seules les portions 470–694 et 1240–1260 MHz de la plage sont utilisables ; le plan de bandes exclut le reste. Gardes revues le 18/09/2026. Deux sources : le guide Sound Devices écrit que « the A20 digital RF transmission is inherently immune to intermodulation […] Systems can be used together when separated by at least 400 kHz », mais cette phrase parle des A20 entre eux et ne dit rien d'un récepteur A20 face aux émetteurs d'une autre marque ; la base d'équipements de Wireless Workbench donne à la série A20 un espacement de 400 kHz en Robust avec une garde de 100 kHz au 3e ordre à 2 émetteurs, et la compte comme source d'intermodulation. Les deux sources s'accordent sur les 400 kHz. Là où elles divergent, la lecture prudente est retenue : une garde trop haute coûte un peu de capacité, une garde trop basse coûte un spectacle. Les gardes à zéro de la première rédaction dépassaient la portée de la phrase source et avaient ouvert le trou de D-033. À trancher par la mesure ou par une réponse de Sound Devices.",
-    "source": "https://www.sounddevices.com/product/a20-nexus/", "verified": false
+    "source": "https://www.sounddevices.com/product/a20-nexus/", "provenance": "manufacturer"
   },
   {
     "id": "sounddevices-astral-a20-tx", "brand": "Sound Devices", "series": "Astral", "model": "A20-TX", "bandVariant": "SpectraBand", "type": "bodypack",
     "tuningRangeKHz": [169000, 1525000], "stepKHz": 25, "channelWidthKHz": 200,
     "guards": {"im3TwoTxKHz": 100, "im3ThreeTxKHz": 0, "im5TwoTxKHz": 0, "spacingKHz": 400},
     "notes": "Plage et pas de 25 kHz relevés dans le guide utilisateur Sound Devices le 12/09/2026. En France, seules les portions 470–694 et 1240–1260 MHz de la plage sont utilisables ; le plan de bandes exclut le reste. Gardes revues le 18/09/2026. Deux sources : le guide Sound Devices écrit que « the A20 digital RF transmission is inherently immune to intermodulation […] Systems can be used together when separated by at least 400 kHz », mais cette phrase parle des A20 entre eux et ne dit rien d'un récepteur A20 face aux émetteurs d'une autre marque ; la base d'équipements de Wireless Workbench donne à la série A20 un espacement de 400 kHz en Robust avec une garde de 100 kHz au 3e ordre à 2 émetteurs, et la compte comme source d'intermodulation. Les deux sources s'accordent sur les 400 kHz. Là où elles divergent, la lecture prudente est retenue : une garde trop haute coûte un peu de capacité, une garde trop basse coûte un spectacle. Les gardes à zéro de la première rédaction dépassaient la portée de la phrase source et avaient ouvert le trou de D-033. À trancher par la mesure ou par une réponse de Sound Devices.",
-    "source": "https://www.sounddevices.com/product/a20-nexus/", "verified": false
+    "source": "https://www.sounddevices.com/product/a20-nexus/", "provenance": "manufacturer"
   },
   {
     "id": "sounddevices-astral-a20-rx", "brand": "Sound Devices", "series": "Astral", "model": "A20-RX", "bandVariant": "SpectraBand", "type": "iem",
     "tuningRangeKHz": [169000, 1525000], "stepKHz": 25, "channelWidthKHz": 200,
     "guards": {"im3TwoTxKHz": 100, "im3ThreeTxKHz": 0, "im5TwoTxKHz": 0, "spacingKHz": 400},
     "notes": "Plage et pas de 25 kHz relevés dans le guide utilisateur Sound Devices le 12/09/2026. En France, seules les portions 470–694 et 1240–1260 MHz de la plage sont utilisables ; le plan de bandes exclut le reste. Gardes revues le 18/09/2026. Deux sources : le guide Sound Devices écrit que « the A20 digital RF transmission is inherently immune to intermodulation […] Systems can be used together when separated by at least 400 kHz », mais cette phrase parle des A20 entre eux et ne dit rien d'un récepteur A20 face aux émetteurs d'une autre marque ; la base d'équipements de Wireless Workbench donne à la série A20 un espacement de 400 kHz en Robust avec une garde de 100 kHz au 3e ordre à 2 émetteurs, et la compte comme source d'intermodulation. Les deux sources s'accordent sur les 400 kHz. Là où elles divergent, la lecture prudente est retenue : une garde trop haute coûte un peu de capacité, une garde trop basse coûte un spectacle. Les gardes à zéro de la première rédaction dépassaient la portée de la phrase source et avaient ouvert le trou de D-033. À trancher par la mesure ou par une réponse de Sound Devices.",
-    "source": "https://www.sounddevices.com/product/a20-nexus/", "verified": false
+    "source": "https://www.sounddevices.com/product/a20-nexus/", "provenance": "manufacturer"
   }
 ]

@@ -20,6 +20,12 @@ export interface HardwareProfile {
   guards?: Partial<Guards>;
   /** `wmas` for a wideband multichannel block (D-026); narrowband otherwise. */
   kind?: 'narrowband' | 'wmas';
+  /**
+   * How far the figures can be trusted (D-034). The engine ignores it; the
+   * interface must not, because a plan built on figures a user typed in has
+   * to say so on screen and in the PDF.
+   */
+  provenance?: 'verified' | 'manufacturer' | 'user';
 }
 
 export class UnknownHardwareError extends Error {

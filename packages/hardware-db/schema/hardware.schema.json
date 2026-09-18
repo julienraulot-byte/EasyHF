@@ -4,7 +4,7 @@
   "title": "EasyHF hardware entry",
   "description": "One tunable model in one band variant, as sold. Frequencies are whole kHz.",
   "type": "object",
-  "required": ["id", "brand", "series", "model", "bandVariant", "type", "tuningRangeKHz", "stepKHz", "channelWidthKHz", "source", "verified"],
+  "required": ["id", "brand", "series", "model", "bandVariant", "type", "tuningRangeKHz", "stepKHz", "channelWidthKHz", "source", "provenance"],
   "additionalProperties": false,
   "properties": {
     "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "description": "Stable id: brand-series-band, lower case, e.g. shure-ulxd-g51." },
@@ -31,8 +31,11 @@
       }
     },
     "notes": { "type": "string" },
-    "source": { "type": "string", "pattern": "^https://", "description": "Official specification page or document." },
-    "verified": { "type": "boolean", "description": "True only once Julien has checked every figure against the source." },
+    "source": { "type": "string", "minLength": 1, "description": "Official specification page or document for a shipped entry; free text (a manual, a box) for a user entry." },
+    "provenance": {
+      "type": "string", "enum": ["verified", "manufacturer", "user"],
+      "description": "Where the figures come from. verified: checked figure by figure against the source, needs verifiedAt. manufacturer: read off manufacturer documentation, not yet checked. user: entered on the user's own device, never shipped in this repository."
+    },
     "verifiedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" }
   }
 }
