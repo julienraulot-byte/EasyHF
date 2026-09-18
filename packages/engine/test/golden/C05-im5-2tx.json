@@ -13,7 +13,13 @@
       "offenderFreqKHz": 498400,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×HF01 − 2×HF02 tombe à 498.400 MHz, soit 0 kHz de HF03 (498.400 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     }
   ],
   "margins": {

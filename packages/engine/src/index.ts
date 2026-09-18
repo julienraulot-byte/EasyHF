@@ -1,4 +1,5 @@
 export { coordinate } from './assign.js';
+export { formatViolation } from './messages.js';
 export { checkPlan, MARGIN_WINDOW_FACTOR } from './check.js';
 export {
   DEFAULT_CONFIG,

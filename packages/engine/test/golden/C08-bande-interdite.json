@@ -10,7 +10,10 @@
       "offenderFreqKHz": 700000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "700.000 MHz n'est dans aucune bande PMSE autorisée (largeur de canal 200 kHz incluse)."
+      "detail": {
+        "code": "band.not-allowed",
+        "channelWidthKHz": 200
+      }
     }
   ],
   "margins": {

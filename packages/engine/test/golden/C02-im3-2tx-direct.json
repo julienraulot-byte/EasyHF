@@ -13,7 +13,13 @@
       "offenderFreqKHz": 506000,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×HF01 − HF03 tombe à 506.000 MHz, soit 0 kHz de HF02 (506.000 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -27,7 +33,13 @@
       "offenderFreqKHz": 494000,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×HF01 − HF02 tombe à 494.000 MHz, soit 0 kHz de HF03 (494.000 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     }
   ],
   "margins": {

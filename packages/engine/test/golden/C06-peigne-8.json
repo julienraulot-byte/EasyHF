@@ -13,7 +13,13 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE2 − PEIGNE3 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -27,7 +33,13 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE3 − PEIGNE5 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -41,7 +53,13 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE4 − PEIGNE7 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -55,7 +73,13 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE3 − PEIGNE4 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -69,7 +93,13 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE4 − PEIGNE6 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -83,7 +113,13 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE5 − PEIGNE8 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -97,7 +133,13 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE2 − PEIGNE1 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -111,7 +153,13 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE4 − PEIGNE5 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -125,7 +173,13 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE5 − PEIGNE7 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -139,7 +193,13 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE3 − PEIGNE2 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -153,7 +213,13 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE5 − PEIGNE6 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -167,7 +233,13 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE6 − PEIGNE8 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -181,7 +253,13 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE3 − PEIGNE1 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -195,7 +273,13 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE4 − PEIGNE3 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -209,7 +293,13 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE6 − PEIGNE7 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -223,7 +313,13 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE4 − PEIGNE2 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -237,7 +333,13 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE5 − PEIGNE4 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -251,7 +353,13 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE7 − PEIGNE8 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -265,7 +373,13 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE4 − PEIGNE1 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -279,7 +393,13 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE5 − PEIGNE3 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -293,7 +413,13 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE6 − PEIGNE5 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -307,7 +433,13 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE5 − PEIGNE2 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -321,7 +453,13 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE6 − PEIGNE4 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-2tx",
@@ -335,7 +473,13 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 200,
       "actualKHz": 0,
-      "message": "IM3 (2 émetteurs) 2×PEIGNE7 − PEIGNE6 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 200 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          2,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -350,7 +494,14 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE3 − PEIGNE4 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -365,7 +516,14 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE4 − PEIGNE5 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -380,7 +538,14 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE5 − PEIGNE6 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -395,7 +560,14 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE6 − PEIGNE7 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -410,7 +582,14 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE7 − PEIGNE8 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -425,7 +604,14 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE4 − PEIGNE6 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -440,7 +626,14 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE5 − PEIGNE7 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -455,7 +648,14 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE6 − PEIGNE8 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -470,7 +670,14 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE5 − PEIGNE8 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -485,7 +692,14 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE4 − PEIGNE3 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -500,7 +714,14 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE5 − PEIGNE4 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -515,7 +736,14 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE6 − PEIGNE5 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -530,7 +758,14 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE7 − PEIGNE6 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -545,7 +780,14 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE8 − PEIGNE7 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -560,7 +802,14 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE4 − PEIGNE5 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -575,7 +824,14 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE5 − PEIGNE6 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -590,7 +846,14 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE6 − PEIGNE7 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -605,7 +868,14 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE7 − PEIGNE8 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -620,7 +890,14 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE5 − PEIGNE7 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -635,7 +912,14 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE6 − PEIGNE8 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -650,7 +934,14 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE4 − PEIGNE2 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -665,7 +956,14 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE6 − PEIGNE4 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -680,7 +978,14 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE7 − PEIGNE5 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -695,7 +1000,14 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE8 − PEIGNE6 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -710,7 +1022,14 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE5 − PEIGNE4 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -725,7 +1044,14 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE6 − PEIGNE5 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -740,7 +1066,14 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE7 − PEIGNE6 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -755,7 +1088,14 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE8 − PEIGNE7 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -770,7 +1110,14 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE5 − PEIGNE6 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -785,7 +1132,14 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE6 − PEIGNE7 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -800,7 +1154,14 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE7 − PEIGNE8 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -815,7 +1176,14 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE5 + PEIGNE6 − PEIGNE8 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -830,7 +1198,14 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE5 − PEIGNE2 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -845,7 +1220,14 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE6 − PEIGNE3 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -860,7 +1242,14 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE8 − PEIGNE5 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -875,7 +1264,14 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE3 − PEIGNE1 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -890,7 +1286,14 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE5 − PEIGNE3 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -905,7 +1308,14 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE7 − PEIGNE5 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -920,7 +1330,14 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE8 − PEIGNE6 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -935,7 +1352,14 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE6 − PEIGNE5 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -950,7 +1374,14 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE7 − PEIGNE6 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -965,7 +1396,14 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE8 − PEIGNE7 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -980,7 +1418,14 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE5 + PEIGNE6 − PEIGNE7 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -995,7 +1440,14 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE5 + PEIGNE7 − PEIGNE8 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1010,7 +1462,14 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE6 − PEIGNE2 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1025,7 +1484,14 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE7 − PEIGNE3 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1040,7 +1506,14 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE8 − PEIGNE4 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1055,7 +1528,14 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE4 − PEIGNE1 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1070,7 +1550,14 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE6 − PEIGNE3 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1085,7 +1572,14 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE7 − PEIGNE4 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1100,7 +1594,14 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE4 − PEIGNE2 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1115,7 +1616,14 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE6 − PEIGNE4 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1130,7 +1638,14 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE8 − PEIGNE6 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1145,7 +1660,14 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE7 − PEIGNE6 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1160,7 +1682,14 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE8 − PEIGNE7 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1175,7 +1704,14 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE6 + PEIGNE7 − PEIGNE8 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1190,7 +1726,14 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE7 − PEIGNE2 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1205,7 +1748,14 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE8 − PEIGNE3 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1220,7 +1770,14 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE5 − PEIGNE1 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1235,7 +1792,14 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE7 − PEIGNE3 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1250,7 +1814,14 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE8 − PEIGNE4 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1265,7 +1836,14 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE4 − PEIGNE1 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1280,7 +1858,14 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE5 − PEIGNE2 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1295,7 +1880,14 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE7 − PEIGNE4 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1310,7 +1902,14 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE8 − PEIGNE5 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1325,7 +1924,14 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE5 − PEIGNE3 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1340,7 +1946,14 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE7 − PEIGNE5 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1355,7 +1968,14 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE5 + PEIGNE8 − PEIGNE7 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1370,7 +1990,14 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE1 + PEIGNE8 − PEIGNE2 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1385,7 +2012,14 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE6 − PEIGNE1 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1400,7 +2034,14 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE8 − PEIGNE3 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1415,7 +2056,14 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE5 − PEIGNE1 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1430,7 +2078,14 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE6 − PEIGNE2 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1445,7 +2100,14 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE8 − PEIGNE4 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1460,7 +2122,14 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE5 − PEIGNE2 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1475,7 +2144,14 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE6 − PEIGNE3 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1490,7 +2166,14 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE8 − PEIGNE5 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1505,7 +2188,14 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE5 + PEIGNE6 − PEIGNE4 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1520,7 +2210,14 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE5 + PEIGNE8 − PEIGNE6 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1535,7 +2232,14 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE2 + PEIGNE7 − PEIGNE1 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1550,7 +2254,14 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE6 − PEIGNE1 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1565,7 +2276,14 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE3 + PEIGNE7 − PEIGNE2 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1580,7 +2298,14 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE5 − PEIGNE1 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1595,7 +2320,14 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE6 − PEIGNE2 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1610,7 +2342,14 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE4 + PEIGNE7 − PEIGNE3 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1625,7 +2364,14 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE5 + PEIGNE6 − PEIGNE3 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1640,7 +2386,14 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE5 + PEIGNE7 − PEIGNE4 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im3-3tx",
@@ -1655,7 +2408,14 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 100,
       "actualKHz": 0,
-      "message": "IM3 (3 émetteurs) PEIGNE6 + PEIGNE7 − PEIGNE5 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 100 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          1,
+          1,
+          -1
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1669,7 +2429,13 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE3 − 2×PEIGNE4 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1683,7 +2449,13 @@
       "offenderFreqKHz": 500000,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE5 − 2×PEIGNE7 tombe à 500.000 MHz, soit 0 kHz de PEIGNE1 (500.000 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1697,7 +2469,13 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE4 − 2×PEIGNE5 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1711,7 +2489,13 @@
       "offenderFreqKHz": 500800,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE6 − 2×PEIGNE8 tombe à 500.800 MHz, soit 0 kHz de PEIGNE2 (500.800 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1725,7 +2509,13 @@
       "offenderFreqKHz": 501600,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE5 − 2×PEIGNE6 tombe à 501.600 MHz, soit 0 kHz de PEIGNE3 (501.600 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1739,7 +2529,13 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE2 − 2×PEIGNE1 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1753,7 +2549,13 @@
       "offenderFreqKHz": 502400,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE6 − 2×PEIGNE7 tombe à 502.400 MHz, soit 0 kHz de PEIGNE4 (502.400 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1767,7 +2569,13 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE3 − 2×PEIGNE2 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1781,7 +2589,13 @@
       "offenderFreqKHz": 503200,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE7 − 2×PEIGNE8 tombe à 503.200 MHz, soit 0 kHz de PEIGNE5 (503.200 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1795,7 +2609,13 @@
       "offenderFreqKHz": 504000,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE4 − 2×PEIGNE3 tombe à 504.000 MHz, soit 0 kHz de PEIGNE6 (504.000 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1809,7 +2629,13 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE3 − 2×PEIGNE1 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1823,7 +2649,13 @@
       "offenderFreqKHz": 504800,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE5 − 2×PEIGNE4 tombe à 504.800 MHz, soit 0 kHz de PEIGNE7 (504.800 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1837,7 +2669,13 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE4 − 2×PEIGNE2 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     },
     {
       "kind": "im5-2tx",
@@ -1851,7 +2689,13 @@
       "offenderFreqKHz": 505600,
       "requiredKHz": 90,
       "actualKHz": 0,
-      "message": "IM5 (2 émetteurs) 3×PEIGNE6 − 2×PEIGNE5 tombe à 505.600 MHz, soit 0 kHz de PEIGNE8 (505.600 MHz), minimum requis 90 kHz."
+      "detail": {
+        "code": "im.too-close",
+        "coefficients": [
+          3,
+          -2
+        ]
+      }
     }
   ],
   "margins": {

@@ -50,32 +50,6 @@ const MARGIN_KEY_BY_KIND: Record<ImKind, 'im3TwoTxKHz' | 'im3ThreeTxKHz' | 'im5T
   'im5-2tx': 'im5TwoTxKHz',
 };
 
-const IM_LABEL: Record<ImKind, string> = {
-  'im3-2tx': 'IM3 (2 émetteurs)',
-  'im3-3tx': 'IM3 (3 émetteurs)',
-  'im5-2tx': 'IM5 (2 émetteurs)',
-};
-
-function mhz(khz: number): string {
-  return (khz / 1000).toFixed(3);
-}
-
-/**
- * Renders a product as the arithmetic a coordinator can check by hand, e.g.
- * `HF03 + HF02 − HF01` or `2×HF01 − HF04`.
- */
-function productExpression(linkIds: readonly string[], coefficients: readonly number[]): string {
-  return linkIds
-    .map((id, index) => {
-      const coefficient = coefficients[index] as number;
-      const magnitude = Math.abs(coefficient);
-      const term = magnitude === 1 ? id : `${magnitude}×${id}`;
-      if (index === 0) return coefficient < 0 ? `−${term}` : term;
-      return `${coefficient < 0 ? ' − ' : ' + '}${term}`;
-    })
-    .join('');
-}
-
 /** Whether a frequency falls in one of the link's tunable sub-ranges. */
 export function fitsTunableRanges(link: EngineLink, freqKHz: number): boolean {
   const ranges = link.tunableRangesKHz;
@@ -181,6 +155,15 @@ export function fitsAllowedSpan(
   return spans.some(([from, to]) => freq - half >= from && freq + half <= to);
 }
 
+/**
+ * A stable last resort for the sort. Two exclusions can overlap the same
+ * carrier at the same edge and differ only by their label, so the label has to
+ * take part; everything else is already separated by the fields above.
+ */
+function detailKey(detail: Violation['detail']): string {
+  return detail.code === 'exclusion.too-close' ? `${detail.code}|${detail.label}` : detail.code;
+}
+
 function sortViolations(violations: Violation[]): Violation[] {
   return violations.sort(
     (a, b) =>
@@ -188,9 +171,7 @@ function sortViolations(violations: Violation[]): Violation[] {
       compareIds(a.victimLinkId, b.victimLinkId) ||
       a.offenderFreqKHz - b.offenderFreqKHz ||
       compareIds(a.sourceLinkIds.join('|'), b.sourceLinkIds.join('|')) ||
-      // Two exclusions can overlap the same carrier at the same edge; only the
-      // message tells them apart, and something has to.
-      compareIds(a.message, b.message),
+      compareIds(detailKey(a.detail), detailKey(b.detail)),
   );
 }
 
@@ -267,13 +248,11 @@ export function checkPlan(input: CheckInput): CheckResult {
       offenderFreqKHz: freqKHz,
       requiredKHz: link.stepKHz,
       actualKHz: 0,
-      message: outside
-        ? `${mhz(freqKHz)} MHz est hors de la plage d'accord de ${link.id} (${mhz(fromKHz)}–${mhz(toKHz)} MHz).`
+      detail: outside
+        ? { code: 'tuning.outside', fromKHz, toKHz }
         : inHole
-          ? `${mhz(freqKHz)} MHz tombe dans un trou de la bande de ${link.id}, qui n'accorde que ${(link.tunableRangesKHz ?? [])
-              .map(([a, b]) => `${mhz(a)}–${mhz(b)}`)
-              .join(', ')} MHz.`
-          : `${mhz(freqKHz)} MHz n'est pas sur la grille d'accord de ${link.id} (pas de ${link.stepKHz} kHz depuis ${mhz(fromKHz)} MHz).`,
+          ? { code: 'tuning.hole', tunableRangesKHz: link.tunableRangesKHz ?? [] }
+          : { code: 'tuning.off-grid', fromKHz, stepKHz: link.stepKHz },
     });
   }
 
@@ -292,7 +271,7 @@ export function checkPlan(input: CheckInput): CheckResult {
         offenderFreqKHz: freqKHz,
         requiredKHz: half,
         actualKHz: 0,
-        message: `${mhz(freqKHz)} MHz n'est dans aucune bande PMSE autorisée (largeur de canal ${link.channelWidthKHz} kHz incluse).`,
+        detail: { code: 'band.not-allowed', channelWidthKHz: link.channelWidthKHz },
       });
     }
   }
@@ -321,7 +300,12 @@ export function checkPlan(input: CheckInput): CheckResult {
         offenderFreqKHz: nearestEdge,
         requiredKHz: required,
         actualKHz: actual,
-        message: `${mhz(freqKHz)} MHz est à ${actual} kHz de l'exclusion « ${exclusion.label} » (${mhz(exclusion.fromKHz)}–${mhz(exclusion.toKHz)} MHz), minimum requis ${required} kHz.`,
+        detail: {
+          code: 'exclusion.too-close',
+          label: exclusion.label,
+          fromKHz: exclusion.fromKHz,
+          toKHz: exclusion.toKHz,
+        },
       });
     }
   }
@@ -352,7 +336,7 @@ export function checkPlan(input: CheckInput): CheckResult {
         offenderFreqKHz: b.freqKHz,
         requiredKHz: required,
         actualKHz: actual,
-        message: `${a.link.id} et ${b.link.id} ne sont séparées que de ${actual} kHz, minimum requis ${required} kHz.`,
+        detail: { code: 'spacing.too-close' },
       });
     }
   }
@@ -384,7 +368,6 @@ export function checkPlan(input: CheckInput): CheckResult {
       const sourceLinkIds = hit.sourceIndices.map(
         (index) => (assigned[index] as { link: EngineLink }).link.id,
       );
-      const expression = productExpression(sourceLinkIds, hit.coefficients);
       violations.push({
         kind: hit.kind,
         severity: SEVERITY_BY_KIND[hit.kind],
@@ -394,10 +377,11 @@ export function checkPlan(input: CheckInput): CheckResult {
         offenderFreqKHz: hit.productKHz,
         requiredKHz: guard,
         actualKHz: hit.distanceKHz,
-        message:
-          victim.link.kind === 'wmas'
-            ? `${IM_LABEL[hit.kind]} ${expression} tombe à ${mhz(hit.productKHz)} MHz, soit ${hit.distanceKHz} kHz du bord du bloc ${victim.link.id} (${mhz(victim.freqKHz)} MHz ± ${halfWidthKHz(victim.link)} kHz), minimum requis ${guard} kHz.`
-            : `${IM_LABEL[hit.kind]} ${expression} tombe à ${mhz(hit.productKHz)} MHz, soit ${hit.distanceKHz} kHz de ${victim.link.id} (${mhz(victim.freqKHz)} MHz), minimum requis ${guard} kHz.`,
+        detail: {
+          code: 'im.too-close',
+          coefficients: hit.coefficients,
+          ...(victim.link.kind === 'wmas' ? { victimBlockHalfWidthKHz: halfWidthKHz(victim.link) } : {}),
+        },
       });
     },
   );

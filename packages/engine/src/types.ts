@@ -186,9 +186,42 @@ export interface Violation {
   requiredKHz: number;
   /** Clearance actually available. */
   actualKHz: number;
-  /** French, user-facing. */
-  message: string;
+  /**
+   * What the violation is, and the values a sentence needs beyond the fields
+   * above. The engine emits no prose: rendering belongs to whoever knows the
+   * reader's language (DECISIONS.md D-036). `formatViolation` does it in
+   * French for the tools in this repository.
+   */
+  detail: ViolationDetail;
 }
+
+/**
+ * The violation, finer than `ViolationKind`, with what the fields do not
+ * already carry. A discriminated union so a formatter cannot forget a case.
+ */
+export type ViolationDetail =
+  /** The frequency lies outside the hardware's tuning range. */
+  | { code: 'tuning.outside'; fromKHz: FreqKHz; toKHz: FreqKHz }
+  /** Inside the range, but not on the tuning grid. */
+  | { code: 'tuning.off-grid'; fromKHz: FreqKHz; stepKHz: number }
+  /** On the grid, but in a hole of the band (D-035). */
+  | { code: 'tuning.hole'; tunableRangesKHz: readonly (readonly [FreqKHz, FreqKHz])[] }
+  /** The channel does not fit in any allowed band. */
+  | { code: 'band.not-allowed'; channelWidthKHz: number }
+  /** Too close to an excluded span. */
+  | { code: 'exclusion.too-close'; label: string; fromKHz: FreqKHz; toKHz: FreqKHz }
+  /** Two carriers too close together. */
+  | { code: 'spacing.too-close' }
+  /**
+   * An intermodulation product too close to a carrier. `coefficients` are
+   * parallel to `sourceLinkIds`; `victimBlockHalfWidthKHz` is set when the
+   * victim is a WMAS block, the distance then being measured to its edge.
+   */
+  | {
+      code: 'im.too-close';
+      coefficients: readonly number[];
+      victimBlockHalfWidthKHz?: number;
+    };
 
 export interface PlanEntry {
   linkId: string;

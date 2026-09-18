@@ -2,6 +2,7 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { coordinate } from '../src/assign.js';
 import { checkPlan } from '../src/check.js';
+import { formatViolation } from '../src/messages.js';
 import { FR_BANDS, tntChannel } from './fixtures/links.js';
 import type {
   EngineBand,
@@ -10,6 +11,8 @@ import type {
   EngineLink,
   Guards,
   InterZonePolicy,
+  ViolationDetail,
+  Violation,
   ZonePolicies,
 } from '../src/types.js';
 
@@ -128,7 +131,9 @@ function crossValidate(
         `le vérificateur ${checkerAccepted ? 'accepte' : 'refuse'}` +
         (checkerAccepted
           ? ''
-          : ` (${verdict.violations.find((v) => v.victimLinkId === 'FREE' || v.sourceLinkIds.includes('FREE'))?.message})`),
+          : ` (${formatViolation(
+              verdict.violations.find((v) => v.victimLinkId === 'FREE' || v.sourceLinkIds.includes('FREE')) as Violation,
+            )})`),
     ).toBe(checkerAccepted);
 
     if (searchAccepted) accepted += 1;

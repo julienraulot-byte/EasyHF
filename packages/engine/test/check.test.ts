@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { formatViolation } from '../src/messages.js';
 import { checkPlan, distanceToInterval, requiredExclusionKHz, requiredSpacingKHz } from '../src/check.js';
 import { ENGINE_VERSION } from '../src/version.js';
 import { FR_BANDS, link, tntChannel } from './fixtures/links.js';
@@ -63,7 +64,7 @@ describe('checkPlan — exclusions', () => {
     expect(result.violations).toHaveLength(1);
     expect(result.violations[0]?.kind).toBe('exclusion');
     expect(result.violations[0]?.actualKHz).toBe(0);
-    expect(result.violations[0]?.message).toContain('Canal TNT 30');
+    expect(formatViolation(result.violations[0]!)).toContain('Canal TNT 30');
   });
 
   it('reports a carrier inside the guard band of an exclusion', () => {
@@ -209,7 +210,7 @@ describe('checkPlan — hardware limits', () => {
       plan: [{ linkId: 'A', freqKHz: 650_000 }],
     });
     expect(result.violations.map((v) => v.kind)).toEqual(['out-of-tuning-range']);
-    expect(result.violations[0]?.message).toMatch(/hors de la plage/);
+    expect(formatViolation(result.violations[0]!)).toMatch(/hors de la plage/);
   });
 
   it('rejects a frequency off the hardware tuning grid', () => {
@@ -218,7 +219,7 @@ describe('checkPlan — hardware limits', () => {
       plan: [{ linkId: 'A', freqKHz: 550_013 }],
     });
     expect(result.violations.map((v) => v.kind)).toEqual(['out-of-tuning-range']);
-    expect(result.violations[0]?.message).toMatch(/grille d'accord/);
+    expect(formatViolation(result.violations[0]!)).toMatch(/grille d'accord/);
   });
 
   it('accepts the exact bounds of the tuning range', () => {
@@ -488,8 +489,8 @@ describe('checkPlan — reporting', () => {
     });
     expect(forward.violations).toHaveLength(2);
     expect(backward.violations).toEqual(forward.violations);
-    expect(forward.violations.map((v) => v.message)).toEqual([
-      ...forward.violations.map((v) => v.message),
+    expect(forward.violations.map(formatViolation)).toEqual([
+      ...forward.violations.map(formatViolation),
     ].sort());
   });
 
@@ -557,7 +558,7 @@ describe('checkPlan — wideband blocks (D-026)', () => {
     expect(result.violations.map((v) => [v.kind, v.victimLinkId, v.actualKHz, v.requiredKHz])).toEqual([
       ['im3-2tx', 'S', 100, 200],
     ]);
-    expect(result.violations[0]?.message).toContain('du bord du bloc S (520.000 MHz ± 3000 kHz)');
+    expect(formatViolation(result.violations[0]!)).toContain('du bord du bloc S (520.000 MHz ± 3000 kHz)');
   });
 
   it('keeps the whole block inside an allowed band and clear of exclusions', () => {
@@ -621,8 +622,8 @@ describe('checkPlan — bands with holes (D-035)', () => {
   it('rejects a frequency that is on the grid but inside a hole', () => {
     const result = checkPlan({ links: [k54('A')], plan: [{ linkId: 'A', freqKHz: 630_000 }] });
     expect(result.violations.map((v) => v.kind)).toEqual(['out-of-tuning-range']);
-    expect(result.violations[0]?.message).toContain('tombe dans un trou de la bande');
-    expect(result.violations[0]?.message).toContain('653.125–662.875');
+    expect(formatViolation(result.violations[0]!)).toContain('tombe dans un trou de la bande');
+    expect(formatViolation(result.violations[0]!)).toContain('653.125–662.875');
   });
 
   it('accepts every sub-range, edges included', () => {
@@ -633,10 +634,10 @@ describe('checkPlan — bands with holes (D-035)', () => {
 
   it('still reports the older faults first, so a hole never masks them', () => {
     // Off the grid inside a sub-range, and outside the range entirely.
-    expect(checkPlan({ links: [k54('A')], plan: [{ linkId: 'A', freqKHz: 606_010 }] }).violations[0]?.message).toContain(
+    expect(checkPlan({ links: [k54('A')], plan: [{ linkId: 'A', freqKHz: 606_010 }] }).violations.map(formatViolation)[0]).toContain(
       "grille d'accord",
     );
-    expect(checkPlan({ links: [k54('A')], plan: [{ linkId: 'A', freqKHz: 700_000 }] }).violations[0]?.message).toContain(
+    expect(checkPlan({ links: [k54('A')], plan: [{ linkId: 'A', freqKHz: 700_000 }] }).violations.map(formatViolation)[0]).toContain(
       "hors de la plage d'accord",
     );
   });

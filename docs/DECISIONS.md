@@ -1176,3 +1176,44 @@ les appareils à canaux préréglés (les trois BLX, dont Wireless Workbench dit
 pas nul) et les gardes aux 7e et 9e ordres, que seul du matériel analogique
 utilise. Aucune des deux ne fait proposer une fréquence fausse ; elles peuvent
 attendre le portage.
+
+## D-036 — Le moteur n'écrit plus de phrases, il émet des codes **[VALIDÉ 18/09/2026]**
+
+*Phase 1, 18/09/2026, recommandation du cinquième audit.* `Violation.message`
+portait une phrase française produite par le moteur, et les fichiers témoins la
+figeaient. Deux conséquences que l'audit a pointées : le portage Kotlin aurait
+dû reproduire ces phrases **au caractère près**, y compris l'arrondi de
+`toFixed(3)` qui ne se comporte pas comme `String.format` ; et le multi-pays
+(D-031) restait impossible sans réécrire le moteur.
+
+**Le champ `message` devient `detail`**, une union discriminée par un code, qui
+ne porte que ce que les autres champs de la violation ne portent pas déjà :
+
+| Code | Ce qu'il ajoute |
+|---|---|
+| `tuning.outside` | les bornes de la plage |
+| `tuning.off-grid` | la borne basse et le pas |
+| `tuning.hole` | les sous-plages réellement accordables (D-035) |
+| `band.not-allowed` | la largeur de canal |
+| `exclusion.too-close` | le libellé de l'exclusion et ses bornes |
+| `spacing.too-close` | rien, tout est déjà dans les champs |
+| `im.too-close` | les coefficients du produit, et la demi-largeur du bloc quand la victime en est un |
+
+Le rendu français part dans `messages.ts`, hors du moteur de calcul, derrière
+`formatViolation`. C'est désormais **le seul endroit du dépôt où une phrase
+destinée à un lecteur est écrite**, et le seul fichier de test qui en affirme
+une. Les fichiers témoins ne contiennent plus un mot de français : le portage
+aura des nombres à reproduire, pas des caractères.
+
+L'union étant discriminée, un code ajouté sans son rendu ne compile pas, et un
+test parcourt les sept codes pour vérifier qu'aucun ne rend une phrase vide,
+muette sur la liaison, ou identique à celle d'un autre.
+
+**Deux messages améliorés au passage**, parce que ce test les a pris en défaut :
+« hors bande » et « trop près d'une exclusion » ne nommaient pas la liaison
+concernée. Sur un plan de 24 liaisons, c'était inexploitable. Ils la nomment.
+
+Un détail de tri a suivi : la départie ultime entre deux violations utilisait la
+phrase, faute de mieux, pour distinguer deux exclusions qui se recouvrent sur la
+même porteuse au même bord. Elle utilise maintenant le code et, pour les
+exclusions, le libellé — donc une donnée, pas une traduction.
