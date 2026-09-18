@@ -75,6 +75,14 @@ const SERIES_ALIASES: Record<string, string> = {
   ewd: 'ewdem',
   digital6000: 'em6000',
   '2000iem': 'sr2050',
+  // WWB carries the 300 and the 500 as one series, and the Astral as A20.
+  ew300g4: 'ew300500g4',
+  ew500g4: 'ew300500g4',
+  astral: 'a20',
+  dwx: 'dwr',
+  // Deliberately not aliased: Audio-Technica's "3000" in WWB is an older
+  // generation than the fourth-generation entries here, so comparing them
+  // would be worse than reporting the series as unknown.
 };
 
 /** Punctuation and case carry no meaning in either database. */
