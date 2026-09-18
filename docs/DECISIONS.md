@@ -1132,3 +1132,47 @@ point de responsabilité soulevé par l'audit stratégique.
 
 Les 67 entrées passent en `manufacturer` : aucune n'a encore été contrôlée
 chiffre par chiffre (D-024).
+
+## D-035 — Une bande peut avoir des trous, et le moteur les respecte **[VALIDÉ 18/09/2026]**
+
+*Phase 1, décidé par Julien.* Une entrée décrivait une plage d'un seul tenant.
+Deux entrées de la base n'en ont pas : le Shure Axient Digital **K54** accorde
+606,000–607,875, 614,125–615,875 et 653,125–662,875 MHz et **rien entre les
+deux** ; le QLX-D **S50** accorde 823,125–831,875 et 863,125–864,875 MHz. Sur
+ces deux-là, le moteur proposait des fréquences que le récepteur ne peut pas
+afficher — exactement ce que D-017 interdit, et le cinquième audit l'a relevé.
+
+**Le modèle.** `EngineLink.tunableRangesKHz` est une liste optionnelle de
+sous-plages. Absente, toute la plage s'accorde, ce qui reste le cas ordinaire
+de 65 entrées sur 67. Présente, une fréquence doit tomber dans l'une d'elles,
+en plus d'être sur la grille. La plage extérieure reste la borne du calcul, si
+bien que la grille de candidats et toute l'arithmétique sont inchangées : les
+trous sont simplement masqués.
+
+Les deux moitiés du moteur portent la règle : `checkPlan` rend une violation
+`out-of-tuning-range` dont le message nomme les sous-plages réellement
+accordables, et le masque statique de l'assignateur écarte les candidats des
+trous. La comparaison exhaustive candidat par candidat couvre le cas, sur une
+bande dont deux tiers de la grille sont inaccessibles.
+
+**Effet de bord voulu sur le QLX-D S50.** L'entrée était tronquée à sa
+sous-plage française, ce qui confondait deux rôles. Elle décrit maintenant le
+matériel entier, trous compris, et c'est le plan de bandes qui écarte la
+portion 863–865 MHz absente du plan français. C'est la règle de D-031
+enfin appliquée : **une entrée décrit le matériel, le plan de bandes filtre.**
+
+**Ce que le validateur exige** d'une liste de sous-plages : au moins deux,
+triées, disjointes, chacune dans la plage extérieure et sur la grille, la
+première commençant à la borne basse et la dernière finissant à la borne
+haute. La combinaison avec un bloc WMAS est refusée : elle demanderait
+d'appliquer le retrait d'une demi-largeur à chaque sous-plage, et aucune entrée
+n'en a besoin aujourd'hui.
+
+L'importateur sait désormais comparer les sous-plages plutôt que de signaler
+leur simple existence : 37 entrées conformes contre 35 avant.
+
+**Restent en dette, documentée**, les deux autres manques relevés par l'audit :
+les appareils à canaux préréglés (les trois BLX, dont Wireless Workbench dit le
+pas nul) et les gardes aux 7e et 9e ordres, que seul du matériel analogique
+utilise. Aucune des deux ne fait proposer une fréquence fausse ; elles peuvent
+attendre le portage.

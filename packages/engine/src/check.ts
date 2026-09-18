@@ -76,6 +76,13 @@ function productExpression(linkIds: readonly string[], coefficients: readonly nu
     .join('');
 }
 
+/** Whether a frequency falls in one of the link's tunable sub-ranges. */
+export function fitsTunableRanges(link: EngineLink, freqKHz: number): boolean {
+  const ranges = link.tunableRangesKHz;
+  if (!ranges || ranges.length === 0) return true;
+  return ranges.some(([from, to]) => freqKHz >= from && freqKHz <= to);
+}
+
 export function halfWidthKHz(link: EngineLink): number {
   return Math.ceil(link.channelWidthKHz / 2);
 }
@@ -249,7 +256,8 @@ export function checkPlan(input: CheckInput): CheckResult {
     const [fromKHz, toKHz] = link.tuningRangeKHz;
     const outside = freqKHz < fromKHz || freqKHz > toKHz;
     const offGrid = !outside && (freqKHz - fromKHz) % link.stepKHz !== 0;
-    if (!outside && !offGrid) continue;
+    const inHole = !outside && !offGrid && !fitsTunableRanges(link, freqKHz);
+    if (!outside && !offGrid && !inHole) continue;
     violations.push({
       kind: 'out-of-tuning-range',
       severity: SEVERITY_BY_KIND['out-of-tuning-range'],
@@ -261,7 +269,11 @@ export function checkPlan(input: CheckInput): CheckResult {
       actualKHz: 0,
       message: outside
         ? `${mhz(freqKHz)} MHz est hors de la plage d'accord de ${link.id} (${mhz(fromKHz)}–${mhz(toKHz)} MHz).`
-        : `${mhz(freqKHz)} MHz n'est pas sur la grille d'accord de ${link.id} (pas de ${link.stepKHz} kHz depuis ${mhz(fromKHz)} MHz).`,
+        : inHole
+          ? `${mhz(freqKHz)} MHz tombe dans un trou de la bande de ${link.id}, qui n'accorde que ${(link.tunableRangesKHz ?? [])
+              .map(([a, b]) => `${mhz(a)}–${mhz(b)}`)
+              .join(', ')} MHz.`
+          : `${mhz(freqKHz)} MHz n'est pas sur la grille d'accord de ${link.id} (pas de ${link.stepKHz} kHz depuis ${mhz(fromKHz)} MHz).`,
     });
   }
 

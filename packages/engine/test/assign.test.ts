@@ -310,3 +310,29 @@ describe('coordinate — wideband blocks (D-026)', () => {
     expect(first.assignments).toEqual(last.assignments);
   });
 });
+
+describe('coordinate — bands with holes (D-035)', () => {
+  it('never places a carrier in a hole, and says so when the holes leave no room', () => {
+    const k54 = (id: string) =>
+      link(id, {
+        tuningRangeKHz: [606_000, 662_875],
+        tunableRangesKHz: [
+          [606_000, 607_875],
+          [614_125, 615_875],
+          [653_125, 662_875],
+        ],
+      });
+    const links = Array.from({ length: 8 }, (_, i) => k54(`HF${i}`));
+    const result = coordinate({ links });
+    expect(result.ok).toBe(true);
+    for (const { freqKHz } of result.assignments) {
+      const inside =
+        (freqKHz >= 606_000 && freqKHz <= 607_875) ||
+        (freqKHz >= 614_125 && freqKHz <= 615_875) ||
+        (freqKHz >= 653_125 && freqKHz <= 662_875);
+      expect(inside, `${freqKHz} kHz est dans un trou`).toBe(true);
+    }
+    // The checker run independently agrees, which is what the two halves owe.
+    expect(checkPlan({ links, plan: result.assignments }).ok).toBe(true);
+  });
+});

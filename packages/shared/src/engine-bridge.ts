@@ -14,6 +14,8 @@ import type { BandPlan, Project } from './domain.js';
 export interface HardwareProfile {
   /** Range of the carrier — of the block's centre for a WMAS entry. */
   tuningRangeKHz: readonly [number, number];
+  /** Tunable sub-ranges when the band has holes (D-035). */
+  tunableRangesKHz?: readonly (readonly [number, number])[];
   stepKHz: number;
   channelWidthKHz: number;
   /** Clearances this model needs, overriding the global guards field by field. */
@@ -60,6 +62,7 @@ export function toCoordinateInput(
         tuningRangeKHz: profile.tuningRangeKHz,
         stepKHz: profile.stepKHz,
         channelWidthKHz: profile.channelWidthKHz,
+        ...(profile.tunableRangesKHz ? { tunableRangesKHz: profile.tunableRangesKHz } : {}),
         ...(profile.kind ? { kind: profile.kind } : {}),
         ...(profile.guards ? { guards: profile.guards } : {}),
         ...(link.locked && link.assignedFreqKHz !== undefined

@@ -3,6 +3,7 @@ import {
   allowedSpans,
   checkPlan,
   fitsAllowedSpan,
+  fitsTunableRanges,
   generatesIm,
   halfWidthKHz,
   imHalfWidthKHz,
@@ -104,6 +105,12 @@ export function coordinate(input: CoordinateInput): CoordinationResult {
     const grid = grids[linkIndex] as CandidateGrid;
     const mask = new Uint8Array(grid.count);
     const half = halfWidthKHz(link);
+    // Holes in the band: a frequency the receiver simply cannot display.
+    if (link.tunableRangesKHz && link.tunableRangesKHz.length > 0) {
+      for (let k = 0; k < grid.count; k += 1) {
+        if (!fitsTunableRanges(link, freqAt(grid, k))) mask[k] = 1;
+      }
+    }
     if (bands.length > 0) {
       for (let k = 0; k < grid.count; k += 1) {
         if (!fitsAllowedSpan(freqAt(grid, k), half, spans)) mask[k] = 1;

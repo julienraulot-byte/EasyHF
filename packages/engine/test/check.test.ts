@@ -604,3 +604,40 @@ describe('checkPlan — wideband blocks (D-026)', () => {
     expect(result.violations).toEqual([]);
   });
 });
+
+describe('checkPlan — bands with holes (D-035)', () => {
+  // A Shure Axient Digital K54 tunes 606.000–607.875, 614.125–615.875 and
+  // 653.125–662.875 MHz. Everything between is on the grid and unreachable.
+  const k54 = (id: string) =>
+    link(id, {
+      tuningRangeKHz: [606_000, 662_875],
+      tunableRangesKHz: [
+        [606_000, 607_875],
+        [614_125, 615_875],
+        [653_125, 662_875],
+      ],
+    });
+
+  it('rejects a frequency that is on the grid but inside a hole', () => {
+    const result = checkPlan({ links: [k54('A')], plan: [{ linkId: 'A', freqKHz: 630_000 }] });
+    expect(result.violations.map((v) => v.kind)).toEqual(['out-of-tuning-range']);
+    expect(result.violations[0]?.message).toContain('tombe dans un trou de la bande');
+    expect(result.violations[0]?.message).toContain('653.125–662.875');
+  });
+
+  it('accepts every sub-range, edges included', () => {
+    for (const freqKHz of [606_000, 607_875, 614_125, 615_875, 653_125, 662_875]) {
+      expect(checkPlan({ links: [k54('A')], plan: [{ linkId: 'A', freqKHz }] }).violations, `${freqKHz}`).toEqual([]);
+    }
+  });
+
+  it('still reports the older faults first, so a hole never masks them', () => {
+    // Off the grid inside a sub-range, and outside the range entirely.
+    expect(checkPlan({ links: [k54('A')], plan: [{ linkId: 'A', freqKHz: 606_010 }] }).violations[0]?.message).toContain(
+      "grille d'accord",
+    );
+    expect(checkPlan({ links: [k54('A')], plan: [{ linkId: 'A', freqKHz: 700_000 }] }).violations[0]?.message).toContain(
+      "hors de la plage d'accord",
+    );
+  });
+});

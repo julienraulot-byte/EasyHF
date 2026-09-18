@@ -27,7 +27,13 @@ export function findHardware(id: string): HardwareEntry | undefined {
 export function hardwareProfile(entry: HardwareEntry): HardwareProfile {
   const guards = entry.guards ? { guards: entry.guards, provenance: entry.provenance } : { provenance: entry.provenance };
   if (entry.type !== 'wmas') {
-    return { tuningRangeKHz: entry.tuningRangeKHz, stepKHz: entry.stepKHz, channelWidthKHz: entry.channelWidthKHz, ...guards };
+    return {
+      tuningRangeKHz: entry.tuningRangeKHz,
+      stepKHz: entry.stepKHz,
+      channelWidthKHz: entry.channelWidthKHz,
+      ...(entry.tunableRangesKHz ? { tunableRangesKHz: entry.tunableRangesKHz } : {}),
+      ...guards,
+    };
   }
   // A WMAS entry gives the RF range its block may occupy; the engine places
   // the block's centre, which must keep the whole block inside that range

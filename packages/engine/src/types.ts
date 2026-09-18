@@ -26,6 +26,13 @@ export interface EngineLink {
   zoneId: string;
   /** Inclusive tuning range of the hardware, from `hardware-db`. */
   tuningRangeKHz: readonly [FreqKHz, FreqKHz];
+  /**
+   * Tunable sub-ranges, when the band has holes — a Shure Axient Digital K54
+   * tunes 606.000–607.875, 614.125–615.875 and 653.125–662.875 MHz and nothing
+   * between. Each must lie inside `tuningRangeKHz`. Absent means the whole
+   * range is tunable, which is the ordinary case (DECISIONS.md D-035).
+   */
+  tunableRangesKHz?: readonly (readonly [FreqKHz, FreqKHz])[];
   /** Tuning grid of the hardware, in kHz. Candidates are `from + n * step`. */
   stepKHz: number;
   /**

@@ -51,8 +51,9 @@
   },
   {
     "id": "shure-qlxd-s50", "brand": "Shure", "series": "QLX-D", "model": "QLXD4", "bandVariant": "S50", "type": "receiver",
-    "tuningRangeKHz": [823125, 831875], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "La bande S50 de WWB couvre deux sous-plages accordables, 823,125–831,875 et 863,125–864,875 MHz ; seule la première est retenue, la seconde étant hors du plan de bandes français v1 (D-019). Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
+    "tuningRangeKHz": [823125, 864875], "stepKHz": 25, "channelWidthKHz": 200,
+    "tunableRangesKHz": [[823125, 831875], [863125, 864875]],
+    "notes": "Bande à trous : la S50 accorde 823,125–831,875 et 863,125–864,875 MHz, relevé dans la base d'équipements de Wireless Workbench 7.8.3 le 18/09/2026. L'entrée décrit désormais le matériel entier, sous-plages comprises ; c'est le plan de bandes qui écarte la portion 863–865 MHz, absente du plan français (D-019, D-031).",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/qlx-d_digital_wireless", "provenance": "manufacturer"
   },
   {
@@ -82,7 +83,8 @@
   {
     "id": "shure-ad-k54", "brand": "Shure", "series": "Axient Digital", "model": "AD4D / AD4Q", "bandVariant": "K54", "type": "receiver",
     "tuningRangeKHz": [606000, 662875], "stepKHz": 25, "channelWidthKHz": 200,
-    "notes": "Variante nord-américaine. WWB donne trois sous-plages accordables — 606,000–607,875, 614,125–615,875 et 653,125–662,875 MHz — que notre modèle à plage unique ne sait pas décrire : le moteur peut proposer une fréquence située dans un trou. L'équivalent européen est K55, qui n'a pas ce défaut. Plage relevé dans la base d'équipements de Wireless Workbench 7.8.3 (PrePackagedSeries2, version 4.8 du 04/05/2026) le 12/09/2026.",
+    "tunableRangesKHz": [[606000, 607875], [614125, 615875], [653125, 662875]],
+    "notes": "Variante nord-américaine. Bande à trois trous : 606,000–607,875, 614,125–615,875 et 653,125–662,875 MHz, relevé dans la base d'équipements de Wireless Workbench 7.8.3 le 18/09/2026. L'équivalent européen est K55, d'un seul tenant.",
     "source": "https://www.shure.com/en-GB/products/wireless-systems/axient_digital", "provenance": "manufacturer"
   },
   {

@@ -148,6 +148,7 @@ variantes de bande, qui sont ce que le moteur manipule réellement.
 | Schéma JSON et validateur en CI | fait |
 | Entrées sourcées | 67 entrées, 22 séries, toutes `verified: false` |
 | Gardes par modèle dans le moteur (D-023) | fait, comparaison exhaustive à gardes mélangées |
+| Bandes à trous (D-035) | fait — le moteur ne propose plus de fréquence inaccordable sur AD K54 ni QLX-D S50 |
 | Blocs WMAS dans le moteur (D-026) | fait, comparaison exhaustive bloc verrouillé / bloc libre / blocs générateurs |
 | Chiffres Spectera | plages ZONE 01 et règle de garde sourcées chez Sennheiser (D-026) ; pas de placement du centre non publié |
 | Base légale du WMAS en France | vérifiée : ARCEP 2015-0830, 50 mW p.a.r., aucune limite de largeur (D-027) |

@@ -54,6 +54,25 @@ export function findings(entries: readonly HardwareEntry[]): string[] {
         );
       }
     }
+    const subs = entry.tunableRangesKHz;
+    if (subs) {
+      if (entry.type === 'wmas') {
+        out.push(`${label} : sous-plages et bloc WMAS ne se combinent pas encore`);
+      }
+      let previousEnd = -1;
+      for (const [a, b] of subs) {
+        if (b < a) out.push(`${label} : sous-plage inversée (${a}–${b} kHz)`);
+        if (a < from || b > to) out.push(`${label} : sous-plage ${a}–${b} kHz hors de la plage ${from}–${to} kHz`);
+        if (a <= previousEnd) out.push(`${label} : sous-plages non triées ou qui se chevauchent en ${a} kHz`);
+        if (entry.stepKHz > 0 && ((a - from) % entry.stepKHz !== 0 || (b - from) % entry.stepKHz !== 0)) {
+          out.push(`${label} : sous-plage ${a}–${b} kHz hors de la grille de ${entry.stepKHz} kHz`);
+        }
+        previousEnd = b;
+      }
+      if (subs[0]?.[0] !== from || subs[subs.length - 1]?.[1] !== to) {
+        out.push(`${label} : les sous-plages doivent commencer à ${from} et finir à ${to} kHz`);
+      }
+    }
     if (entry.stepKHz > 0 && (to - from) % entry.stepKHz !== 0) {
       out.push(`${label} : la borne haute ${to} kHz n'est pas sur la grille de ${entry.stepKHz} kHz depuis ${from}`);
     }

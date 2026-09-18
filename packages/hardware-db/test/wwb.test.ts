@@ -175,3 +175,31 @@ describe('readWwbBands', () => {
     expect(only.profiles.every((p) => p.isImdSource)).toBe(true);
   });
 });
+
+describe('compareToWwb — bands with holes', () => {
+  const holed = band({
+    subRangesKHz: [
+      [470_125, 480_000],
+      [500_000, 534_000],
+    ],
+  });
+
+  it('says nothing when our sub-ranges match WWB, and counts the entry as conforming', () => {
+    const ours = entry({ tunableRangesKHz: [[470_125, 480_000], [500_000, 534_000]] });
+    expect(compareToWwb([ours], [holed]).map((f) => f.kind)).toEqual(['match']);
+  });
+
+  it('reports a difference rather than the mere presence of holes', () => {
+    const wrong = entry({ tunableRangesKHz: [[470_125, 481_000], [500_000, 534_000]] });
+    const findings = compareToWwb([wrong], [holed]);
+    expect(findings.map((f) => f.kind)).toEqual(['sub-ranges']);
+    expect(findings[0]?.message).toContain('sous-plages différentes');
+  });
+
+  it('reports an entry claiming holes WWB does not have', () => {
+    const invented = entry({ tunableRangesKHz: [[470_125, 480_000], [500_000, 534_000]] });
+    const findings = compareToWwb([invented], [band()]);
+    expect(findings.map((f) => f.kind)).toEqual(['sub-ranges']);
+    expect(findings[0]?.message).toContain("WWB ne connaît pas");
+  });
+});

@@ -173,10 +173,25 @@ export function compareToWwb(entries: readonly HardwareEntry[], bands: readonly 
     }
     if (band.subRangesKHz.length > 1) {
       const spans = band.subRangesKHz.map(([a, b]) => `${mhz(a)}–${mhz(b)}`).join(', ');
+      const ours = entry.tunableRangesKHz ?? [];
+      const same =
+        ours.length === band.subRangesKHz.length &&
+        ours.every((r, i) => r[0] === band.subRangesKHz[i]?.[0] && r[1] === band.subRangesKHz[i]?.[1]);
+      if (!same) {
+        findings.push({
+          kind: 'sub-ranges',
+          entryId: entry.id,
+          message:
+            ours.length === 0
+              ? `la bande a ${band.subRangesKHz.length} sous-plages accordables (${spans} MHz) ; notre entrée n'en décrit aucune.`
+              : `sous-plages différentes : ${ours.map(([a, b]) => `${mhz(a)}–${mhz(b)}`).join(', ')} chez nous, ${spans} MHz dans WWB.`,
+        });
+      }
+    } else if ((entry.tunableRangesKHz ?? []).length > 0) {
       findings.push({
         kind: 'sub-ranges',
         entryId: entry.id,
-        message: `la bande a ${band.subRangesKHz.length} sous-plages accordables (${spans} MHz) ; notre entrée n'en décrit qu'une seule.`,
+        message: `notre entrée décrit des sous-plages que WWB ne connaît pas : sa bande est d'un seul tenant.`,
       });
     }
     for (const profile of band.profiles) {
@@ -189,7 +204,8 @@ export function compareToWwb(entries: readonly HardwareEntry[], bands: readonly 
         });
       }
     }
-    if (exact && band.stepKHz === entry.stepKHz && band.subRangesKHz.length <= 1 && how === 'series') {
+    const subRangesAgree = !findings.some((f) => f.kind === 'sub-ranges' && f.entryId === entry.id);
+    if (exact && band.stepKHz === entry.stepKHz && subRangesAgree && how === 'series') {
       findings.push({ kind: 'match', entryId: entry.id, message: `conforme à WWB (série ${band.series}).` });
     }
   }

@@ -84,11 +84,20 @@ function crossValidate(
     const free: EngineLink = {
       id: 'FREE',
       zoneId: zoneOfFreeLink,
+      // One candidate at a time: the range is the candidate itself, and any
+      // sub-ranges are clipped to it so the grid stays a single point.
       tuningRangeKHz: [freqKHz, freqKHz],
       stepKHz: 25,
       channelWidthKHz: 200,
       ...(freeGuards ? { guards: freeGuards } : {}),
       ...freeLink,
+      ...(freeLink?.tunableRangesKHz
+        ? {
+            tunableRangesKHz: freeLink.tunableRangesKHz.some(([a, b]) => freqKHz >= a && freqKHz <= b)
+              ? [[freqKHz, freqKHz] as const]
+              : [[freqKHz + 1, freqKHz + 1] as const],
+          }
+        : {}),
     };
     const links = [...locked, free];
     const search = coordinate({ links, zonePolicies, config: merged, ...spectrum });
@@ -264,6 +273,24 @@ describe('assignment and checking agree, candidate by candidate', () => {
     const locked = [block('S1', 'a', 500_000), block('S2', 'b', 512_000), pinned('L1', 'a', 520_000)];
     const counts = crossValidate(locked, grid(470_000, 720, 125), POLICIES_MIXED, 'a', { wmasAsImGenerator: true });
     bothOutcomes(counts, 'deux blocs générateurs');
+  });
+
+  it('with a band full of holes, where the search must refuse what the checker refuses', () => {
+    // The free link tunes only three windows; every candidate offered lands
+    // either in a window or in a hole, and both halves must say the same.
+    const locked = [pinned('L1', 'a', 500_000), pinned('L2', 'b', 503_400), pinned('L3', 'a', 507_125)];
+    const holed: Partial<EngineLink> = {
+      tunableRangesKHz: [
+        [494_000, 496_000],
+        [500_000, 502_000],
+        [508_000, 512_000],
+      ],
+    };
+    const counts = crossValidate(locked, grid(494_000, 740), POLICIES_MIXED, 'a', {}, { freeLink: holed });
+    bothOutcomes(counts, 'bande à trous');
+    // And the holes really bite: far more refusals than the carriers alone
+    // would cause, since two thirds of the grid is unreachable.
+    expect(counts.rejected).toBeGreaterThan(counts.accepted);
   });
 
   it('on randomly generated scenes', () => {

@@ -21,6 +21,8 @@ export interface HardwareEntry {
   bandVariant: string;
   type: HardwareType;
   tuningRangeKHz: [number, number];
+  /** Tunable sub-ranges when the band has holes (D-035). Omit when contiguous. */
+  tunableRangesKHz?: [number, number][];
   stepKHz: number;
   channelWidthKHz: number;
   guards?: Partial<Guards>;
