@@ -15,7 +15,7 @@
     "validate": "tsx src/validate.ts",
     "import:wwb": "tsx src/import-wwb.ts"
   },
-  "dependencies": {
+  "devDependencies": {
     "@easyhf/engine": "workspace:*",
     "@easyhf/shared": "workspace:*"
   }

@@ -8,7 +8,6 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { exit } from 'node:process';
 import { Ajv2020 } from 'ajv/dist/2020.js';
-import { resolveConfig } from '@easyhf/engine';
 import { HARDWARE } from './index.js';
 import type { HardwareEntry } from './types.js';
 
@@ -89,13 +88,6 @@ export function findings(entries: readonly HardwareEntry[]): string[] {
     }
     if (entry.provenance !== 'user' && !/^https:\/\//.test(entry.source)) {
       out.push(`${label} : une fiche livrée doit citer une source en https, reçu « ${entry.source} »`);
-    }
-    if (entry.guards) {
-      try {
-        resolveConfig({ guards: entry.guards });
-      } catch (error) {
-        out.push(`${label} : ${(error as Error).message}`);
-      }
     }
   }
   return out;

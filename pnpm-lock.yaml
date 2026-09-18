@@ -33,7 +33,7 @@ importers:
   packages/engine: {}
 
   packages/hardware-db:
-    dependencies:
+    devDependencies:
       '@easyhf/engine':
         specifier: workspace:*
         version: link:../engine
