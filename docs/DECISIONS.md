@@ -1053,14 +1053,32 @@ d'écrire la première ligne de Kotlin :**
    structurés**, le formatage revenant à l'interface — ce qui sert aussi le
    multi-pays (D-031), et doit donc être fait une fois, avant le port.
 
-**Et une suite de conformité à construire :** dix fichiers témoins ne prouvent
-pas un moteur numérique. Geler avant le portage un corpus généré de plusieurs
-milliers de scènes — graine fixe, blocs WMAS, zones, exclusions, grilles à 5 et
-125 kHz, plages en 1,4 GHz — sérialisé en JSON structuré sans chaînes, et
-l'exécuter côté Kotlin en intégration continue. Une journée de travail en
-TypeScript. Ajouter un banc sur téléphone réel avant d'engager le port : le
-budget de 3 secondes n'a jamais été mesuré ailleurs que sur une machine de
-build.
+**La suite de conformité est construite [FAIT 19/09/2026].**
+`test/conformance/corpus.json`, 800 cas sur 400 scènes, 1,6 Mio, régénérable
+par `pnpm --filter @easyhf/engine corpus` avec une graine fixe et un générateur
+xorshift, donc reproductible ailleurs qu'en JavaScript.
+
+Ce qu'il couvre, mesuré et non supposé : les deux moitiés du moteur — 400 cas
+rejouent `coordinate`, 400 rejouent `checkPlan` sur un plan tiré au hasard, qui
+tombe sur bien plus de violations qu'un plan déjà rendu valide par la recherche.
+**Les sept codes de violation apparaissent**, 469 violations en tout. Les
+liaisons couvrent les grilles de 5, 25 et 125 kHz, des plages jusqu'à 1,8 GHz,
+les blocs WMAS générateurs ou non, les bandes à trous, les porteuses
+verrouillées, les six jeux de gardes dont un tout à zéro, trois politiques de
+zones, les exclusions et les plans de bandes. La moitié des scènes sont à
+l'étroit, si bien que l'échelle de robustesse descend et que des liaisons
+restent non placées — des états qu'un corpus de scènes faciles n'atteint jamais.
+Le fichier ne contient **aucun caractère non ASCII**, ce qu'un test vérifie.
+
+**Preuve qu'il sert à quelque chose.** La divergence de division entière
+annoncée plus haut a été simulée en remplaçant `Math.floor` par `Math.trunc`
+dans `candidates.ts`, ce qui est exactement ce que ferait un portage Kotlin naïf.
+Le corpus la rattrape. **Les dix fichiers témoins ne la voient pas** : leur
+suite reste verte. La comparaison exhaustive la rattrape aussi, ce qui est
+rassurant, mais elle ne partira pas en Kotlin — le corpus, si.
+
+Reste le **banc sur téléphone réel** avant d'engager le port : le budget de
+3 secondes n'a jamais été mesuré ailleurs que sur une machine de build.
 
 ## D-033 — Quatrième révision de D-005 : une règle couvrante à garde nulle ne couvre rien
 
