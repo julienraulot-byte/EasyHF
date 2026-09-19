@@ -158,8 +158,8 @@ describe('readWwbBands', () => {
     return path;
   }
 
-  it('reads bands, sorted sub-ranges and the three compatibility levels', () => {
-    const bands = readWwbBands(fixture());
+  it('reads bands, sorted sub-ranges and the three compatibility levels', async () => {
+    const bands = await readWwbBands(fixture());
     expect(bands).toHaveLength(1);
     const [only] = bands as [WwbBand];
     expect(only).toMatchObject({ manufacturer: 'Shure', series: 'ULXD', band: 'G51', fromKHz: 470_125, toKHz: 534_000, stepKHz: 25 });

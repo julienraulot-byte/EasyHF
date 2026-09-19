@@ -10,7 +10,6 @@
  * only becomes `verified: true` once a human has confirmed it (D-024).
  */
 
-import { DatabaseSync } from 'node:sqlite';
 import { HARDWARE } from './index.js';
 import { compareToWwb, toKHz, type Finding, type WwbBand, type WwbProfile } from './wwb.js';
 
@@ -31,9 +30,27 @@ interface Row {
   [column: string]: string | number | null;
 }
 
+/**
+ * `node:sqlite` arrived in Node 22.5, while the library itself runs on Node 20.
+ * Importing it at the top of the file would fail to load the whole module on an
+ * older runtime, with a message about an unknown built-in; loading it here lets
+ * the caller say something useful instead.
+ */
+async function openDatabase(path: string): Promise<{ prepare(sql: string): { all(): unknown[] }; close(): void }> {
+  let DatabaseSync: new (p: string, o: { readOnly: boolean }) => never;
+  try {
+    ({ DatabaseSync } = (await import('node:sqlite')) as unknown as { DatabaseSync: typeof DatabaseSync });
+  } catch {
+    throw new Error(
+      `Node ${process.versions.node} ne fournit pas « node:sqlite » : il faut Node 22.5 ou plus récent pour lire la base de Wireless Workbench.`,
+    );
+  }
+  return new DatabaseSync(path, { readOnly: true });
+}
+
 /** Every band variant WWB knows, with its compatibility profiles. */
-export function readWwbBands(path: string): WwbBand[] {
-  const db = new DatabaseSync(path, { readOnly: true });
+export async function readWwbBands(path: string): Promise<WwbBand[]> {
+  const db = await openDatabase(path);
   try {
     const bandRows = db
       .prepare(
@@ -137,17 +154,17 @@ function report(findings: readonly Finding[]): string {
   return lines.join('\n');
 }
 
-function main(): void {
+async function main(): Promise<void> {
   const given = process.argv[2];
   const path = given ?? DEFAULT_PATHS[0];
   let bands: WwbBand[];
   try {
-    bands = readWwbBands(path);
+    bands = await readWwbBands(path);
   } catch (error) {
     console.error(`Impossible de lire la base WWB « ${path} » : ${(error as Error).message}`);
     console.error('Chemins habituels :');
     for (const candidate of DEFAULT_PATHS) console.error(`  ${candidate}`);
-    console.error("Passez le chemin en argument si WWB est installé ailleurs. Node 22.5 ou plus est nécessaire.");
+    console.error('Passez le chemin en argument si WWB est installé ailleurs.');
     process.exit(1);
     return;
   }
@@ -155,4 +172,4 @@ function main(): void {
   console.log(report(compareToWwb(HARDWARE, bands)));
 }
 
-if (process.argv[1]?.endsWith('import-wwb.ts')) main();
+if (process.argv[1]?.endsWith('import-wwb.ts')) void main();
